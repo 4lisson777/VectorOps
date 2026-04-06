@@ -1,7 +1,7 @@
 import { BugForm } from "@/components/tickets/bug-form"
 
 export const metadata = {
-  title: "Report a Bug — ShinobiOps",
+  title: "Reportar Alvo (Bug) — ShinobiOps",
 }
 
 // Server component — renders the BugForm client component.

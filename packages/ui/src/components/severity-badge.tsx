@@ -12,22 +12,22 @@ const severityConfig: Record<
   { label: string; className: string }
 > = {
   LOW: {
-    label: "Low",
+    label: "Baixa",
     className:
       "bg-white border-gray-300 text-gray-800 dark:bg-white dark:border-gray-400 dark:text-gray-900",
   },
   MEDIUM: {
-    label: "Medium",
+    label: "Média",
     className:
       "bg-green-600 border-green-700 text-white dark:bg-green-600 dark:border-green-700",
   },
   HIGH: {
-    label: "High",
+    label: "Alta",
     className:
       "bg-red-600 border-red-700 text-white dark:bg-red-600 dark:border-red-700",
   },
   CRITICAL: {
-    label: "Critical",
+    label: "Crítica",
     className:
       "bg-black border-black text-white dark:bg-gray-950 dark:border-gray-800",
   },

@@ -16,11 +16,11 @@ import { UserAvatar } from "@/components/user-avatar"
 import type { TicketWithRelations } from "@/components/tickets/mission-board"
 
 const STATUS_LABELS: Record<string, string> = {
-  OPEN: "Open",
-  IN_PROGRESS: "In Progress",
-  WAITING_FOR_INFO: "Waiting for Info",
-  DONE: "Done",
-  CANCELLED: "Cancelled",
+  OPEN: "Aberto",
+  IN_PROGRESS: "Em Progresso",
+  WAITING_FOR_INFO: "Aguardando Info",
+  DONE: "Concluído",
+  CANCELLED: "Cancelado",
 }
 
 const STATUS_VARIANT: Record<
@@ -82,7 +82,7 @@ export function TicketCard({
           <button
             type="button"
             onClick={handleCopyId}
-            title="Click to copy ID"
+            title="Clique para copiar o ID"
             className={cn(
               "font-mono text-xs font-medium tabular-nums rounded px-1.5 py-0.5 transition-colors",
               copied
@@ -90,7 +90,7 @@ export function TicketCard({
                 : "bg-muted text-muted-foreground hover:bg-muted/70"
             )}
           >
-            {copied ? "Copied!" : ticket.publicId}
+            {copied ? "Copiado!" : ticket.publicId}
           </button>
           <Badge
             variant={ticket.type === "BUG" ? "destructive" : "outline"}
@@ -100,14 +100,14 @@ export function TicketCard({
                 : "border-[oklch(0.18_0.05_265)] text-[oklch(0.18_0.05_265)] dark:border-primary dark:text-primary"
             }
           >
-            {ticket.type === "BUG" ? "Bug" : "Ticket"}
+            {ticket.type === "BUG" ? "Bug" : "Chamado"}
           </Badge>
           <Badge variant={STATUS_VARIANT[ticket.status] ?? "outline"}>
             {STATUS_LABELS[ticket.status] ?? ticket.status}
           </Badge>
           {ticket.hasPendingReorder && (
             <Badge variant="outline" className="border-amber-500/50 bg-amber-500/10 text-amber-700 dark:text-amber-400">
-              Reorder Pending
+              Reordenação Pendente
             </Badge>
           )}
         </div>
@@ -120,7 +120,7 @@ export function TicketCard({
         </Link>
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
           <span>
-            Opened by{" "}
+            Aberto por{" "}
             <span className="font-medium text-foreground">
               {ticket.openedBy.name}
             </span>
@@ -131,13 +131,13 @@ export function TicketCard({
               isPastDue ? "text-destructive" : "text-muted-foreground"
             )}
           >
-            Due{" "}
+            Prazo{" "}
             {new Date(ticket.deadline).toLocaleDateString("en-US", {
               month: "short",
               day: "numeric",
               year: "numeric",
             })}
-            {isPastDue && " — OVERDUE"}
+            {isPastDue && " — ATRASADO"}
           </span>
         </div>
       </div>
@@ -157,7 +157,7 @@ export function TicketCard({
             </span>
           </div>
         ) : (
-          <span className="text-xs text-muted-foreground">Unassigned</span>
+          <span className="text-xs text-muted-foreground">Não Atribuído</span>
         )}
 
         {/* Actions */}
@@ -169,7 +169,7 @@ export function TicketCard({
             onClick={() => onReorderRequest?.(ticket.id)}
             className="text-xs"
           >
-            Request Reorder
+            Solicitar Reordenação
           </Button>
         )}
 
@@ -180,7 +180,7 @@ export function TicketCard({
             onClick={() => onAssignToMe?.(ticket.id)}
             className="text-xs bg-[oklch(0.18_0.05_265)] text-white hover:bg-[oklch(0.24_0.06_265)] dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
           >
-            Assign to me
+            Atribuir a mim
           </Button>
         )}
 
@@ -188,7 +188,7 @@ export function TicketCard({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button type="button" variant="outline" size="sm" className="text-xs">
-                Assign to...
+                Atribuir a...
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

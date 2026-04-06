@@ -319,7 +319,7 @@ export default async function TicketDetailPage({
           {/* Timeline */}
           <div className="flex flex-col gap-4">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Mission Log
+              Registro de Missões
             </h2>
             <TicketTimeline events={timelineEvents} />
           </div>

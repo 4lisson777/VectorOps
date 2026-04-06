@@ -98,11 +98,11 @@ interface SearchResult {
 }
 
 const STATUS_LABELS: Record<string, string> = {
-  OPEN: "Open",
-  IN_PROGRESS: "In Progress",
-  WAITING_FOR_INFO: "Waiting",
-  DONE: "Done",
-  CANCELLED: "Cancelled",
+  OPEN: "Aberto",
+  IN_PROGRESS: "Em Progresso",
+  WAITING_FOR_INFO: "Aguardando",
+  DONE: "Concluído",
+  CANCELLED: "Cancelado",
 }
 
 // Pattern to detect a direct public ID navigation (TKT-XXXX or BUG-XXXX)
@@ -218,7 +218,7 @@ function GlobalSearch() {
         <input
           ref={inputRef}
           type="search"
-          placeholder="Search or press Ctrl+K…"
+          placeholder="Pesquisar ou pressione Ctrl+K…"
           value={searchValue}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
@@ -226,7 +226,7 @@ function GlobalSearch() {
           onFocus={() => {
             if (results.length > 0) setIsOpen(true)
           }}
-          aria-label="Global search"
+          aria-label="Pesquisa global"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           autoComplete="off"
@@ -248,11 +248,11 @@ function GlobalSearch() {
           >
             {isSearching ? (
               <div className="px-4 py-3 text-sm text-muted-foreground">
-                Searching…
+                Pesquisando…
               </div>
             ) : results.length === 0 ? (
               <div className="px-4 py-3 text-sm italic text-muted-foreground">
-                No results found.
+                Nenhum resultado encontrado.
               </div>
             ) : (
               <ul className="max-h-72 overflow-y-auto py-1">
@@ -280,7 +280,7 @@ function GlobalSearch() {
                               : ""
                           )}
                         >
-                          {result.type === "BUG" ? "Bug" : "Ticket"}
+                          {result.type === "BUG" ? "Bug" : "Chamado"}
                         </Badge>
                       </div>
                       <span className="line-clamp-1 text-sm text-foreground">
@@ -320,7 +320,7 @@ export function Header({ session, avatarUrl, onMenuClick }: HeaderProps) {
       {/* Hamburger — only on small screens */}
       <button
         type="button"
-        aria-label="Open navigation menu"
+        aria-label="Abrir menu de navegação"
         onClick={onMenuClick}
         className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground lg:hidden"
       >
@@ -338,7 +338,7 @@ export function Header({ session, avatarUrl, onMenuClick }: HeaderProps) {
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            aria-label={`User menu for ${session.name}`}
+            aria-label={`Menu do usuário ${session.name}`}
             className="flex items-center gap-2 rounded-md p-1 hover:bg-muted"
           >
             <UserAvatar
@@ -364,7 +364,7 @@ export function Header({ session, avatarUrl, onMenuClick }: HeaderProps) {
           <DropdownMenuItem asChild>
             <Link href="/profile" className="flex items-center gap-2">
               <UserIcon />
-              Profile
+              Perfil
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -373,7 +373,7 @@ export function Header({ session, avatarUrl, onMenuClick }: HeaderProps) {
             className="flex items-center gap-2 text-destructive focus:text-destructive"
           >
             <LogOutIcon />
-            Sign Out
+            Sair
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

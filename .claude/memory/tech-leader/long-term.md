@@ -20,6 +20,12 @@
 ## Stubs Inventory (Phase 5)
 Admin component stubs exist returning null: command-dojo-overview, team-management, checkpoint-config, ticket-log, tv-board. Admin page stubs exist: /admin (has placeholder UI), /admin/team, /admin/checkpoints, /admin/log (return null). TV page at (public)/dev/tv has placeholder UI. Header has basic search but no dropdown/debounce/Ctrl+K.
 
+## i18n Pattern
+- For single-language apps, a simple `t()` utility function importing a typed const object is far simpler than React Context + hooks
+- React Context approach fails for Server Components (no hooks in RSC)
+- TypeScript const objects give autocompletion; JSON files do not
+- Keep API responses in English even when UI is translated
+
 ## Patterns Learned
 - Checkpoint config API already exists at /api/checkpoints/config (GET + PATCH with TECH_LEAD guard)
 - Users API at /api/users already has role/isActive filters but lacks search and admin fields

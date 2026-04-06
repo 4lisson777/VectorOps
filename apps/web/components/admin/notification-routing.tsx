@@ -153,7 +153,7 @@ export function NotificationRouting() {
 
   if (devs.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">No active developers found.</p>
+      <p className="text-sm text-muted-foreground">Nenhum desenvolvedor ativo encontrado.</p>
     )
   }
 
@@ -162,9 +162,9 @@ export function NotificationRouting() {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[200px]">Developer</TableHead>
-            <TableHead className="text-center">Ticket Notifications</TableHead>
-            <TableHead className="text-center">Bug Notifications</TableHead>
+            <TableHead className="w-[200px]">Desenvolvedor</TableHead>
+            <TableHead className="text-center">Notificações de Chamados</TableHead>
+            <TableHead className="text-center">Notificações de Bugs</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>

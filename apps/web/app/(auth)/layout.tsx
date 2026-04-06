@@ -38,7 +38,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         <h1 className="text-xl font-bold tracking-wide text-white">
           Shinobi<span className="text-[oklch(0.56_0.22_15)]">Ops</span>
         </h1>
-        <p className="text-xs text-white/40">Inovar Sistemas — Internal Tool</p>
+        <p className="text-xs text-white/40">Inovar Sistemas — Ferramenta Interna</p>
       </div>
 
       {/* Form card */}

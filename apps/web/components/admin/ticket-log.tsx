@@ -63,11 +63,11 @@ interface TicketsResponse {
 }
 
 const STATUS_LABELS: Record<Status, string> = {
-  OPEN: "Open",
-  IN_PROGRESS: "In Progress",
-  WAITING_FOR_INFO: "Waiting",
-  DONE: "Done",
-  CANCELLED: "Cancelled",
+  OPEN: "Aberto",
+  IN_PROGRESS: "Em Progresso",
+  WAITING_FOR_INFO: "Aguardando Info",
+  DONE: "Concluído",
+  CANCELLED: "Cancelado",
 }
 
 const STATUS_VARIANT: Record<Status, "default" | "secondary" | "outline" | "destructive"> = {
@@ -222,9 +222,9 @@ export function TicketLog() {
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Mission Log</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Registro de Missões</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Full history of all tickets and bugs.
+          Histórico completo de todos os chamados e bugs.
         </p>
       </div>
 
@@ -232,7 +232,7 @@ export function TicketLog() {
       <div className="flex flex-wrap gap-3">
         <Input
           type="search"
-          placeholder="Search by ID or title…"
+          placeholder="Buscar por ID ou título…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="h-9 max-w-xs"
@@ -240,25 +240,25 @@ export function TicketLog() {
 
         <Select value={typeFilter} onValueChange={setTypeFilter}>
           <SelectTrigger className="h-9 w-36">
-            <SelectValue placeholder="Type" />
+            <SelectValue placeholder="Tipo" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All types</SelectItem>
-            <SelectItem value="TICKET">Ticket</SelectItem>
+            <SelectItem value="ALL">Todos os tipos</SelectItem>
+            <SelectItem value="TICKET">Chamado</SelectItem>
             <SelectItem value="BUG">Bug</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={severityFilter} onValueChange={setSeverityFilter}>
           <SelectTrigger className="h-9 w-36">
-            <SelectValue placeholder="Severity" />
+            <SelectValue placeholder="Severidade" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All severities</SelectItem>
-            <SelectItem value="LOW">Low</SelectItem>
-            <SelectItem value="MEDIUM">Medium</SelectItem>
-            <SelectItem value="HIGH">High</SelectItem>
-            <SelectItem value="CRITICAL">Critical</SelectItem>
+            <SelectItem value="ALL">Todas as severidades</SelectItem>
+            <SelectItem value="LOW">Baixa</SelectItem>
+            <SelectItem value="MEDIUM">Média</SelectItem>
+            <SelectItem value="HIGH">Alta</SelectItem>
+            <SelectItem value="CRITICAL">Crítica</SelectItem>
           </SelectContent>
         </Select>
 
@@ -267,18 +267,18 @@ export function TicketLog() {
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All statuses</SelectItem>
-            <SelectItem value="OPEN">Open</SelectItem>
-            <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-            <SelectItem value="WAITING_FOR_INFO">Waiting for Info</SelectItem>
-            <SelectItem value="DONE">Done</SelectItem>
-            <SelectItem value="CANCELLED">Cancelled</SelectItem>
+            <SelectItem value="ALL">Todos os status</SelectItem>
+            <SelectItem value="OPEN">Aberto</SelectItem>
+            <SelectItem value="IN_PROGRESS">Em Progresso</SelectItem>
+            <SelectItem value="WAITING_FOR_INFO">Aguardando Info</SelectItem>
+            <SelectItem value="DONE">Concluído</SelectItem>
+            <SelectItem value="CANCELLED">Cancelado</SelectItem>
           </SelectContent>
         </Select>
 
         <div className="flex items-center gap-2">
           <Label htmlFor="log-from" className="text-xs whitespace-nowrap">
-            From
+            De
           </Label>
           <Input
             id="log-from"
@@ -290,7 +290,7 @@ export function TicketLog() {
         </div>
         <div className="flex items-center gap-2">
           <Label htmlFor="log-to" className="text-xs whitespace-nowrap">
-            To
+            Ate
           </Label>
           <Input
             id="log-to"
@@ -308,7 +308,7 @@ export function TicketLog() {
             size="sm"
             onClick={clearFilters}
           >
-            Clear filters
+            Limpar filtros
           </Button>
         )}
       </div>
@@ -319,15 +319,15 @@ export function TicketLog() {
           <TableHeader>
             <TableRow>
               <TableHead className="min-w-[100px]">ID</TableHead>
-              <TableHead className="min-w-[200px]">Title</TableHead>
-              <TableHead>Type</TableHead>
+              <TableHead className="min-w-[200px]">Título</TableHead>
+              <TableHead>Tipo</TableHead>
               <TableHead>
                 <button
                   type="button"
                   onClick={() => handleSort("severity")}
                   className="flex items-center gap-1 hover:text-foreground"
                 >
-                  Severity
+                  Severidade
                   <SortIcon direction={getSortDirection("severity")} />
                 </button>
               </TableHead>
@@ -341,15 +341,15 @@ export function TicketLog() {
                   <SortIcon direction={getSortDirection("status")} />
                 </button>
               </TableHead>
-              <TableHead className="hidden lg:table-cell">Opener</TableHead>
-              <TableHead className="hidden xl:table-cell">Assignee</TableHead>
+              <TableHead className="hidden lg:table-cell">Aberto por</TableHead>
+              <TableHead className="hidden xl:table-cell">Atribuído a</TableHead>
               <TableHead>
                 <button
                   type="button"
                   onClick={() => handleSort("createdAt")}
                   className="flex items-center gap-1 hover:text-foreground"
                 >
-                  Created
+                  Criado
                   <SortIcon direction={getSortDirection("createdAt")} />
                 </button>
               </TableHead>
@@ -359,7 +359,7 @@ export function TicketLog() {
                   onClick={() => handleSort("resolvedAt")}
                   className="flex items-center gap-1 hover:text-foreground"
                 >
-                  Resolved
+                  Resolvido
                   <SortIcon direction={getSortDirection("resolvedAt")} />
                 </button>
               </TableHead>
@@ -382,7 +382,7 @@ export function TicketLog() {
                   colSpan={9}
                   className="py-10 text-center text-sm italic text-muted-foreground"
                 >
-                  No tickets found.
+                  Nenhuma missão encontrada.
                 </TableCell>
               </TableRow>
             ) : (
@@ -416,7 +416,7 @@ export function TicketLog() {
                           : ""
                       )}
                     >
-                      {ticket.type === "BUG" ? "Bug" : "Ticket"}
+                      {ticket.type === "BUG" ? "Bug" : "Chamado"}
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -441,8 +441,6 @@ export function TicketLog() {
                   <TableCell>
                     <span className="text-xs text-muted-foreground">
                       {new Date(ticket.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
                         year: "numeric",
                       })}
                     </span>
@@ -450,7 +448,7 @@ export function TicketLog() {
                   <TableCell className="hidden lg:table-cell">
                     <span className="text-xs text-muted-foreground">
                       {ticket.resolvedAt
-                        ? new Date(ticket.resolvedAt).toLocaleDateString("en-US", {
+                        ? new Date(ticket.resolvedAt).toLocaleDateString("pt-BR", {
                             month: "short",
                             day: "numeric",
                             year: "numeric",
@@ -469,7 +467,7 @@ export function TicketLog() {
       {totalPages > 1 && (
         <div className="flex items-center justify-between gap-3">
           <span className="text-xs text-muted-foreground">
-            {total} total results
+            {total} resultados no total
           </span>
           <div className="flex items-center gap-2">
             <Button
@@ -479,10 +477,10 @@ export function TicketLog() {
               disabled={page <= 1 || isLoading}
               onClick={() => void loadTickets(page - 1)}
             >
-              Previous
+              Anterior
             </Button>
             <span className="text-xs">
-              Page {page} of {totalPages}
+              Página {page} de {totalPages}
             </span>
             <Button
               type="button"
@@ -491,7 +489,7 @@ export function TicketLog() {
               disabled={page >= totalPages || isLoading}
               onClick={() => void loadTickets(page + 1)}
             >
-              Next
+              Próximo
             </Button>
           </div>
         </div>

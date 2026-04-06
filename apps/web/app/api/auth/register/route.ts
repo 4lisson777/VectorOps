@@ -8,12 +8,12 @@ import { ALL_ROLES, type SafeUser } from "@/lib/types"
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit"
 
 const RegisterSchema = z.object({
-  name: z.string().min(1, "Name is required").max(100),
-  email: z.string().email("Must be a valid email address"),
-  password: z.string().min(8, "Password must be at least 8 characters"),
+  name: z.string().min(1, "Nome é obrigatório").max(100),
+  email: z.string().email("Deve ser um endereço de e-mail válido"),
+  password: z.string().min(8, "A senha deve ter pelo menos 8 caracteres"),
   role: z.enum(
     ALL_ROLES as [string, ...string[]],
-    { errorMap: () => ({ message: "Invalid role" }) }
+    { errorMap: () => ({ message: "Cargo inválido" }) }
   ),
   ninjaAlias: z.string().max(50).optional(),
 })
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const rateLimit = checkRateLimit(`register:${ip}`, { limit: 5, windowMs: 60_000 })
   if (!rateLimit.allowed) {
     return NextResponse.json(
-      { error: "Too many requests. Please try again later." },
+      { error: "Muitas solicitações. Tente novamente mais tarde." },
       { status: 429 }
     )
   }
@@ -33,13 +33,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    return NextResponse.json({ error: "Corpo JSON inválido" }, { status: 400 })
   }
 
   const parsed = RegisterSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
+      { error: "Falha na validação", details: parsed.error.flatten().fieldErrors },
       { status: 400 }
     )
   }
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const existing = await db.user.findUnique({ where: { email } })
   if (existing) {
     return NextResponse.json(
-      { error: "Email address is already registered" },
+      { error: "Este endereço de e-mail já está registrado" },
       { status: 409 }
     )
   }

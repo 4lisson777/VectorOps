@@ -1,8 +1,8 @@
 import { LoginForm } from "@/components/auth/login-form"
 
 export const metadata = {
-  title: "Enter the Dojo — ShinobiOps",
-  description: "Sign in to ShinobiOps",
+  title: "Entrar no Dojo — ShinobiOps",
+  description: "Faça login no ShinobiOps",
 }
 
 // Server Component: just renders the client form.
@@ -11,8 +11,8 @@ export default function LoginPage() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-white">Welcome back, Shinobi</h2>
-        <p className="mt-0.5 text-sm text-white/50">Sign in to continue your mission</p>
+        <h2 className="text-lg font-semibold text-white">Bem-vindo de volta, Shinobi</h2>
+        <p className="mt-0.5 text-sm text-white/50">Faça login para continuar sua missão</p>
       </div>
       <LoginForm />
     </>

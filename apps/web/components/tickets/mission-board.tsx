@@ -186,15 +186,12 @@ export function MissionBoard({
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Input
           type="search"
-          placeholder="Search by title or ID..."
+          placeholder="Buscar por ID ou título..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="sm:max-w-xs"
         />
-        <span className="text-xs text-muted-foreground">
-          {filtered.length} of {initialTickets.length} mission
-          {initialTickets.length !== 1 ? "s" : ""}
-        </span>
+          {filtered.length} de {initialTickets.length} missões
       </div>
 
       {/* Filters */}
@@ -206,10 +203,10 @@ export function MissionBoard({
         >
           <TabsList className="h-8">
             <TabsTrigger value="ALL" className="h-7 px-3 text-xs">
-              All
+              Todos
             </TabsTrigger>
             <TabsTrigger value="TICKET" className="h-7 px-3 text-xs">
-              Ticket
+              Chamado
             </TabsTrigger>
             <TabsTrigger value="BUG" className="h-7 px-3 text-xs">
               Bug
@@ -223,14 +220,14 @@ export function MissionBoard({
           onValueChange={(v) => setSeverityFilter(v as SeverityFilter)}
         >
           <SelectTrigger className="h-8 w-36 text-xs">
-            <SelectValue placeholder="Severity" />
+            <SelectValue placeholder="Severidade" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All Severities</SelectItem>
-            <SelectItem value="CRITICAL">Critical</SelectItem>
-            <SelectItem value="HIGH">High</SelectItem>
-            <SelectItem value="MEDIUM">Medium</SelectItem>
-            <SelectItem value="LOW">Low</SelectItem>
+            <SelectItem value="ALL">Todas as Severidades</SelectItem>
+            <SelectItem value="CRITICAL">Crítica</SelectItem>
+            <SelectItem value="HIGH">Alta</SelectItem>
+            <SelectItem value="MEDIUM">Média</SelectItem>
+            <SelectItem value="LOW">Baixa</SelectItem>
           </SelectContent>
         </Select>
 
@@ -243,12 +240,12 @@ export function MissionBoard({
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All Statuses</SelectItem>
-            <SelectItem value="OPEN">Open</SelectItem>
-            <SelectItem value="IN_PROGRESS">In Progress</SelectItem>
-            <SelectItem value="WAITING_FOR_INFO">Waiting for Info</SelectItem>
-            <SelectItem value="DONE">Done</SelectItem>
-            <SelectItem value="CANCELLED">Cancelled</SelectItem>
+            <SelectItem value="ALL">Todos os Status</SelectItem>
+            <SelectItem value="OPEN">Aberto</SelectItem>
+            <SelectItem value="IN_PROGRESS">Em Progresso</SelectItem>
+            <SelectItem value="WAITING_FOR_INFO">Aguardando Info</SelectItem>
+            <SelectItem value="DONE">Concluído</SelectItem>
+            <SelectItem value="CANCELLED">Cancelado</SelectItem>
           </SelectContent>
         </Select>
 
@@ -259,11 +256,11 @@ export function MissionBoard({
             onValueChange={setAssigneeFilter}
           >
             <SelectTrigger className="h-8 w-40 text-xs">
-              <SelectValue placeholder="Assignee" />
+              <SelectValue placeholder="Responsável" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="ALL">All Assignees</SelectItem>
-              <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
+              <SelectItem value="ALL">Todos os Responsáveis</SelectItem>
+              <SelectItem value="UNASSIGNED">Não Atribuído</SelectItem>
               {(developers ?? []).map((dev) => (
                 <SelectItem key={dev.id} value={dev.id}>
                   {dev.name}
@@ -278,7 +275,7 @@ export function MissionBoard({
       <div className="flex flex-col gap-2">
         {filtered.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
-            No missions match the current filters.
+            Nenhuma missão corresponde aos filtros atuais.
           </div>
         ) : (
           filtered.map((ticket) => (

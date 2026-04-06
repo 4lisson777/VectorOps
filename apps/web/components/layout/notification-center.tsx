@@ -16,13 +16,13 @@ import { useSSEContext } from "@/lib/sse-context"
 function relativeTime(isoDate: string): string {
   const diff = Date.now() - new Date(isoDate).getTime()
   const seconds = Math.floor(diff / 1000)
-  if (seconds < 60) return "just now"
+  if (seconds < 60) return "agora mesmo"
   const minutes = Math.floor(seconds / 60)
-  if (minutes < 60) return `${minutes}m ago`
+  if (minutes < 60) return `${minutes}min atrás`
   const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours}h ago`
+  if (hours < 24) return `${hours}h atrás`
   const days = Math.floor(hours / 24)
-  return `${days}d ago`
+  return `${days}d atrás`
 }
 
 function BellIcon({ className }: { className?: string }) {
@@ -86,7 +86,7 @@ export function NotificationCenter() {
       <PopoverTrigger asChild>
         <button
           type="button"
-          aria-label={`Notifications (${unreadCount} unread)`}
+          aria-label={`Notificações (${unreadCount} não lidas)`}
           className="relative rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <BellIcon />
@@ -108,14 +108,14 @@ export function NotificationCenter() {
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <h2 className="text-sm font-semibold">Notifications</h2>
+          <h2 className="text-sm font-semibold">Notificações</h2>
           {unreadCount > 0 && (
             <button
               type="button"
               onClick={() => void markAllRead()}
               className="text-xs text-muted-foreground hover:text-foreground"
             >
-              Mark all as read
+              Marcar todas como lidas
             </button>
           )}
         </div>
@@ -124,12 +124,12 @@ export function NotificationCenter() {
         <div className="max-h-[400px] overflow-y-auto">
           {isLoading ? (
             <div className="flex items-center justify-center py-8 text-sm text-muted-foreground">
-              Loading…
+              Carregando…
             </div>
           ) : notifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
               <BellIcon className="size-8 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground">No notifications yet</p>
+              <p className="text-sm text-muted-foreground">Nenhuma notificação ainda</p>
             </div>
           ) : (
             <ul role="list">
@@ -186,7 +186,7 @@ export function NotificationCenter() {
               onClick={() => void markAllRead()}
               className="w-full text-center text-xs text-muted-foreground hover:text-foreground"
             >
-              Mark all as read
+              Marcar todas como lidas
             </button>
           </div>
         )}

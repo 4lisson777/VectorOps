@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session"
 import { CommandDojoOverview } from "@/components/admin/command-dojo-overview"
 
 export const metadata = {
-  title: "Command Dojo — ShinobiOps",
+  title: "Dojô de Comando — ShinobiOps",
 }
 
 export default async function AdminPage() {

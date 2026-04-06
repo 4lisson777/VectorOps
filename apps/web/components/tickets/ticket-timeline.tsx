@@ -171,7 +171,7 @@ function RelativeTime({ date }: { date: string | Date }) {
 export function TicketTimeline({ events }: TicketTimelineProps) {
   if (events.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">No mission log entries yet.</p>
+      <p className="text-sm text-muted-foreground">Nenhuma entrada no registro de missões ainda.</p>
     )
   }
 

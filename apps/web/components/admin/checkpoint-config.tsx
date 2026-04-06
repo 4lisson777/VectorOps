@@ -92,7 +92,7 @@ export function CheckpointConfig() {
     setIsLoadingConfig(true)
     try {
       const res = await fetch("/api/admin/checkpoints/config")
-      if (!res.ok) throw new Error("Failed to load config")
+      if (!res.ok) throw new Error("Falha ao carregar configuração")
       const data = (await res.json()) as { config: CheckpointConfigData }
       setConfig(data.config)
       setIsEnabled(data.config.isEnabled)
@@ -132,7 +132,7 @@ export function CheckpointConfig() {
         params.set("to", to.toISOString())
       }
       const res = await fetch(`/api/admin/checkpoints/history?${params.toString()}`)
-      if (!res.ok) throw new Error("Failed to load history")
+      if (!res.ok) throw new Error("Falha ao carregar histórico")
       const data = (await res.json()) as HistoryResponse
       setHistory(data.checkpoints)
       setHistoryTotal(data.total)
@@ -157,7 +157,7 @@ export function CheckpointConfig() {
   async function handleSaveConfig() {
     const interval = parseInt(intervalMinutes, 10)
     if (isNaN(interval) || interval < 30 || interval > 480) {
-      setSaveMessage("Interval must be between 30 and 480 minutes.")
+      setSaveMessage("O intervalo deve ter entre 30 e 480 minutos.")
       return
     }
     setIsSaving(true)
@@ -173,12 +173,12 @@ export function CheckpointConfig() {
           activeHoursEnd,
         }),
       })
-      if (!res.ok) throw new Error("Save failed")
+      if (!res.ok) throw new Error("Falha ao salvar")
       const data = (await res.json()) as { config: CheckpointConfigData }
       setConfig(data.config)
-      setSaveMessage("Configuration saved.")
+      setSaveMessage("Configuração salva.")
     } catch {
-      setSaveMessage("Failed to save. Please try again.")
+      setSaveMessage("Falha ao salvar. Tente novamente.")
     } finally {
       setIsSaving(false)
     }
@@ -190,16 +190,16 @@ export function CheckpointConfig() {
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Status Scroll Config</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Configurações dos Pergaminhos de Status</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Configure automated Status Scroll prompts and review response history.
+          Configure solicitações automáticas de Pergaminhos de Status e reveja o histórico de respostas.
         </p>
       </div>
 
       {/* Config form */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Global Configuration</CardTitle>
+          <CardTitle className="text-base">Configurações Globais</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoadingConfig ? (
@@ -214,10 +214,10 @@ export function CheckpointConfig() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <Label htmlFor="checkpoint-enabled" className="font-medium">
-                    Enable Status Scrolls
+                    Ativar Pergaminhos de Status
                   </Label>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    When enabled, developers receive automatic Status Scroll prompts.
+                    Quando ativado, os desenvolvedores recebem solicitações automáticas de Pergaminhos de Status.
                   </p>
                 </div>
                 <Switch
@@ -229,8 +229,8 @@ export function CheckpointConfig() {
 
               {/* Interval */}
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="interval">Interval (minutes)</Label>
-                <p className="text-xs text-muted-foreground">Range: 30 – 480 minutes</p>
+                <Label htmlFor="interval">Intervalo (minutos)</Label>
+                <p className="text-xs text-muted-foreground">Intervalo: 30 – 480 minutos</p>
                 <Input
                   id="interval"
                   type="number"
@@ -245,7 +245,7 @@ export function CheckpointConfig() {
               {/* Active hours */}
               <div className="flex flex-wrap gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="hours-start">Active Hours Start</Label>
+                  <Label htmlFor="hours-start">Início (Horário Ativo)</Label>
                   <Input
                     id="hours-start"
                     type="time"
@@ -255,7 +255,7 @@ export function CheckpointConfig() {
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="hours-end">Active Hours End</Label>
+                  <Label htmlFor="hours-end">Fim (Horário Ativo)</Label>
                   <Input
                     id="hours-end"
                     type="time"
@@ -270,7 +270,7 @@ export function CheckpointConfig() {
                 <p
                   className={cn(
                     "text-sm",
-                    saveMessage === "Configuration saved."
+                    saveMessage === "Configuração salva."
                       ? "text-green-600 dark:text-green-400"
                       : "text-destructive"
                   )}
@@ -286,11 +286,11 @@ export function CheckpointConfig() {
                   disabled={isSaving}
                   className="bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]"
                 >
-                  {isSaving ? "Saving…" : "Save Configuration"}
+                  {isSaving ? "Salvando…" : "Salvar Configurações"}
                 </Button>
                 {config && (
                   <Badge variant="outline" className="text-xs">
-                    Current: {config.isEnabled ? "Enabled" : "Disabled"},{" "}
+                    Atual: {config.isEnabled ? "Ativado" : "Desativado"},{" "}
                     {config.intervalMinutes}min,{" "}
                     {config.activeHoursStart}–{config.activeHoursEnd}
                   </Badge>
@@ -304,17 +304,17 @@ export function CheckpointConfig() {
       {/* History section */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Response History</CardTitle>
+          <CardTitle className="text-base">Histórico de Respostas</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           {/* History filters */}
           <div className="flex flex-wrap gap-3">
             <Select value={devFilter} onValueChange={setDevFilter}>
               <SelectTrigger className="h-9 w-48">
-                <SelectValue placeholder="All developers" />
+                <SelectValue placeholder="Todos os desenvolvedores" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="ALL">All developers</SelectItem>
+                <SelectItem value="ALL">Todos os desenvolvedores</SelectItem>
                 {developers.map((d) => (
                   <SelectItem key={d.id} value={d.id}>
                     {d.name} ({d.ninjaAlias})
@@ -325,7 +325,7 @@ export function CheckpointConfig() {
 
             <div className="flex items-center gap-2">
               <Label htmlFor="date-from" className="text-xs whitespace-nowrap">
-                From
+                De
               </Label>
               <Input
                 id="date-from"
@@ -337,7 +337,7 @@ export function CheckpointConfig() {
             </div>
             <div className="flex items-center gap-2">
               <Label htmlFor="date-to" className="text-xs whitespace-nowrap">
-                To
+                Ate
               </Label>
               <Input
                 id="date-to"
@@ -359,7 +359,7 @@ export function CheckpointConfig() {
                   setDateTo("")
                 }}
               >
-                Clear
+                Limpar
               </Button>
             )}
           </div>
@@ -369,11 +369,11 @@ export function CheckpointConfig() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Developer</TableHead>
-                  <TableHead>Current Task</TableHead>
-                  <TableHead>Blocked</TableHead>
-                  <TableHead className="hidden md:table-cell">Notes</TableHead>
-                  <TableHead>Time</TableHead>
+                  <TableHead>Desenvolvedor</TableHead>
+                  <TableHead>Tarefa Atual</TableHead>
+                  <TableHead>Bloqueado</TableHead>
+                  <TableHead className="hidden md:table-cell">Notas</TableHead>
+                  <TableHead>Hora</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -406,7 +406,7 @@ export function CheckpointConfig() {
                       colSpan={5}
                       className="py-10 text-center text-sm italic text-muted-foreground"
                     >
-                      No Status Scroll responses found.
+                      Nenhuma resposta de Pergaminho de Status encontrada.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -438,11 +438,11 @@ export function CheckpointConfig() {
                             variant="outline"
                             className="border-red-500/30 text-red-600 dark:text-red-400"
                           >
-                            Blocked
+                            Bloqueado
                           </Badge>
                         ) : (
                           <Badge variant="outline" className="text-muted-foreground">
-                            No
+                            Não
                           </Badge>
                         )}
                       </TableCell>
@@ -453,7 +453,7 @@ export function CheckpointConfig() {
                       </TableCell>
                       <TableCell>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(entry.createdAt).toLocaleString("en-US", {
+                          {new Date(entry.createdAt).toLocaleString("pt-BR", {
                             month: "short",
                             day: "numeric",
                             hour: "2-digit",
@@ -472,7 +472,7 @@ export function CheckpointConfig() {
           {totalPages > 1 && (
             <div className="flex items-center justify-between gap-3 pt-1">
               <span className="text-xs text-muted-foreground">
-                {historyTotal} total responses
+                {historyTotal} respostas no total
               </span>
               <div className="flex items-center gap-2">
                 <Button
@@ -482,10 +482,10 @@ export function CheckpointConfig() {
                   disabled={historyPage <= 1 || isLoadingHistory}
                   onClick={() => void loadHistory(historyPage - 1)}
                 >
-                  Previous
+                  Anterior
                 </Button>
                 <span className="text-xs">
-                  Page {historyPage} of {totalPages}
+                  Página {historyPage} de {totalPages}
                 </span>
                 <Button
                   type="button"
@@ -494,7 +494,7 @@ export function CheckpointConfig() {
                   disabled={historyPage >= totalPages || isLoadingHistory}
                   onClick={() => void loadHistory(historyPage + 1)}
                 >
-                  Next
+                  Próximo
                 </Button>
               </div>
             </div>

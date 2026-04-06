@@ -35,8 +35,8 @@ export function LoginForm() {
 
     // Basic client-side validation
     const errors: FieldError = {}
-    if (!email) errors.email = ["Email is required"]
-    if (!password) errors.password = ["Password is required"]
+    if (!email) errors.email = ["Email é obrigatório"]
+    if (!password) errors.password = ["Senha é obrigatória"]
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors)
       return
@@ -60,7 +60,7 @@ export function LoginForm() {
         if (data.details) {
           setFieldErrors(data.details)
         } else {
-          setServerError(data.error ?? "Login failed. Please try again.")
+          setServerError(data.error ?? "Falha ao entrar. Tente novamente.")
         }
         return
       }
@@ -70,7 +70,7 @@ export function LoginForm() {
         router.refresh()
       }
     } catch {
-      setServerError("Network error. Please check your connection.")
+      setServerError("Erro de rede. Verifique sua conexão.")
     } finally {
       setIsPending(false)
     }
@@ -108,7 +108,7 @@ export function LoginForm() {
 
       {/* Password */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">Senha</Label>
         <Input
           id="password"
           type="password"
@@ -135,17 +135,17 @@ export function LoginForm() {
           "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
         )}
       >
-        {isPending ? "Entering the dojo…" : "Enter the Dojo"}
+        {isPending ? "Entrando no dojo…" : "Entrar no Dojo"}
       </Button>
 
       {/* Register link */}
       <p className="text-center text-sm text-muted-foreground">
-        New shinobi?{" "}
+        Novo shinobi?{" "}
         <Link
           href="/register"
           className="font-medium text-[oklch(0.56_0.22_15)] underline-offset-4 hover:underline"
         >
-          Join the clan
+          Entrar para o clã
         </Link>
       </p>
     </form>

@@ -22,12 +22,12 @@ export async function POST(
   })
 
   if (!helpRequest) {
-    return NextResponse.json({ error: "Help request not found" }, { status: 404 })
+    return NextResponse.json({ error: "Pedido de ajuda não encontrado" }, { status: 404 })
   }
 
   if (helpRequest.requestedById === session.userId) {
     return NextResponse.json(
-      { error: "Cannot respond to your own help request" },
+      { error: "Você não pode responder ao seu próprio pedido de ajuda" },
       { status: 400 }
     )
   }
@@ -37,7 +37,7 @@ export async function POST(
   )
   if (alreadyResponded) {
     return NextResponse.json(
-      { error: "Already responded to this help request" },
+      { error: "Você já respondeu a este pedido de ajuda" },
       { status: 409 }
     )
   }
@@ -84,8 +84,8 @@ export async function POST(
   // Fire-and-forget: in-app notification for the requester
   void createAndEmitNotifications({
     type: "HELP_REQUEST_RESPONDED",
-    title: `${responder.ninjaAlias} can help you`,
-    body: `${responder.name} responded to your Smoke Signal.`,
+    title: `${responder.ninjaAlias} pode te ajudar`,
+    body: `${responder.name} respondeu ao seu Sinal de Fumaça.`,
     targetUserIds: [helpRequest.requestedById],
   }).catch(console.error)
 

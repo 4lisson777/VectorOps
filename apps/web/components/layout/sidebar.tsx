@@ -125,29 +125,29 @@ function ScrollIcon() {
 
 function getNavItems(role: Role): { primary: NavItem[]; secondary?: NavItem[] } {
   const supportPrimary: NavItem[] = [
-    { label: "Support Home", href: "/support", icon: <GridIcon /> },
-    { label: "Mission Board", href: "/support/queue", icon: <ListIcon /> },
-    { label: "My Items", href: "/support/my-items", icon: <UserIcon /> },
+    { label: "Início do Suporte", href: "/support", icon: <GridIcon /> },
+    { label: "Painel de Missões", href: "/support/queue", icon: <ListIcon /> },
+    { label: "Meus Itens", href: "/support/my-items", icon: <UserIcon /> },
   ]
   const supportSecondary: NavItem[] = [
-    { label: "New Ticket", href: "/support/ticket/new", icon: <TicketIcon /> },
-    { label: "Report Bug", href: "/support/bug/new", icon: <BugIcon /> },
+    { label: "Novo Chamado", href: "/support/ticket/new", icon: <TicketIcon /> },
+    { label: "Reportar Bug", href: "/support/bug/new", icon: <BugIcon /> },
   ]
 
   const devPrimary: NavItem[] = [
-    { label: "Ninja Board", href: "/dev", icon: <GridIcon /> },
-    { label: "Mission Board", href: "/dev/queue", icon: <ListIcon /> },
+    { label: "Painel Ninja", href: "/dev", icon: <GridIcon /> },
+    { label: "Painel de Missões", href: "/dev/queue", icon: <ListIcon /> },
   ]
 
   const adminPrimary: NavItem[] = [
-    { label: "Ninja Board", href: "/dev", icon: <GridIcon /> },
-    { label: "Mission Board", href: "/dev/queue", icon: <ListIcon /> },
-    { label: "Command Dojo", href: "/admin", icon: <ShurikenIcon /> },
+    { label: "Painel Ninja", href: "/dev", icon: <GridIcon /> },
+    { label: "Painel de Missões", href: "/dev/queue", icon: <ListIcon /> },
+    { label: "Dojô de Comando", href: "/admin", icon: <ShurikenIcon /> },
   ]
   const adminSecondary: NavItem[] = [
-    { label: "Team", href: "/admin/team", icon: <TeamIcon /> },
-    { label: "Notifications", href: "/admin/notifications", icon: <BellIcon /> },
-    { label: "Checkpoints", href: "/admin/checkpoints", icon: <ClockIcon /> },
+    { label: "Equipe", href: "/admin/team", icon: <TeamIcon /> },
+    { label: "Notificações", href: "/admin/notifications", icon: <BellIcon /> },
+    { label: "Pergaminhos de Status", href: "/admin/checkpoints", icon: <ClockIcon /> },
     { label: "Log", href: "/admin/log", icon: <ScrollIcon /> },
   ]
 

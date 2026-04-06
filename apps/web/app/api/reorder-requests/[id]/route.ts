@@ -21,7 +21,7 @@ export async function PATCH(
   const parsed = actionSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
+      { error: "Falha na validação", details: parsed.error.flatten().fieldErrors },
       { status: 400 }
     )
   }
@@ -35,11 +35,11 @@ export async function PATCH(
   })
 
   if (!reorderRequest) {
-    return NextResponse.json({ error: "Reorder request not found" }, { status: 404 })
+    return NextResponse.json({ error: "Pedido de reordenação não encontrado" }, { status: 404 })
   }
   if (reorderRequest.status !== "PENDING") {
     return NextResponse.json(
-      { error: "Reorder request is no longer pending" },
+      { error: "O pedido de reordenação não está mais pendente" },
       { status: 409 }
     )
   }
@@ -66,8 +66,8 @@ export async function PATCH(
 
     void createAndEmitNotifications({
       type: "TICKET_STATUS_CHANGED",
-      title: "Reorder request declined",
-      body: `Your reorder request for ${reorderRequest.ticket.publicId} was declined.`,
+      title: "Pedido de reordenação recusado",
+      body: `Seu pedido de reordenação para ${reorderRequest.ticket.publicId} foi recusado.`,
       ticketId: reorderRequest.ticketId,
       targetUserIds: [reorderRequest.requestedById],
     }).catch(console.error)
@@ -115,8 +115,8 @@ export async function PATCH(
 
   void createAndEmitNotifications({
     type: "TICKET_STATUS_CHANGED",
-    title: "Reorder request approved",
-    body: `Your reorder request for ${reorderRequest.ticket.publicId} was approved. It is now at position ${targetPosition}.`,
+    title: "Pedido de reordenação aprovado",
+    body: `Seu pedido de reordenação para ${reorderRequest.ticket.publicId} foi aprovado. Agora está na posição ${targetPosition}.`,
     ticketId: reorderRequest.ticketId,
     targetUserIds: [reorderRequest.requestedById],
   }).catch(console.error)

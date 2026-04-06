@@ -22,7 +22,7 @@ export function CopyIdButton({ publicId }: CopyIdButtonProps) {
     <button
       type="button"
       onClick={handleCopy}
-      title="Click to copy ID"
+      title="Clique para copiar o ID"
       className={cn(
         "font-mono text-sm font-semibold rounded px-2 py-0.5 transition-colors",
         copied
@@ -30,7 +30,7 @@ export function CopyIdButton({ publicId }: CopyIdButtonProps) {
           : "bg-muted text-muted-foreground hover:bg-muted/70"
       )}
     >
-      {copied ? "Copied!" : publicId}
+      {copied ? "Copiado!" : publicId}
     </button>
   )
 }

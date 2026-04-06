@@ -54,7 +54,7 @@ export function StatusScrollModal({
       })
       if (!res.ok) {
         const data = await res.json() as { error?: string }
-        setError(data.error ?? "Failed to submit checkpoint.")
+        setError(data.error ?? "Falha ao enviar checkpoint.")
         return
       }
       // Reset form
@@ -64,7 +64,7 @@ export function StatusScrollModal({
       onSubmitted?.()
       onOpenChange(false)
     } catch {
-      setError("Network error. Please try again.")
+      setError("Erro de rede. Tente novamente.")
     } finally {
       setIsSubmitting(false)
     }
@@ -77,18 +77,18 @@ export function StatusScrollModal({
           <DialogTitle>📜 Status Scroll</DialogTitle>
         </DialogHeader>
         <p className="text-sm text-muted-foreground">
-          Time for a quick check-in. Let your team know what you&apos;re working on.
+          Hora de uma rápida verificação. Informe à sua equipe no que você está trabalhando.
         </p>
         <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="current-task">
-              What are you working on? <span className="text-destructive">*</span>
+              No que você está trabalhando? <span className="text-destructive">*</span>
             </Label>
             <Input
               id="current-task"
               value={currentTask}
               onChange={(e) => setCurrentTask(e.target.value)}
-              placeholder="Describe your current task…"
+              placeholder="Descreva sua tarefa atual…"
               disabled={isSubmitting}
               autoFocus
               required
@@ -96,7 +96,7 @@ export function StatusScrollModal({
           </div>
 
           <div className="flex items-center justify-between">
-            <Label htmlFor="is-blocked">Are you blocked?</Label>
+            <Label htmlFor="is-blocked">Você está bloqueado?</Label>
             <Switch
               id="is-blocked"
               checked={isBlocked}
@@ -106,12 +106,12 @@ export function StatusScrollModal({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="notes">Notes (optional)</Label>
+            <Label htmlFor="notes">Notas (opcional)</Label>
             <Textarea
               id="notes"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Any blockers, context, or additional notes…"
+              placeholder="Qualquer bloqueador, contexto ou notas adicionais…"
               rows={3}
               disabled={isSubmitting}
               className="resize-none"
@@ -129,13 +129,13 @@ export function StatusScrollModal({
               onClick={handleClose}
               disabled={isSubmitting}
             >
-              Dismiss
+              Dispensar
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting || currentTask.trim().length === 0}
             >
-              {isSubmitting ? "Submitting…" : "Submit"}
+              {isSubmitting ? "Enviando…" : "Enviar"}
             </Button>
           </DialogFooter>
         </form>

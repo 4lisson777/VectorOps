@@ -274,8 +274,8 @@ export function NinjaBoard({
           )}
         >
           <span>
-            {newArrival.type === "BUG" ? "New bug report" : "New ticket"}{" "}
-            <span className="font-mono">{newArrival.publicId}</span> has arrived.
+            {newArrival.type === "BUG" ? "Novo bug" : "Novo chamado"}{" "}
+            <span className="font-mono">{newArrival.publicId}</span> chegou.
           </span>
           <button
             onClick={() => {
@@ -283,7 +283,7 @@ export function NinjaBoard({
               setNewArrival(null)
             }}
             className="ml-4 text-current opacity-60 hover:opacity-100"
-            aria-label="Dismiss"
+            aria-label="Dispensar"
           >
             ✕
           </button>
@@ -295,7 +295,7 @@ export function NinjaBoard({
         <div className="flex items-start justify-between gap-4 rounded-lg border border-blue-500/40 bg-blue-500/10 px-4 py-3 text-sm">
           <div className="flex flex-col gap-0.5">
             <span className="font-semibold text-blue-700 dark:text-blue-300">
-              Smoke Signal from {incomingHelp.requesterAlias}
+              Sinal de Fumaça de {incomingHelp.requesterAlias}
             </span>
             <span className="text-muted-foreground">{incomingHelp.contextMessage}</span>
           </div>
@@ -305,13 +305,13 @@ export function NinjaBoard({
               disabled={isRespondingHelp}
               className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
             >
-              I can help
+              Posso ajudar
             </button>
             <button
               onClick={() => setIncomingHelp(null)}
               className="rounded-md px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
             >
-              Dismiss
+              Dispensar
             </button>
           </div>
         </div>
@@ -320,9 +320,9 @@ export function NinjaBoard({
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Ninja Board</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Painel Ninja</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Real-time team overview
+            Visão geral da equipe em tempo real
           </p>
         </div>
         {/* 4.2 — Send Smoke Signal button */}
@@ -332,22 +332,22 @@ export function NinjaBoard({
             className="flex items-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-500/20 dark:text-amber-400"
           >
             <span>🔥</span>
-            Send Smoke Signal
+            Enviar Sinal de Fumaça
           </button>
         )}
       </div>
 
       {/* Stats bar */}
       <div className="flex flex-wrap gap-3">
-        <StatPill label="Active" count={activeCount} color="text-green-600 dark:text-green-400" bg="bg-green-500/10" />
+        <StatPill label="Ativos" count={activeCount} color="text-green-600 dark:text-green-400" bg="bg-green-500/10" />
         {blockedCount > 0 && (
-          <StatPill label="Blocked" count={blockedCount} color="text-red-600 dark:text-red-400" bg="bg-red-500/10" />
+          <StatPill label="Bloqueados" count={blockedCount} color="text-red-600 dark:text-red-400" bg="bg-red-500/10" />
         )}
         {inCheckpointCount > 0 && (
-          <StatPill label="In Checkpoint" count={inCheckpointCount} color="text-amber-600 dark:text-amber-400" bg="bg-amber-500/10" />
+          <StatPill label="No Status Scroll" count={inCheckpointCount} color="text-amber-600 dark:text-amber-400" bg="bg-amber-500/10" />
         )}
         {helpingCount > 0 && (
-          <StatPill label="Helping" count={helpingCount} color="text-blue-600 dark:text-blue-400" bg="bg-blue-500/10" />
+          <StatPill label="Ajudando" count={helpingCount} color="text-blue-600 dark:text-blue-400" bg="bg-blue-500/10" />
         )}
         <StatPill label="Total" count={devs.length} color="text-muted-foreground" bg="bg-muted/40" />
       </div>
@@ -355,7 +355,7 @@ export function NinjaBoard({
       {/* Developer grid */}
       {devs.length === 0 ? (
         <div className="flex flex-1 items-center justify-center py-20 text-sm text-muted-foreground">
-          No active developers found.
+          Nenhum desenvolvedor ativo encontrado.
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

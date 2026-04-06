@@ -50,21 +50,21 @@ const LEAD_TRANSITIONS: TicketForActions["status"][] = [
 ]
 
 const STATUS_LABELS: Record<TicketForActions["status"], string> = {
-  OPEN: "Open",
-  IN_PROGRESS: "In Progress",
-  WAITING_FOR_INFO: "Waiting for Info",
-  DONE: "Done",
-  CANCELLED: "Cancelled",
+  OPEN: "Aberto",
+  IN_PROGRESS: "Em Progresso",
+  WAITING_FOR_INFO: "Aguardando Info",
+  DONE: "Concluído",
+  CANCELLED: "Cancelado",
 }
 
 const SEVERITY_OPTIONS: {
   value: TicketForActions["severity"]
   label: string
 }[] = [
-  { value: "LOW", label: "Low" },
-  { value: "MEDIUM", label: "Medium" },
-  { value: "HIGH", label: "High" },
-  { value: "CRITICAL", label: "Critical" },
+  { value: "LOW", label: "Baixa" },
+  { value: "MEDIUM", label: "Média" },
+  { value: "HIGH", label: "Alta" },
+  { value: "CRITICAL", label: "Crítica" },
 ]
 
 export function TicketActions({
@@ -121,13 +121,13 @@ export function TicketActions({
       })
       const data = (await res.json()) as { error?: string }
       if (!res.ok) {
-        showMsg(data.error ?? "Failed to update ticket.")
+        showMsg(data.error ?? "Falha ao atualizar o chamado.")
       } else {
-        showMsg("Ticket updated.")
+        showMsg("Chamado atualizado.")
         router.refresh()
       }
     } catch {
-      showMsg("Network error. Please try again.")
+      showMsg("Erro de rede. Tente novamente.")
     } finally {
       setIsPending(false)
     }
@@ -144,13 +144,13 @@ export function TicketActions({
       })
       const data = (await res.json()) as { error?: string }
       if (!res.ok) {
-        showMsg(data.error ?? "Failed to assign ticket.")
+        showMsg(data.error ?? "Falha ao atribuir o chamado.")
       } else {
-        showMsg("Ticket assigned to you.")
+        showMsg("Chamado atribuído a você.")
         router.refresh()
       }
     } catch {
-      showMsg("Network error. Please try again.")
+      showMsg("Erro de rede. Tente novamente.")
     } finally {
       setIsPending(false)
     }
@@ -167,13 +167,13 @@ export function TicketActions({
       })
       const data = (await res.json()) as { error?: string }
       if (!res.ok) {
-        showMsg(data.error ?? "Failed to reassign ticket.")
+        showMsg(data.error ?? "Falha ao reatribuir o chamado.")
       } else {
-        showMsg("Ticket reassigned.")
+        showMsg("Chamado reatribuído.")
         router.refresh()
       }
     } catch {
-      showMsg("Network error. Please try again.")
+      showMsg("Erro de rede. Tente novamente.")
     } finally {
       setIsPending(false)
     }
@@ -185,7 +185,7 @@ export function TicketActions({
 
   return (
     <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4">
-      <h3 className="text-sm font-semibold">Actions</h3>
+      <h3 className="text-sm font-semibold">Ações</h3>
 
       {actionMsg && (
         <div
@@ -205,7 +205,7 @@ export function TicketActions({
           onClick={handleAssignToMe}
           className="w-full bg-[oklch(0.18_0.05_265)] text-white hover:bg-[oklch(0.24_0.06_265)] dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
         >
-          Assign to me
+          Atribuir a mim
         </Button>
       )}
 
@@ -246,7 +246,7 @@ export function TicketActions({
       {isTechLead && (
         <>
           <div className="flex flex-col gap-1.5">
-            <Label className="text-xs">Severity</Label>
+            <Label className="text-xs">Severidade</Label>
             <Select
               value={severityValue}
               onValueChange={(v) => {
@@ -271,7 +271,7 @@ export function TicketActions({
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="action-deadline" className="text-xs">
-              Deadline
+              Prazo
             </Label>
             <div className="flex items-center gap-2">
               <input
@@ -299,13 +299,13 @@ export function TicketActions({
                 onClick={() => void patchTicket({ deadline: deadlineValue })}
                 className="h-8 text-xs"
               >
-                Save
+                Salvar
               </Button>
             </div>
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label className="text-xs">Assignee</Label>
+            <Label className="text-xs">Responsável</Label>
             <Select
               value={assigneeValue}
               onValueChange={(v) => {
@@ -315,10 +315,10 @@ export function TicketActions({
               disabled={isPending}
             >
               <SelectTrigger className="h-8 text-xs">
-                <SelectValue placeholder="Unassigned" />
+                <SelectValue placeholder="Não Atribuído" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="UNASSIGNED">Unassigned</SelectItem>
+                <SelectItem value="UNASSIGNED">Não Atribuído</SelectItem>
                 {(developers ?? []).map((dev) => (
                   <SelectItem key={dev.id} value={dev.id}>
                     {dev.name}

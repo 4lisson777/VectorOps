@@ -33,10 +33,10 @@ const SEVERITY_OPTIONS: {
   label: string
   dot: string
 }[] = [
-  { value: "LOW", label: "Low — White Belt", dot: "bg-gray-200 border border-gray-400" },
-  { value: "MEDIUM", label: "Medium — Green Belt", dot: "bg-green-500" },
-  { value: "HIGH", label: "High — Red Belt", dot: "bg-red-500" },
-  { value: "CRITICAL", label: "Critical — Black Belt", dot: "bg-black dark:bg-gray-800 border border-gray-600" },
+  { value: "LOW", label: "Baixa — Faixa Branca", dot: "bg-gray-200 border border-gray-400" },
+  { value: "MEDIUM", label: "Média — Faixa Verde", dot: "bg-green-500" },
+  { value: "HIGH", label: "Alta — Faixa Vermelha", dot: "bg-red-500" },
+  { value: "CRITICAL", label: "Crítica — Faixa Preta", dot: "bg-black dark:bg-gray-800 border border-gray-600" },
 ]
 
 export function TicketForm() {
@@ -81,15 +81,15 @@ export function TicketForm() {
       const data = (await res.json()) as { error?: string }
 
       if (!res.ok) {
-        setServerError(data.error ?? "Failed to create ticket. Please try again.")
+        setServerError(data.error ?? "Falha ao criar o chamado. Tente novamente.")
         return
       }
 
-      setSuccessMsg("Mission created successfully")
+      setSuccessMsg("Missão criada com sucesso")
       // Brief delay so the user sees the success message before redirect
       setTimeout(() => router.push("/support/queue"), 800)
     } catch {
-      setServerError("Network error. Please check your connection.")
+      setServerError("Erro de rede. Verifique sua conexão.")
     } finally {
       setIsPending(false)
     }
@@ -118,7 +118,7 @@ export function TicketForm() {
       {/* Title */}
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <Label htmlFor="title">Title</Label>
+          <Label htmlFor="title">Título</Label>
           <span
             className={cn(
               "text-xs tabular-nums",
@@ -133,7 +133,7 @@ export function TicketForm() {
         <Input
           id="title"
           type="text"
-          placeholder="Brief description of the request"
+          placeholder="Breve descrição da solicitação"
           value={title}
           maxLength={120}
           onChange={(e) => setTitle(e.target.value)}
@@ -147,10 +147,10 @@ export function TicketForm() {
 
       {/* Description */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">Descrição</Label>
         <Textarea
           id="description"
-          placeholder="Provide full context: what needs to be done, why, and any relevant details..."
+          placeholder="Forneça o contexto completo: o que precisa ser feito, por que e quaisquer detalhes relevantes..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           aria-invalid={!!fieldErrors.description}
@@ -165,14 +165,14 @@ export function TicketForm() {
 
       {/* Severity */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="severity">Severity</Label>
+        <Label htmlFor="severity">Severidade</Label>
         <Select
           value={severity}
           onValueChange={(v) => setSeverity(v as FormData["severity"])}
           disabled={isPending}
         >
           <SelectTrigger id="severity" aria-invalid={!!fieldErrors.severity}>
-            <SelectValue placeholder="Select severity level" />
+            <SelectValue placeholder="Selecione o nível de severidade" />
           </SelectTrigger>
           <SelectContent>
             {SEVERITY_OPTIONS.map((opt) => (
@@ -192,7 +192,7 @@ export function TicketForm() {
 
       {/* Deadline */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="deadline">Deadline</Label>
+        <Label htmlFor="deadline">Prazo</Label>
         <input
           id="deadline"
           type="date"
@@ -224,7 +224,7 @@ export function TicketForm() {
           "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
         )}
       >
-        {isPending ? "Submitting mission…" : "Submit Mission"}
+        {isPending ? "Enviando missão…" : "Enviar Missão"}
       </Button>
     </form>
   )

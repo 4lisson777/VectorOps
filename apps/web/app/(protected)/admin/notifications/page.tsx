@@ -1,7 +1,7 @@
 import { NotificationRouting } from "@/components/admin/notification-routing"
 
 export const metadata = {
-  title: "Notification Routing — ShinobiOps",
+  title: "Roteamento de Notificações — ShinobiOps",
 }
 
 export default function AdminNotificationsPage() {

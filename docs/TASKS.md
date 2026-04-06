@@ -102,6 +102,7 @@
 - [x] 5.13 Error pages (custom 404, error boundary, consistent API error format)
 - [ ] 5.14 Loading states (skeletons for boards, detail pages, dashboard)
 - [ ] 5.15 Final integration testing (end-to-end manual test across all roles and flows)
+- [ ] 5.16 Translate to portuguese -> /home/alisson/.claude/plans/kind-napping-melody.md
 
 ---
 

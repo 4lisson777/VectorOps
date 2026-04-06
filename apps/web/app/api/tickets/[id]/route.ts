@@ -231,8 +231,8 @@ export async function PATCH(
       .then((targetUserIds) =>
         createAndEmitNotifications({
           type: notificationType,
-          title: `Ticket ${status === "DONE" ? "Done" : status === "CANCELLED" ? "Cancelled" : "Updated"}: ${ticket.title}`,
-          body: `${ticket.publicId} status changed to ${status}`,
+          title: `${ticket.type === "BUG" ? "Bug" : "Missão"} ${status === "DONE" ? "Concluída" : status === "CANCELLED" ? "Cancelada" : "Atualizada"}: ${ticket.title}`,
+          body: `O status de ${ticket.publicId} mudou para ${status === "DONE" ? "Concluído" : status === "CANCELLED" ? "Cancelado" : status === "IN_PROGRESS" ? "Em Progresso" : status === "WAITING_FOR_INFO" ? "Aguardando" : "Aberto"}.`,
           ticketId: ticket.id,
           targetUserIds,
         })
@@ -276,7 +276,7 @@ export async function DELETE(
         ticketId: id,
         eventType: "CANCELLED",
         actorId: session.userId,
-        metadata: JSON.stringify({ reason: "Deleted by TECH_LEAD" }),
+        metadata: JSON.stringify({ reason: "Excluído por TECH_LEAD" }),
       },
     })
 

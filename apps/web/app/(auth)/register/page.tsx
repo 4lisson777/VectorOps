@@ -1,8 +1,8 @@
 import { RegisterForm } from "@/components/auth/register-form"
 
 export const metadata = {
-  title: "Join the Clan — ShinobiOps",
-  description: "Create your ShinobiOps account",
+  title: "Entrar para o Clã — ShinobiOps",
+  description: "Crie sua conta no ShinobiOps",
 }
 
 // Server Component: just renders the client form.
@@ -11,8 +11,8 @@ export default function RegisterPage() {
   return (
     <>
       <div className="mb-6">
-        <h2 className="text-lg font-semibold text-white">Join the Clan</h2>
-        <p className="mt-0.5 text-sm text-white/50">Create your shinobi profile</p>
+        <h2 className="text-lg font-semibold text-white">Entre para o Clã</h2>
+        <p className="mt-0.5 text-sm text-white/50">Crie seu perfil de shinobi</p>
       </div>
       <RegisterForm />
     </>

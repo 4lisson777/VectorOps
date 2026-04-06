@@ -37,11 +37,11 @@ export default function GlobalError({
       {/* Error message */}
       <div>
         <p className="text-sm font-medium tracking-widest text-destructive uppercase">
-          Critical Failure
+          Falha Crítica
         </p>
-        <h1 className="mt-2 text-3xl font-bold text-white">Smoke in the Dojo</h1>
+        <h1 className="mt-2 text-3xl font-bold text-white">Fumaça no Dojo</h1>
         <p className="mt-3 max-w-md text-sm text-white/50">
-          An unexpected error has disrupted the mission. The tech lead has been notified.
+          Um erro inesperado interrompeu a missão. O tech lead foi notificado.
           {error.digest && (
             <span className="block mt-1 font-mono text-xs opacity-60">
               Ref: {error.digest}
@@ -57,13 +57,13 @@ export default function GlobalError({
           onClick={reset}
           className="inline-flex h-9 items-center justify-center rounded-md bg-[oklch(0.56_0.22_15)] px-4 text-sm font-medium text-white transition-colors hover:bg-[oklch(0.50_0.22_15)]"
         >
-          Try Again
+          Tentar Novamente
         </button>
         <Link
           href="/"
           className="inline-flex h-9 items-center justify-center rounded-md border border-white/20 px-4 text-sm font-medium text-white/70 transition-colors hover:border-white/40 hover:text-white"
         >
-          Return to Base
+          Voltar à Base
         </Link>
       </div>
     </div>

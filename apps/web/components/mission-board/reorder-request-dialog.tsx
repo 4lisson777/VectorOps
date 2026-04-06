@@ -149,13 +149,13 @@ export function ReorderRequestDialog({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            Reorder — <span className="font-mono">{ticket.publicId}</span>
+            Reordenar — <span className="font-mono">{ticket.publicId}</span>
           </DialogTitle>
         </DialogHeader>
 
         <p className="text-sm text-muted-foreground">
-          Current position: <span className="font-medium text-foreground">{ticket.priorityOrder}</span>
-          {" "}of {totalTickets} active missions.
+          Posição atual: <span className="font-medium text-foreground">{ticket.priorityOrder}</span>
+          {" "}de {totalTickets} missões ativas.
         </p>
 
         {error && <p className="text-sm text-destructive">{error}</p>}
@@ -164,9 +164,9 @@ export function ReorderRequestDialog({
         {isLead ? (
           <Tabs defaultValue="direct">
             <TabsList className="w-full">
-              <TabsTrigger value="direct" className="flex-1">Direct Reorder</TabsTrigger>
+              <TabsTrigger value="direct" className="flex-1">Reordenar Direto</TabsTrigger>
               <TabsTrigger value="requests" className="flex-1">
-                Pending Requests
+                Pedidos Pendentes
                 {pendingRequests.length > 0 && (
                   <span className="ml-1.5 rounded-full bg-primary px-1.5 py-0.5 text-[10px] text-primary-foreground">
                     {pendingRequests.length}
@@ -178,7 +178,7 @@ export function ReorderRequestDialog({
             <TabsContent value="direct">
               <form onSubmit={(e) => void handleDirectReorder(e)} className="flex flex-col gap-4 pt-2">
                 <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="direct-pos">Move to position</Label>
+                  <Label htmlFor="direct-pos">Mover para a posição</Label>
                   <Input
                     id="direct-pos"
                     type="number"
@@ -192,9 +192,9 @@ export function ReorderRequestDialog({
                   />
                 </div>
                 <DialogFooter>
-                  <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>Cancel</Button>
+                  <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>Cancelar</Button>
                   <Button type="submit" disabled={isSubmitting || !directPosition}>
-                    {isSubmitting ? "Moving…" : "Reorder Now"}
+                    {isSubmitting ? "Movendo…" : "Reordenar Agora"}
                   </Button>
                 </DialogFooter>
               </form>
@@ -203,12 +203,12 @@ export function ReorderRequestDialog({
             <TabsContent value="requests">
               <div className="flex flex-col gap-3 pt-2">
                 {pendingRequests.length === 0 ? (
-                  <p className="py-6 text-center text-sm text-muted-foreground">No pending requests for this ticket.</p>
+                  <p className="py-6 text-center text-sm text-muted-foreground">Nenhum pedido pendente para esta missão.</p>
                 ) : (
                   pendingRequests.map((req) => (
                     <div key={req.id} className="flex items-start justify-between gap-3 rounded-md border border-border p-3">
                       <div className="flex flex-col gap-0.5 text-sm">
-                        <span className="font-medium">{req.requestedBy.ninjaAlias} → position {req.requestedPosition}</span>
+                        <span className="font-medium">{req.requestedBy.ninjaAlias} → posição {req.requestedPosition}</span>
                         {req.reason && <span className="text-xs text-muted-foreground">{req.reason}</span>}
                       </div>
                       <div className="flex shrink-0 gap-2">
@@ -219,7 +219,7 @@ export function ReorderRequestDialog({
                           onClick={() => void handleApproveDecline(req.id, "decline")}
                           className="text-xs"
                         >
-                          Decline
+                          Recusar
                         </Button>
                         <Button
                           size="sm"
@@ -227,7 +227,7 @@ export function ReorderRequestDialog({
                           onClick={() => void handleApproveDecline(req.id, "approve")}
                           className="text-xs"
                         >
-                          Approve
+                          Aprovar
                         </Button>
                       </div>
                     </div>
@@ -239,7 +239,7 @@ export function ReorderRequestDialog({
         ) : (
           <form onSubmit={(e) => void handleRequest(e)} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="req-pos">Requested position</Label>
+              <Label htmlFor="req-pos">Posição solicitada</Label>
               <Input
                 id="req-pos"
                 type="number"
@@ -253,21 +253,21 @@ export function ReorderRequestDialog({
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="req-reason">Reason (optional)</Label>
+              <Label htmlFor="req-reason">Motivo (opcional)</Label>
               <Textarea
                 id="req-reason"
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                placeholder="Why should this ticket be moved?"
+                placeholder="Por que esta missão deve ser movida?"
                 rows={3}
                 disabled={isSubmitting}
                 className="resize-none"
               />
             </div>
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>Cancel</Button>
+              <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>Cancelar</Button>
               <Button type="submit" disabled={isSubmitting || !requestPosition}>
-                {isSubmitting ? "Submitting…" : "Request Reorder"}
+                {isSubmitting ? "Enviando…" : "Solicitar Reordenação"}
               </Button>
             </DialogFooter>
           </form>

@@ -202,9 +202,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       createAndEmitNotifications({
         type: notificationType,
         title: isBug
-          ? `New Bug: ${ticket.title}`
-          : `New Ticket: ${ticket.title}`,
-        body: `${ticket.publicId} — ${ticket.severity} severity`,
+          ? `Novo Bug: ${ticket.title}`
+          : `Nova Missão: ${ticket.title}`,
+        body: `${ticket.publicId} — Severidade ${ticket.severity === "LOW" ? "Baixa" : ticket.severity === "MEDIUM" ? "Média" : ticket.severity === "HIGH" ? "Alta" : "Crítica"}`,
         ticketId: ticket.id,
         targetUserIds,
       })

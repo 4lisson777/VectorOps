@@ -1,7 +1,7 @@
 import Link from "next/link"
 
 export const metadata = {
-  title: "Mission Not Found — ShinobiOps",
+  title: "Missão Não Encontrada — ShinobiOps",
 }
 
 // 404 page — ninja theme: the mission file has been shredded.
@@ -29,12 +29,12 @@ export default function NotFound() {
       {/* Error code */}
       <div>
         <p className="text-sm font-medium tracking-widest text-[oklch(0.56_0.22_15)] uppercase">
-          Mission File — 404
+          Arquivo de Missão — 404
         </p>
-        <h1 className="mt-2 text-4xl font-bold text-white">Mission Not Found</h1>
+        <h1 className="mt-2 text-4xl font-bold text-white">Missão Não Encontrada</h1>
         <p className="mt-3 max-w-md text-sm text-white/50">
-          The scroll you seek has been destroyed or never existed. The shadows
-          hold no record of this path.
+          O pergaminho que você busca foi destruído ou nunca existiu. As sombras
+          não guardam registro deste caminho.
         </p>
       </div>
 
@@ -44,13 +44,13 @@ export default function NotFound() {
           href="/"
           className="inline-flex h-9 items-center justify-center rounded-md bg-[oklch(0.56_0.22_15)] px-4 text-sm font-medium text-white transition-colors hover:bg-[oklch(0.50_0.22_15)]"
         >
-          Return to Base
+          Voltar à Base
         </Link>
         <Link
           href="/support"
           className="inline-flex h-9 items-center justify-center rounded-md border border-white/20 px-4 text-sm font-medium text-white/70 transition-colors hover:border-white/40 hover:text-white"
         >
-          Support Home
+          Suporte
         </Link>
       </div>
     </div>

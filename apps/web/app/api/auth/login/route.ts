@@ -6,8 +6,8 @@ import { getSession } from "@/lib/session"
 import { checkRateLimit, getClientIp } from "@/lib/rate-limit"
 
 const LoginSchema = z.object({
-  email: z.string().email("Must be a valid email address"),
-  password: z.string().min(1, "Password is required"),
+  email: z.string().email("Deve ser um endereço de e-mail válido"),
+  password: z.string().min(1, "Senha é obrigatória"),
 })
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
@@ -16,7 +16,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const rateLimit = checkRateLimit(`login:${ip}`, { limit: 5, windowMs: 60_000 })
   if (!rateLimit.allowed) {
     return NextResponse.json(
-      { error: "Too many requests. Please try again later." },
+      { error: "Muitas solicitações. Tente novamente mais tarde." },
       { status: 429 }
     )
   }
@@ -25,13 +25,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    return NextResponse.json({ error: "Corpo JSON inválido" }, { status: 400 })
   }
 
   const parsed = LoginSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
+      { error: "Falha na validação", details: parsed.error.flatten().fieldErrors },
       { status: 400 }
     )
   }
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!user) {
     await bcrypt.hash(password, 12) // dummy work to equalize timing
     return NextResponse.json(
-      { error: "Invalid email or password" },
+      { error: "E-mail ou senha inválidos" },
       { status: 401 }
     )
   }
@@ -53,14 +53,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const passwordValid = await bcrypt.compare(password, user.passwordHash)
   if (!passwordValid) {
     return NextResponse.json(
-      { error: "Invalid email or password" },
+      { error: "E-mail ou senha inválidos" },
       { status: 401 }
     )
   }
 
   if (!user.isActive) {
     return NextResponse.json(
-      { error: "Your account has been deactivated. Contact an administrator." },
+      { error: "Sua conta foi desativada. Entre em contato com um administrador." },
       { status: 403 }
     )
   }

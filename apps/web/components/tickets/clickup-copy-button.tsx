@@ -16,9 +16,9 @@ export function ClickUpCopyButton({ bug }: ClickUpCopyButtonProps) {
     const markdown = generateClickUpMarkdown(bug)
     try {
       await navigator.clipboard.writeText(markdown)
-      setMsg("Copied to clipboard!")
+      setMsg("Copiado para a área de transferência!")
     } catch {
-      setMsg("Failed to copy — please try again.")
+      setMsg("Falha ao copiar — tente novamente.")
     }
     setTimeout(() => setMsg(null), 2500)
   }
@@ -38,7 +38,7 @@ export function ClickUpCopyButton({ bug }: ClickUpCopyButtonProps) {
           <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
           <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
         </svg>
-        Copy to ClickUp Format
+        Copiar para Formato ClickUp
       </Button>
       {msg && (
         <p role="status" className="text-xs text-muted-foreground">

@@ -45,12 +45,12 @@ export function SmokeSignalModal({ open, onOpenChange }: SmokeSignalModalProps) 
       })
       if (!res.ok) {
         const data = await res.json() as { error?: string }
-        setError(data.error ?? "Failed to send smoke signal.")
+        setError(data.error ?? "Falha ao enviar sinal de fumaça.")
         return
       }
       handleClose()
     } catch {
-      setError("Network error. Please try again.")
+      setError("Erro de rede. Tente novamente.")
     } finally {
       setIsSubmitting(false)
     }
@@ -62,18 +62,18 @@ export function SmokeSignalModal({ open, onOpenChange }: SmokeSignalModalProps) 
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>🔥 Send Smoke Signal</DialogTitle>
+          <DialogTitle>🔥 Enviar Sinal de Fumaça</DialogTitle>
         </DialogHeader>
         <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="context-message">
-              What do you need help with?
+              Com o que você precisa de ajuda?
             </Label>
             <Textarea
               id="context-message"
               value={message}
               onChange={(e) => setMessage(e.target.value.slice(0, MAX_CHARS))}
-              placeholder="Briefly describe what you're stuck on…"
+              placeholder="Descreva brevemente no que você está travado…"
               rows={4}
               disabled={isSubmitting}
               className="resize-none"
@@ -84,7 +84,7 @@ export function SmokeSignalModal({ open, onOpenChange }: SmokeSignalModalProps) 
                 remaining <= 20 ? "text-red-500" : "text-muted-foreground"
               }`}
             >
-              {remaining} characters remaining
+              {remaining} caracteres restantes
             </p>
           </div>
           {error && (
@@ -97,13 +97,13 @@ export function SmokeSignalModal({ open, onOpenChange }: SmokeSignalModalProps) 
               onClick={handleClose}
               disabled={isSubmitting}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting || message.trim().length === 0}
             >
-              {isSubmitting ? "Sending…" : "Send Signal"}
+              {isSubmitting ? "Enviando…" : "Enviar Sinal"}
             </Button>
           </DialogFooter>
         </form>

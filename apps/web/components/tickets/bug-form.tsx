@@ -41,21 +41,21 @@ const SEVERITY_OPTIONS: {
   label: string
   dot: string
 }[] = [
-  { value: "LOW", label: "Low — White Belt", dot: "bg-gray-200 border border-gray-400" },
-  { value: "MEDIUM", label: "Medium — Green Belt", dot: "bg-green-500" },
-  { value: "HIGH", label: "High — Red Belt", dot: "bg-red-500" },
+  { value: "LOW", label: "Baixa — Faixa Branca", dot: "bg-gray-200 border border-gray-400" },
+  { value: "MEDIUM", label: "Média — Faixa Verde", dot: "bg-green-500" },
+  { value: "HIGH", label: "Alta — Faixa Vermelha", dot: "bg-red-500" },
   {
     value: "CRITICAL",
-    label: "Critical — Black Belt",
+    label: "Crítica — Faixa Preta",
     dot: "bg-black dark:bg-gray-800 border border-gray-600",
   },
 ]
 
 const ENVIRONMENT_OPTIONS: { value: FormData["environment"]; label: string }[] =
   [
-    { value: "PRODUCTION", label: "Production" },
-    { value: "STAGING", label: "Staging" },
-    { value: "OTHER", label: "Other" },
+    { value: "PRODUCTION", label: "Produção" },
+    { value: "STAGING", label: "Homologação" },
+    { value: "OTHER", label: "Outro" },
   ]
 
 export function BugForm() {
@@ -103,10 +103,10 @@ export function BugForm() {
 
     try {
       await navigator.clipboard.writeText(markdown)
-      setClipboardMsg("Copied to clipboard!")
+      setClipboardMsg("Copiado para a área de transferência!")
       setTimeout(() => setClipboardMsg(null), 2000)
     } catch {
-      setClipboardMsg("Failed to copy — please copy manually.")
+      setClipboardMsg("Falha ao copiar — por favor, copie manualmente.")
       setTimeout(() => setClipboardMsg(null), 3000)
     }
   }
@@ -151,15 +151,15 @@ export function BugForm() {
 
       if (!res.ok) {
         setServerError(
-          data.error ?? "Failed to submit threat report. Please try again."
+          data.error ?? "Falha ao enviar relatório de ameaça. Tente novamente."
         )
         return
       }
 
-      setSuccessMsg("Threat report submitted successfully")
+      setSuccessMsg("Relatório de ameaça enviado com sucesso")
       setTimeout(() => router.push("/support/queue"), 800)
     } catch {
-      setServerError("Network error. Please check your connection.")
+      setServerError("Erro de rede. Verifique sua conexão.")
     } finally {
       setIsPending(false)
     }
@@ -187,11 +187,11 @@ export function BugForm() {
 
       {/* Title */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="title">Title</Label>
+        <Label htmlFor="title">Título</Label>
         <Input
           id="title"
           type="text"
-          placeholder="Short description of the bug"
+          placeholder="Breve descrição do bug"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           aria-invalid={!!fieldErrors.title}
@@ -204,11 +204,11 @@ export function BugForm() {
 
       {/* Affected Module */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="affectedModule">Affected Module / Screen</Label>
+        <Label htmlFor="affectedModule">Módulo / Tela Afetada</Label>
         <Input
           id="affectedModule"
           type="text"
-          placeholder="e.g. Customer invoice page, Login screen"
+          placeholder="ex: Tela de faturas de clientes, Tela de login"
           value={affectedModule}
           onChange={(e) => setAffectedModule(e.target.value)}
           aria-invalid={!!fieldErrors.affectedModule}
@@ -221,10 +221,10 @@ export function BugForm() {
 
       {/* Steps to Reproduce */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="stepsToReproduce">Steps to Reproduce</Label>
+        <Label htmlFor="stepsToReproduce">Passos para Reproduzir</Label>
         <Textarea
           id="stepsToReproduce"
-          placeholder={"1. Go to...\n2. Click...\n3. See error"}
+          placeholder={"1. Vá para...\n2. Clique em...\n3. Veja o erro"}
           value={stepsToReproduce}
           onChange={(e) => setStepsToReproduce(e.target.value)}
           aria-invalid={!!fieldErrors.stepsToReproduce}
@@ -242,10 +242,10 @@ export function BugForm() {
       {/* Expected / Actual Behavior */}
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="expectedBehavior">Expected Behavior</Label>
+          <Label htmlFor="expectedBehavior">Comportamento Esperado</Label>
           <Textarea
             id="expectedBehavior"
-            placeholder="What should have happened?"
+            placeholder="O que deveria ter acontecido?"
             value={expectedBehavior}
             onChange={(e) => setExpectedBehavior(e.target.value)}
             aria-invalid={!!fieldErrors.expectedBehavior}
@@ -260,10 +260,10 @@ export function BugForm() {
           )}
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="actualBehavior">Actual Behavior</Label>
+          <Label htmlFor="actualBehavior">Comportamento Atual</Label>
           <Textarea
             id="actualBehavior"
-            placeholder="What actually happened?"
+            placeholder="O que realmente aconteceu?"
             value={actualBehavior}
             onChange={(e) => setActualBehavior(e.target.value)}
             aria-invalid={!!fieldErrors.actualBehavior}
@@ -282,14 +282,14 @@ export function BugForm() {
       {/* Severity + Environment */}
       <div className="grid gap-5 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="severity">Severity</Label>
+          <Label htmlFor="severity">Severidade</Label>
           <Select
             value={severity}
             onValueChange={(v) => setSeverity(v as FormData["severity"])}
             disabled={isPending}
           >
             <SelectTrigger id="severity" aria-invalid={!!fieldErrors.severity}>
-              <SelectValue placeholder="Select severity" />
+              <SelectValue placeholder="Selecione a severidade" />
             </SelectTrigger>
             <SelectContent>
               {SEVERITY_OPTIONS.map((opt) => (
@@ -313,7 +313,7 @@ export function BugForm() {
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="environment">Environment</Label>
+          <Label htmlFor="environment">Ambiente</Label>
           <Select
             value={environment}
             onValueChange={(v) =>
@@ -325,7 +325,7 @@ export function BugForm() {
               id="environment"
               aria-invalid={!!fieldErrors.environment}
             >
-              <SelectValue placeholder="Select environment" />
+              <SelectValue placeholder="Selecione o ambiente" />
             </SelectTrigger>
             <SelectContent>
               {ENVIRONMENT_OPTIONS.map((opt) => (
@@ -345,7 +345,7 @@ export function BugForm() {
 
       {/* Deadline */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="deadline">Deadline</Label>
+        <Label htmlFor="deadline">Prazo</Label>
         <input
           id="deadline"
           type="date"
@@ -370,13 +370,13 @@ export function BugForm() {
       {/* Customer ID (optional) */}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="customerId">
-          Customer Name / ID{" "}
-          <span className="font-normal text-muted-foreground">(optional)</span>
+          Nome / ID do Cliente{" "}
+          <span className="font-normal text-muted-foreground">(opcional)</span>
         </Label>
         <Input
           id="customerId"
           type="text"
-          placeholder="e.g. Acme Corp or CUST-1234"
+          placeholder="ex: Acme Corp ou CUST-1234"
           value={customerId}
           onChange={(e) => setCustomerId(e.target.value)}
           disabled={isPending}
@@ -407,7 +407,7 @@ export function BugForm() {
             <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
           </svg>
-          Copy to ClickUp Format
+          Copiar para Formato ClickUp
         </Button>
         {clipboardMsg && (
           <p
@@ -419,7 +419,7 @@ export function BugForm() {
         )}
         {!canCopyClickUp && (
           <p className="text-center text-xs text-muted-foreground">
-            Fill in title, affected module, and steps to reproduce to enable this button.
+            Preencha título, módulo afetado e passos para reproduzir para habilitar este botão.
           </p>
         )}
       </div>
@@ -433,7 +433,7 @@ export function BugForm() {
           "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]"
         )}
       >
-        {isPending ? "Submitting threat report…" : "Submit Threat Report"}
+        {isPending ? "Enviando relatório…" : "Enviar Relatório de Ameaça"}
       </Button>
     </form>
   )

@@ -41,22 +41,22 @@ const STATUS_CONFIG: Record<
   { label: string; className: string }
 > = {
   ACTIVE: {
-    label: "Active",
+    label: "Ativo",
     className:
       "bg-green-500/10 text-green-600 border-green-500/20 dark:text-green-400",
   },
   IN_CHECKPOINT: {
-    label: "In Checkpoint",
+    label: "Status Scroll",
     className:
       "bg-amber-500/10 text-amber-600 border-amber-500/20 dark:text-amber-400",
   },
   BLOCKED: {
-    label: "Blocked",
+    label: "Bloqueado",
     className:
       "bg-red-500/10 text-red-600 border-red-500/20 dark:text-red-400",
   },
   HELPING: {
-    label: "Helping",
+    label: "Ajudando",
     className:
       "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400",
   },
@@ -160,7 +160,7 @@ export function DeveloperCard({
         {/* 4.9 — No-response indicator */}
         {isAwaitingCheckpoint && (
           <div className="rounded-md border border-orange-500/40 bg-orange-500/10 px-2 py-1 text-xs font-medium text-orange-700 dark:text-orange-400">
-            ⚠ No response to checkpoint
+            ⚠ Sem resposta ao checkpoint
           </div>
         )}
 
@@ -173,7 +173,7 @@ export function DeveloperCard({
                   type="button"
                   disabled={isSavingStatus}
                   className="cursor-pointer"
-                  aria-label="Change your status"
+                  aria-label="Mudar seu status"
                 >
                   <StatusBadge status={dev.devStatus} />
                 </button>
@@ -207,7 +207,7 @@ export function DeveloperCard({
         {/* Current task */}
         <div className="min-h-[2rem]">
           <p className="mb-1 text-xs font-medium text-muted-foreground">
-            Current Task
+            Tarefa Atual
           </p>
           {isCurrentUser ? (
             isEditingTask ? (
@@ -218,7 +218,7 @@ export function DeveloperCard({
                 onChange={(e) => setTaskDraft(e.target.value)}
                 onBlur={() => void handleTaskSave()}
                 onKeyDown={handleTaskKeyDown}
-                placeholder="What are you working on?"
+                placeholder="No que você está trabalhando?"
                 className="w-full rounded border border-input bg-background px-2 py-1 text-xs outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
               />
             ) : (
@@ -227,13 +227,13 @@ export function DeveloperCard({
                 onClick={handleEditStart}
                 disabled={isSavingTask}
                 className="w-full rounded px-2 py-1 text-left text-xs hover:bg-muted/60"
-                aria-label="Click to edit current task"
+                aria-label="Clique para editar a tarefa atual"
               >
                 {dev.currentTask ? (
                   <span className="text-foreground">{dev.currentTask}</span>
                 ) : (
                   <span className="italic text-muted-foreground">
-                    No current task
+                    Sem tarefa atual
                   </span>
                 )}
               </button>
@@ -244,7 +244,7 @@ export function DeveloperCard({
                 dev.currentTask
               ) : (
                 <span className="italic text-muted-foreground">
-                  No current task
+                  Sem tarefa atual
                 </span>
               )}
             </p>
@@ -254,7 +254,7 @@ export function DeveloperCard({
         {/* Assigned ticket */}
         <div>
           <p className="mb-1 text-xs font-medium text-muted-foreground">
-            Active Mission
+            Missão Ativa
           </p>
           {dev.assignedTicket ? (
             <div className="flex flex-col gap-1 rounded-md border border-border bg-muted/30 px-3 py-2">
@@ -278,7 +278,7 @@ export function DeveloperCard({
             </div>
           ) : (
             <p className="px-2 text-xs italic text-muted-foreground">
-              No active mission
+              Sem missão ativa
             </p>
           )}
         </div>

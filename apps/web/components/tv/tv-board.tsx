@@ -38,19 +38,19 @@ interface TvData {
 
 const SEVERITY_STYLES: Record<Severity, { label: string; cls: string }> = {
   LOW: {
-    label: "Low",
+    label: "Baixa",
     cls: "bg-white/10 text-white border-white/20",
   },
   MEDIUM: {
-    label: "Medium",
+    label: "Média",
     cls: "bg-green-500/20 text-green-300 border-green-500/30",
   },
   HIGH: {
-    label: "High",
+    label: "Alta",
     cls: "bg-red-500/20 text-red-300 border-red-500/30",
   },
   CRITICAL: {
-    label: "Critical",
+    label: "Crítica",
     cls: "bg-black/60 text-white border-white/10",
   },
 }
@@ -59,7 +59,7 @@ const SEVERITY_STYLES: Record<Severity, { label: string; cls: string }> = {
 
 const STATUS_STYLES: Record<string, { label: string; cls: string }> = {
   ACTIVE: {
-    label: "Active",
+    label: "Ativo",
     cls: "bg-green-500/20 text-green-300 border-green-500/30",
   },
   IN_CHECKPOINT: {
@@ -67,11 +67,11 @@ const STATUS_STYLES: Record<string, { label: string; cls: string }> = {
     cls: "bg-amber-500/20 text-amber-300 border-amber-500/30",
   },
   BLOCKED: {
-    label: "Blocked",
+    label: "Bloqueado",
     cls: "bg-red-500/20 text-red-300 border-red-500/30",
   },
   HELPING: {
-    label: "Helping",
+    label: "Ajudando",
     cls: "bg-blue-500/20 text-blue-300 border-blue-500/30",
   },
 }
@@ -163,11 +163,11 @@ function TvDevCard({ dev }: { dev: Developer }) {
       {/* Current task */}
       <div>
         <p className="mb-1 text-xs font-medium uppercase tracking-wider text-white/40">
-          Current Task
+          Tarefa Atual
         </p>
         <p className="text-sm text-white/80">
           {dev.currentTask ?? (
-            <span className="italic text-white/30">No current task</span>
+            <span className="italic text-white/30">Sem tarefa atual</span>
           )}
         </p>
       </div>
@@ -175,7 +175,7 @@ function TvDevCard({ dev }: { dev: Developer }) {
       {/* Assigned ticket */}
       <div>
         <p className="mb-1 text-xs font-medium uppercase tracking-wider text-white/40">
-          Active Mission
+          Missão Ativa
         </p>
         {dev.assignedTicket ? (
           <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
@@ -189,8 +189,7 @@ function TvDevCard({ dev }: { dev: Developer }) {
                   SEVERITY_STYLES[dev.assignedTicket.severity]?.cls
                 )}
               >
-                {dev.assignedTicket.severity.charAt(0) +
-                  dev.assignedTicket.severity.slice(1).toLowerCase()}
+                {SEVERITY_STYLES[dev.assignedTicket.severity]?.label}
               </span>
             </div>
             <p className="line-clamp-2 text-sm text-white/60">
@@ -198,7 +197,7 @@ function TvDevCard({ dev }: { dev: Developer }) {
             </p>
           </div>
         ) : (
-          <p className="text-sm italic text-white/30">No active mission</p>
+          <p className="text-sm italic text-white/30">Sem missão ativa</p>
         )}
       </div>
     </div>
@@ -213,7 +212,7 @@ function LiveClock() {
   React.useEffect(() => {
     function tick() {
       setTime(
-        new Date().toLocaleTimeString("en-US", {
+        new Date().toLocaleTimeString("pt-BR", {
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
@@ -284,10 +283,10 @@ export function TvBoard() {
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[oklch(0.12_0.03_265)] p-8 text-center">
         <ShurikenLogo />
         <p className="mt-4 text-lg font-semibold text-white/60">
-          TV Mode is currently disabled.
+          O Modo TV está desativado no momento.
         </p>
         <p className="text-sm text-white/30">
-          A Tech Lead can enable it from the Command Dojo.
+          Um Tech Lead pode ativá-lo no Command Dojo.
         </p>
       </div>
     )
@@ -313,7 +312,7 @@ export function TvBoard() {
                   key={sev}
                   severity={sev}
                   count={data?.ticketCounts[sev] ?? 0}
-                  label={sev.charAt(0) + sev.slice(1).toLowerCase()}
+                  label={SEVERITY_STYLES[sev].label}
                 />
               ))}
             </div>
@@ -329,7 +328,7 @@ export function TvBoard() {
                   key={sev}
                   severity={sev}
                   count={data?.bugCounts[sev] ?? 0}
-                  label={sev.charAt(0) + sev.slice(1).toLowerCase()}
+                  label={SEVERITY_STYLES[sev].label}
                 />
               ))}
             </div>
@@ -341,8 +340,8 @@ export function TvBoard() {
           <LiveClock />
           {lastUpdated && (
             <span className="text-xs text-white/30">
-              Updated{" "}
-              {lastUpdated.toLocaleTimeString("en-US", {
+              Atualizado às{" "}
+              {lastUpdated.toLocaleTimeString("pt-BR", {
                 hour: "2-digit",
                 minute: "2-digit",
               })}
@@ -379,7 +378,7 @@ export function TvBoard() {
       ) : data.developers.length === 0 ? (
         <div className="flex flex-1 items-center justify-center py-20">
           <p className="text-lg italic text-white/30">
-            No active developers at this time.
+            Nenhum desenvolvedor ativo no momento.
           </p>
         </div>
       ) : (

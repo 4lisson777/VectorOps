@@ -22,10 +22,10 @@ function getRoleHome(role: Role): string {
 }
 
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
-  { value: "SUPPORT_MEMBER", label: "Support Member" },
-  { value: "SUPPORT_LEAD", label: "Support Lead" },
-  { value: "DEVELOPER", label: "Ninja (Developer)" },
-  { value: "TECH_LEAD", label: "Jōnin (Tech Lead)" },
+  { value: "SUPPORT_MEMBER", label: "Membro de Suporte" },
+  // { value: "SUPPORT_LEAD", label: "Líder de Suporte" },
+  { value: "DEVELOPER", label: "Ninja (Desenvolvedor)" },
+  // { value: "TECH_LEAD", label: "Jōnin (Tech Lead)" },
 ]
 
 interface FieldErrors {
@@ -55,11 +55,11 @@ export function RegisterForm() {
 
     // Basic client-side validation
     const errors: FieldErrors = {}
-    if (!name.trim()) errors.name = ["Full name is required"]
-    if (!email) errors.email = ["Email is required"]
+    if (!name.trim()) errors.name = ["Nome completo é obrigatório"]
+    if (!email) errors.email = ["E-mail é obrigatório"]
     if (!password || password.length < 8)
-      errors.password = ["Password must be at least 8 characters"]
-    if (!role) errors.role = ["Please select your role"]
+      errors.password = ["A senha deve ter pelo menos 8 caracteres"]
+    if (!role) errors.role = ["Por favor, selecione seu cargo"]
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors)
       return
@@ -86,7 +86,7 @@ export function RegisterForm() {
         if (data.details) {
           setFieldErrors(data.details)
         } else {
-          setServerError(data.error ?? "Registration failed. Please try again.")
+          setServerError(data.error ?? "Cadastro falhou. Tente novamente.")
         }
         return
       }
@@ -96,7 +96,7 @@ export function RegisterForm() {
         router.refresh()
       }
     } catch {
-      setServerError("Network error. Please check your connection.")
+      setServerError("Erro de rede. Verifique sua conexão.")
     } finally {
       setIsPending(false)
     }
@@ -115,7 +115,7 @@ export function RegisterForm() {
 
       {/* Full name */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="name">Full Name</Label>
+        <Label htmlFor="name">Nome Completo</Label>
         <Input
           id="name"
           type="text"
@@ -151,12 +151,12 @@ export function RegisterForm() {
 
       {/* Password */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="password">Password</Label>
+        <Label htmlFor="password">Senha</Label>
         <Input
           id="password"
           type="password"
           autoComplete="new-password"
-          placeholder="Min. 8 characters"
+          placeholder="Mín. 8 caracteres"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           aria-invalid={!!fieldErrors.password}
@@ -169,14 +169,14 @@ export function RegisterForm() {
 
       {/* Role */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="role">Role</Label>
+        <Label htmlFor="role">Cargo</Label>
         <Select
           value={role}
           onValueChange={(v) => setRole(v as Role)}
           disabled={isPending}
         >
           <SelectTrigger id="role" aria-invalid={!!fieldErrors.role}>
-            <SelectValue placeholder="Select your role" />
+            <SelectValue placeholder="Selecione seu cargo" />
           </SelectTrigger>
           <SelectContent>
             {ROLE_OPTIONS.map((opt) => (
@@ -195,12 +195,12 @@ export function RegisterForm() {
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="ninjaAlias">
           Ninja Alias{" "}
-          <span className="text-muted-foreground font-normal">(optional)</span>
+          <span className="text-muted-foreground font-normal">(opcional)</span>
         </Label>
         <Input
           id="ninjaAlias"
           type="text"
-          placeholder="Auto-generated if left blank"
+          placeholder="Gerado automaticamente se vazio"
           value={ninjaAlias}
           onChange={(e) => setNinjaAlias(e.target.value)}
           disabled={isPending}
@@ -221,17 +221,17 @@ export function RegisterForm() {
           "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
         )}
       >
-        {isPending ? "Joining the clan…" : "Join the Clan"}
+        {isPending ? "Entrando para o clã…" : "Entrar para o Clã"}
       </Button>
 
       {/* Login link */}
       <p className="text-center text-sm text-muted-foreground">
-        Already a shinobi?{" "}
+        Já é shinobi?{" "}
         <Link
           href="/login"
           className="font-medium text-[oklch(0.56_0.22_15)] underline-offset-4 hover:underline"
         >
-          Enter the Dojo
+          Entrar no Dojo
         </Link>
       </p>
     </form>

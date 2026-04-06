@@ -42,10 +42,10 @@ interface User {
 }
 
 const ROLE_LABELS: Record<Role, string> = {
-  TECH_LEAD: "Tech Lead",
-  DEVELOPER: "Developer",
-  SUPPORT_LEAD: "Support Lead",
-  SUPPORT_MEMBER: "Support Member",
+  TECH_LEAD: "Jōnin (Tech Lead)",
+  DEVELOPER: "Ninja (Desenvolvedor)",
+  SUPPORT_LEAD: "Líder de Suporte",
+  SUPPORT_MEMBER: "Membro de Suporte",
 }
 
 // ---- Upload icon ----------------------------------------------------------
@@ -101,7 +101,7 @@ export function TeamManagement() {
       const data = (await res.json()) as { users: User[] }
       setUsers(data.users)
     } catch {
-      setError("Could not load team members. Please try again.")
+      setError("Não foi possível carregar os membros da equipe. Tente novamente.")
     } finally {
       setIsLoading(false)
     }
@@ -205,9 +205,9 @@ export function TeamManagement() {
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Team Management</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Gerenciamento da Equipe</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Manage roles, status, and avatars for all team members.
+          Gerencie funções, status e avatares para todos os membros da equipe.
         </p>
       </div>
 
@@ -215,33 +215,33 @@ export function TeamManagement() {
       <div className="flex flex-wrap gap-3">
         <Input
           type="search"
-          placeholder="Search name or email…"
+          placeholder="Buscar nome ou e-mail…"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="h-9 max-w-xs"
         />
 
         <Select value={roleFilter} onValueChange={setRoleFilter}>
-          <SelectTrigger className="h-9 w-44">
-            <SelectValue placeholder="Filter by role" />
+          <SelectTrigger className="h-9 w-56">
+            <SelectValue placeholder="Filtrar por função" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All roles</SelectItem>
+            <SelectItem value="ALL">Todas as funções</SelectItem>
             <SelectItem value="TECH_LEAD">Tech Lead</SelectItem>
-            <SelectItem value="DEVELOPER">Developer</SelectItem>
-            <SelectItem value="SUPPORT_LEAD">Support Lead</SelectItem>
-            <SelectItem value="SUPPORT_MEMBER">Support Member</SelectItem>
+            <SelectItem value="DEVELOPER">Desenvolvedor</SelectItem>
+            <SelectItem value="SUPPORT_LEAD">Líder de Suporte</SelectItem>
+            <SelectItem value="SUPPORT_MEMBER">Membro de Suporte</SelectItem>
           </SelectContent>
         </Select>
 
         <Select value={activeFilter} onValueChange={setActiveFilter}>
           <SelectTrigger className="h-9 w-36">
-            <SelectValue placeholder="Filter by status" />
+            <SelectValue placeholder="Filtrar por status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="ALL">All statuses</SelectItem>
-            <SelectItem value="true">Active</SelectItem>
-            <SelectItem value="false">Inactive</SelectItem>
+            <SelectItem value="ALL">Todos os status</SelectItem>
+            <SelectItem value="true">Ativo</SelectItem>
+            <SelectItem value="false">Inativo</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -271,11 +271,11 @@ export function TeamManagement() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-12" />
-              <TableHead>Name</TableHead>
-              <TableHead className="hidden md:table-cell">Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead className="hidden sm:table-cell">Alias</TableHead>
-              <TableHead className="hidden lg:table-cell">Last Active</TableHead>
+              <TableHead>Nome</TableHead>
+              <TableHead className="hidden md:table-cell">E-mail</TableHead>
+              <TableHead>Função</TableHead>
+              <TableHead className="hidden sm:table-cell">Apelido</TableHead>
+              <TableHead className="hidden lg:table-cell">Última Atividade</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Avatar</TableHead>
             </TableRow>
@@ -316,7 +316,7 @@ export function TeamManagement() {
                   colSpan={8}
                   className="py-10 text-center text-sm italic text-muted-foreground"
                 >
-                  No team members found.
+                  Nenhum membro da equipe encontrado.
                 </TableCell>
               </TableRow>
             ) : (
@@ -401,7 +401,7 @@ export function TeamManagement() {
                             : "border-muted text-muted-foreground"
                         )}
                       >
-                        {user.isActive ? "Active" : "Inactive"}
+                        {user.isActive ? "Ativo" : "Inativo"}
                       </Badge>
                     </div>
                   </TableCell>
@@ -417,7 +417,7 @@ export function TeamManagement() {
                       onClick={() => handleAvatarButtonClick(user.id)}
                     >
                       <UploadIcon />
-                      {uploadingFor === user.id ? "Uploading…" : "Upload"}
+                      {uploadingFor === user.id ? "Enviando…" : "Enviar"}
                     </Button>
                   </TableCell>
                 </TableRow>

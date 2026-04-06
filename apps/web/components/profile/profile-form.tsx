@@ -96,7 +96,7 @@ export function ProfileForm() {
         setName(data.user.name)
         setNinjaAlias(data.user.ninjaAlias)
       } catch {
-        setLoadError("Could not load your profile. Please refresh the page.")
+        setLoadError("Não foi possível carregar seu perfil. Reinicie a página.")
       } finally {
         setIsLoading(false)
       }
@@ -145,7 +145,7 @@ export function ProfileForm() {
 
       if (!res.ok) {
         if (data.details) setProfileFieldErrors(data.details)
-        else setProfileError(data.error ?? "Update failed. Please try again.")
+        else setProfileError(data.error ?? "Falha na atualização. Tente novamente.")
         return
       }
 
@@ -157,7 +157,7 @@ export function ProfileForm() {
       setProfileSuccess(true)
       setTimeout(() => setProfileSuccess(false), 3000)
     } catch {
-      setProfileError("Network error. Please check your connection.")
+      setProfileError("Erro de rede. Verifique sua conexão.")
     } finally {
       setProfileSaving(false)
     }
@@ -170,11 +170,11 @@ export function ProfileForm() {
     setPasswordSuccess(false)
 
     const errors: ProfileFieldErrors = {}
-    if (!currentPassword) errors.currentPassword = ["Current password is required"]
+    if (!currentPassword) errors.currentPassword = ["Senha atual é obrigatória"]
     if (!newPassword || newPassword.length < 8)
-      errors.newPassword = ["New password must be at least 8 characters"]
+      errors.newPassword = ["A nova senha deve ter pelo menos 8 caracteres"]
     if (newPassword !== confirmPassword)
-      errors.confirmPassword = ["Passwords do not match"]
+      errors.confirmPassword = ["As senhas não coincidem"]
     if (Object.keys(errors).length > 0) {
       setPasswordFieldErrors(errors)
       return
@@ -205,7 +205,7 @@ export function ProfileForm() {
       setPasswordSuccess(true)
       setTimeout(() => setPasswordSuccess(false), 3000)
     } catch {
-      setPasswordError("Network error. Please check your connection.")
+      setPasswordError("Erro de rede. Verifique sua conexão.")
     } finally {
       setPasswordSaving(false)
     }
@@ -252,7 +252,7 @@ export function ProfileForm() {
 
       {/* Profile info section */}
       <section>
-        <h2 className="mb-4 text-base font-semibold">Profile Information</h2>
+        <h2 className="mb-4 text-base font-semibold">Informações do Perfil</h2>
         <form onSubmit={handleProfileSave} noValidate className="flex flex-col gap-4">
           {profileError && (
             <div
@@ -267,7 +267,7 @@ export function ProfileForm() {
               role="status"
               className="rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-400"
             >
-              Profile updated successfully.
+              Perfil atualizado com sucesso.
             </div>
           )}
 
@@ -283,13 +283,13 @@ export function ProfileForm() {
               className="cursor-default"
             />
             <p className="text-xs text-muted-foreground">
-              Email cannot be changed. Contact an admin if needed.
+              O e-mail não pode ser alterado. Contate um admin se necessário.
             </p>
           </div>
 
           {/* Name */}
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="name">Nome Completo</Label>
             <Input
               id="name"
               type="text"
@@ -305,13 +305,13 @@ export function ProfileForm() {
 
           {/* Ninja alias */}
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ninjaAlias">Ninja Alias</Label>
+            <Label htmlFor="ninjaAlias">Apelido Ninja</Label>
             <Input
               id="ninjaAlias"
               type="text"
               value={ninjaAlias}
               onChange={(e) => setNinjaAlias(e.target.value)}
-              placeholder="Your code name in the clan"
+              placeholder="Seu codinome no clã"
               aria-invalid={!!profileFieldErrors.ninjaAlias}
               disabled={profileSaving}
             />
@@ -328,7 +328,7 @@ export function ProfileForm() {
             disabled={profileSaving}
             className="self-start bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]"
           >
-            {profileSaving ? "Saving…" : "Save Changes"}
+            {profileSaving ? "Salvando…" : "Salvar Alterações"}
           </Button>
         </form>
       </section>
@@ -337,7 +337,7 @@ export function ProfileForm() {
 
       {/* Password change section */}
       <section>
-        <h2 className="mb-4 text-base font-semibold">Change Password</h2>
+        <h2 className="mb-4 text-base font-semibold">Mudar Senha</h2>
         <form onSubmit={handlePasswordSave} noValidate className="flex flex-col gap-4">
           {passwordError && (
             <div
@@ -352,12 +352,12 @@ export function ProfileForm() {
               role="status"
               className="rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-700 dark:text-green-400"
             >
-              Password updated successfully.
+              Senha atualizada com sucesso.
             </div>
           )}
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="currentPassword">Current Password</Label>
+            <Label htmlFor="currentPassword">Senha Atual</Label>
             <Input
               id="currentPassword"
               type="password"
@@ -375,12 +375,12 @@ export function ProfileForm() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="newPassword">New Password</Label>
+            <Label htmlFor="newPassword">Nova Senha</Label>
             <Input
               id="newPassword"
               type="password"
               autoComplete="new-password"
-              placeholder="Min. 8 characters"
+              placeholder="Mín. 8 caracteres"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               aria-invalid={!!passwordFieldErrors.newPassword}
@@ -394,7 +394,7 @@ export function ProfileForm() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
             <Input
               id="confirmPassword"
               type="password"
@@ -417,7 +417,7 @@ export function ProfileForm() {
             disabled={passwordSaving}
             className="self-start bg-[oklch(0.18_0.05_265)] text-white hover:bg-[oklch(0.24_0.06_265)] dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
           >
-            {passwordSaving ? "Updating…" : "Update Password"}
+            {passwordSaving ? "Atualizando…" : "Atualizar Senha"}
           </Button>
         </form>
       </section>
@@ -426,16 +426,16 @@ export function ProfileForm() {
 
       {/* Sound preferences */}
       <section>
-        <h2 className="mb-4 text-base font-semibold">Sound Alerts</h2>
+        <h2 className="mb-4 text-base font-semibold">Alertas Sonoros</h2>
         <div className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
           <div className="flex items-center gap-3">
             <SoundIcon muted={!soundEnabled} className="text-muted-foreground" />
             <div>
               <p className="text-sm font-medium">
-                {soundEnabled ? "Sound Alerts Enabled" : "Sound Alerts Muted"}
+                {soundEnabled ? "Alertas Sonoros Ativados" : "Alertas Sonoros Silenciados"}
               </p>
               <p className="text-xs text-muted-foreground">
-                Controls notification tones for new tickets, bugs, checkpoints, and help requests
+                Controla os sons de notificação para novos chamados, bugs, scrolls e pedidos de ajuda
               </p>
             </div>
           </div>
@@ -444,7 +444,7 @@ export function ProfileForm() {
             type="button"
             role="switch"
             aria-checked={soundEnabled}
-            aria-label="Toggle sound alerts"
+            aria-label="Alternar alertas sonoros"
             onClick={toggleSound}
             className={cn(
               "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors",
@@ -462,7 +462,7 @@ export function ProfileForm() {
           </button>
         </div>
         <p className="mt-2 text-xs text-muted-foreground">
-          This preference is stored locally in your browser and applies to this device only.
+          Esta preferência é armazenada localmente em seu navegador e se aplica apenas a este dispositivo.
         </p>
       </section>
     </div>

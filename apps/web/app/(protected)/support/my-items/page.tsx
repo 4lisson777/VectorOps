@@ -6,7 +6,7 @@ import { SeverityBadge } from "@workspace/ui/components/severity-badge"
 import { Badge } from "@workspace/ui/components/badge"
 
 export const metadata = {
-  title: "My Items — ShinobiOps",
+  title: "Meus Itens — ShinobiOps",
 }
 
 const STATUS_ORDER = [

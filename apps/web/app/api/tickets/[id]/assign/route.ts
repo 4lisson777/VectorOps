@@ -30,13 +30,13 @@ export async function POST(
   try {
     body = await request.json()
   } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    return NextResponse.json({ error: "Corpo JSON inválido" }, { status: 400 })
   }
 
   const parsed = assignSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
+      { error: "Falha na validação", details: parsed.error.flatten().fieldErrors },
       { status: 400 }
     )
   }
@@ -46,7 +46,7 @@ export async function POST(
   // DEVELOPER can only self-assign
   if (session.role === "DEVELOPER" && assignedToId !== session.userId) {
     return NextResponse.json(
-      { error: "Developers can only assign tickets to themselves" },
+      { error: "Desenvolvedores só podem atribuir missões a si mesmos" },
       { status: 403 }
     )
   }
@@ -58,12 +58,12 @@ export async function POST(
   })
 
   if (!targetUser) {
-    return NextResponse.json({ error: "Target user not found" }, { status: 404 })
+    return NextResponse.json({ error: "Usuário alvo não encontrado" }, { status: 404 })
   }
 
   if (!["DEVELOPER", "TECH_LEAD"].includes(targetUser.role)) {
     return NextResponse.json(
-      { error: "Tickets can only be assigned to DEVELOPER or TECH_LEAD users" },
+      { error: "Missões só podem ser atribuídas a usuários DEVELOPER ou TECH_LEAD" },
       { status: 422 }
     )
   }
@@ -141,8 +141,8 @@ export async function POST(
     .then((targetUserIds) =>
       createAndEmitNotifications({
         type: "TICKET_ASSIGNED",
-        title: `Ticket Assigned: ${ticket.title}`,
-        body: `${ticket.publicId} has been assigned to you`,
+        title: `Missão Atribuída: ${ticket.title}`,
+        body: `${ticket.publicId} foi atribuída a você`,
         ticketId: ticket.id,
         targetUserIds,
       })

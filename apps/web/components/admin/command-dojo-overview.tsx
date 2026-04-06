@@ -159,7 +159,7 @@ export function CommandDojoOverview({
   async function handleSaveTvConfig() {
     const interval = parseInt(tvInterval, 10)
     if (isNaN(interval) || interval < 10 || interval > 300) {
-      setTvSaveMessage("Interval must be between 10 and 300 seconds.")
+      setTvSaveMessage("O intervalo deve ser entre 10 e 300 segundos.")
       return
     }
     setIsSavingTv(true)
@@ -173,9 +173,9 @@ export function CommandDojoOverview({
       if (!res.ok) throw new Error("Failed to save TV config")
       const data = (await res.json()) as { config: TvConfig }
       setTvConfig(data.config)
-      setTvSaveMessage("Saved successfully.")
+      setTvSaveMessage("Salvo com sucesso.")
     } catch {
-      setTvSaveMessage("Failed to save. Please try again.")
+      setTvSaveMessage("Falha ao salvar. Tente novamente.")
     } finally {
       setIsSavingTv(false)
     }
@@ -195,15 +195,15 @@ export function CommandDojoOverview({
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Command Dojo</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Dojô de Comando</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Team overview and live metrics
+            Visão geral da equipe e métricas em tempo real
           </p>
         </div>
         <div className="flex items-center gap-3">
           <span className="hidden text-xs text-muted-foreground sm:inline">
-            Last updated{" "}
-            {lastUpdated.toLocaleTimeString("en-US", {
+            Atualizado às{" "}
+            {lastUpdated.toLocaleTimeString("pt-BR", {
               hour: "2-digit",
               minute: "2-digit",
             })}
@@ -217,7 +217,7 @@ export function CommandDojoOverview({
             className="gap-2"
           >
             <RefreshIcon spinning={isRefreshing} />
-            Refresh
+            Recarregar
           </Button>
         </div>
       </div>
@@ -237,7 +237,7 @@ export function CommandDojoOverview({
         <Card className="col-span-2 lg:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Open Tickets / Bugs
+              Tickets / Bugs Abertos
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
@@ -249,7 +249,7 @@ export function CommandDojoOverview({
                 <Skeleton className="h-6 w-20" />
               </>
             ) : ticketsBySeverity.length === 0 ? (
-              <span className="text-sm text-muted-foreground italic">No open items</span>
+              <span className="text-sm text-muted-foreground italic">Nenhum item aberto</span>
             ) : (
               <>
                 <span className="text-2xl font-bold tabular-nums">{openTickets}</span>
@@ -270,7 +270,7 @@ export function CommandDojoOverview({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Assigned
+              Atribuídos
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -287,7 +287,7 @@ export function CommandDojoOverview({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Unassigned
+              Não Atribuídos
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -305,7 +305,7 @@ export function CommandDojoOverview({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Avg Resolution (7d)
+              Tempo Méd. Resolução (7d)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -317,7 +317,7 @@ export function CommandDojoOverview({
                 <span className="ml-1 text-sm font-normal text-muted-foreground">h</span>
               </span>
             ) : (
-              <span className="text-sm italic text-muted-foreground">No data</span>
+              <span className="text-sm italic text-muted-foreground">Sem dados</span>
             )}
           </CardContent>
         </Card>
@@ -325,7 +325,7 @@ export function CommandDojoOverview({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium text-muted-foreground">
-              Avg Resolution (30d)
+              Tempo Méd. Resolução (30d)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -337,7 +337,7 @@ export function CommandDojoOverview({
                 <span className="ml-1 text-sm font-normal text-muted-foreground">h</span>
               </span>
             ) : (
-              <span className="text-sm italic text-muted-foreground">No data</span>
+              <span className="text-sm italic text-muted-foreground">Sem dados</span>
             )}
           </CardContent>
         </Card>
@@ -346,7 +346,7 @@ export function CommandDojoOverview({
       {/* Per-developer workload */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Per-Developer Workload</CardTitle>
+          <CardTitle className="text-base">Carga de Trabalho por Desenvolvedor</CardTitle>
         </CardHeader>
         <CardContent>
           {isRefreshing && !stats ? (
@@ -364,7 +364,7 @@ export function CommandDojoOverview({
             </div>
           ) : !stats?.developerWorkload.length ? (
             <p className="py-4 text-center text-sm italic text-muted-foreground">
-              No developers found.
+              Nenhum desenvolvedor encontrado.
             </p>
           ) : (
             <div className="flex flex-col gap-4">
@@ -404,16 +404,16 @@ export function CommandDojoOverview({
       {/* TV Mode settings */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">TV Mode Settings</CardTitle>
+          <CardTitle className="text-base">Configurações do Modo TV</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-4">
             <div>
               <Label htmlFor="tv-enabled" className="font-medium">
-                Enable TV Mode
+                Ativar Modo TV
               </Label>
               <p className="text-xs text-muted-foreground mt-0.5">
-                When disabled, <code>/dev/tv</code> will show a 503 error.
+                Quando desativado, <code>/dev/tv</code> mostrará um erro 503.
               </p>
             </div>
             <Switch
@@ -424,8 +424,8 @@ export function CommandDojoOverview({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="tv-interval">Refresh Interval (seconds)</Label>
-            <p className="text-xs text-muted-foreground">Allowed range: 10 – 300</p>
+            <Label htmlFor="tv-interval">Intervalo de Atualização (segundos)</Label>
+            <p className="text-xs text-muted-foreground">Intervalo permitido: 10 – 300</p>
             <Input
               id="tv-interval"
               type="number"
@@ -441,7 +441,7 @@ export function CommandDojoOverview({
             <p
               className={cn(
                 "text-sm",
-                tvSaveMessage.startsWith("Saved")
+                tvSaveMessage.startsWith("Salvo")
                   ? "text-green-600 dark:text-green-400"
                   : "text-destructive"
               )}
@@ -457,11 +457,11 @@ export function CommandDojoOverview({
               disabled={isSavingTv}
               className="bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]"
             >
-              {isSavingTv ? "Saving…" : "Save TV Settings"}
+              {isSavingTv ? "Salvando…" : "Salvar Configurações da TV"}
             </Button>
             {tvConfig && (
               <Badge variant="outline" className="self-center">
-                Current: {tvConfig.isEnabled ? "Enabled" : "Disabled"},{" "}
+                Atual: {tvConfig.isEnabled ? "Ativado" : "Desativado"},{" "}
                 {tvConfig.refreshInterval}s
               </Badge>
             )}
