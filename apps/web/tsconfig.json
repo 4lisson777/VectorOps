@@ -4,8 +4,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
-      "@workspace/ui/*": ["../../packages/ui/src/*"],
-      "@prisma/client": ["./generated/prisma/client"]
+      "@workspace/ui/*": ["../../packages/ui/src/*"]
     },
     "plugins": [
       {

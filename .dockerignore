@@ -10,6 +10,9 @@ node_modules
 **/.next
 **/out
 
+# Prisma generated client (regenerated during build)
+**/generated
+
 # Persisted data
 data
 **/*.db

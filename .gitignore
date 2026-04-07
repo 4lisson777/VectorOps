@@ -19,6 +19,9 @@ out/
 *.db-wal
 apps/web/prisma/data/
 
+# Prisma generated client (regenerated via prisma generate)
+apps/web/generated/
+
 # OS
 .DS_Store
 Thumbs.db

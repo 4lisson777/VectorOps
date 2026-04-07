@@ -24,8 +24,8 @@ function getRoleHome(role: Role): string {
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
   { value: "SUPPORT_MEMBER", label: "Membro de Suporte" },
   { value: "SUPPORT_LEAD", label: "Líder de Suporte" },
-  { value: "DEVELOPER", label: "Ninja (Desenvolvedor)" },
-  { value: "TECH_LEAD", label: "Jōnin (Tech Lead)" },
+  { value: "DEVELOPER", label: "Desenvolvedor" },
+  { value: "TECH_LEAD", label: "Tech Lead" },
 ]
 
 interface FieldErrors {
@@ -120,7 +120,7 @@ export function RegisterForm() {
           id="name"
           type="text"
           autoComplete="name"
-          placeholder="Ryu Hayabusa"
+          placeholder="João Silva"
           value={name}
           onChange={(e) => setName(e.target.value)}
           aria-invalid={!!fieldErrors.name}
@@ -138,7 +138,7 @@ export function RegisterForm() {
           id="email"
           type="email"
           autoComplete="email"
-          placeholder="ninja@inovar.com"
+          placeholder="email@inovar.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           aria-invalid={!!fieldErrors.email}
@@ -194,7 +194,7 @@ export function RegisterForm() {
       {/* Ninja alias */}
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="ninjaAlias">
-          Ninja Alias{" "}
+          Apelido{" "}
           <span className="text-muted-foreground font-normal">(opcional)</span>
         </Label>
         <Input
@@ -221,17 +221,17 @@ export function RegisterForm() {
           "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
         )}
       >
-        {isPending ? "Entrando para o clã…" : "Entrar para o Clã"}
+        {isPending ? "Criando conta…" : "Criar conta"}
       </Button>
 
       {/* Login link */}
       <p className="text-center text-sm text-muted-foreground">
-        Já é shinobi?{" "}
+        Já tem uma conta?{" "}
         <Link
           href="/login"
           className="font-medium text-[oklch(0.56_0.22_15)] underline-offset-4 hover:underline"
         >
-          Entrar no Dojo
+          Entrar
         </Link>
       </p>
     </form>

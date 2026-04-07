@@ -169,6 +169,8 @@ function getNavItems(role: Role): { primary: NavItem[]; secondary?: NavItem[] } 
       return { primary: adminPrimary, secondary: adminSecondary }
     case "QA":
       return { primary: qaPrimary, secondary: qaSecondary }
+    default:
+      return { primary: supportPrimary, secondary: supportSecondary }
   }
 }
 

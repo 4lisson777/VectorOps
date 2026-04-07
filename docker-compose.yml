@@ -1,18 +1,19 @@
 services:
   web:
+    env_file:
+      - apps/web/.env
+    environment:
+      DATABASE_URL: "file:./prisma/data/shinobiops.db"
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "3005:3000"
-    env_file:
-      - ./apps/web/.env
-    environment:
-      NODE_ENV: production
-      DATABASE_URL: "file:/app/apps/web/prisma/data/shinobiops.db"
     volumes:
-      # Persist SQLite database across container restarts
-      - ./data:/app/apps/web/prisma/data
+      # Named volume so Docker manages directory ownership (avoids permission errors
+      # that occur when a bind-mount directory is created as root on the host while
+      # the container runs as the non-root "node" user).
+      - shinobiops-data:/app/apps/web/prisma/data
     restart: unless-stopped
     healthcheck:
       test:
@@ -24,3 +25,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+
+volumes:
+  shinobiops-data:

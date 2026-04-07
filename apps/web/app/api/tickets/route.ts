@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { Prisma, Severity, TicketStatus, TicketType } from "@prisma/client"
+import { Prisma, Severity, TicketStatus, TicketType } from "@/generated/prisma/client"
 import { db } from "@/lib/db"
 import { requireAuth, requireRole } from "@/lib/auth"
 import { generatePublicId } from "@/lib/ticket-id"

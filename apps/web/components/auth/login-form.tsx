@@ -95,7 +95,7 @@ export function LoginForm() {
           id="email"
           type="email"
           autoComplete="email"
-          placeholder="ninja@inovar.com"
+          placeholder="email@inovar.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           aria-invalid={!!fieldErrors.email}
@@ -135,17 +135,17 @@ export function LoginForm() {
           "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
         )}
       >
-        {isPending ? "Entrando no dojo…" : "Entrar no Dojo"}
+        {isPending ? "Entrando…" : "Entrar"}
       </Button>
 
       {/* Register link */}
       <p className="text-center text-sm text-muted-foreground">
-        Novo shinobi?{" "}
+        Novo usuário?{" "}
         <Link
           href="/register"
           className="font-medium text-[oklch(0.56_0.22_15)] underline-offset-4 hover:underline"
         >
-          Entrar para o clã
+          Criar conta
         </Link>
       </p>
     </form>

@@ -1,7 +1,10 @@
-import { PrismaClient } from "@prisma/client"
+import "dotenv/config"
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3"
+import { PrismaClient } from "../generated/prisma/client"
 import bcrypt from "bcryptjs"
 
-const prisma = new PrismaClient()
+const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL! })
+const prisma = new PrismaClient({ adapter })
 
 // Apply SQLite pragmas before any seeding operations
 async function applyPragmas(): Promise<void> {
@@ -15,38 +18,78 @@ interface SeedUser {
   name: string
   email: string
   password: string
-  role: "TECH_LEAD" | "DEVELOPER" | "SUPPORT_LEAD" | "SUPPORT_MEMBER"
+  role: "TECH_LEAD" | "DEVELOPER" | "SUPPORT_LEAD" | "SUPPORT_MEMBER" | "QA"
   ninjaAlias: string
 }
 
 const SEED_USERS: SeedUser[] = [
+  // Tech Lead (1)
   {
-    name: "Yuki Tanaka",
-    email: "techlead@shinobiops.dev",
+    name: "Alisson Lima",
+    email: "alisson.lima@shinobiops.dev",
     password: "Password123!",
     role: "TECH_LEAD",
     ninjaAlias: "IronJonin",
   },
+  // Developers (4)
   {
-    name: "Ryu Hayabusa",
-    email: "developer@shinobiops.dev",
+    name: "Matheus",
+    email: "matheus@shinobiops.dev",
     password: "Password123!",
     role: "DEVELOPER",
     ninjaAlias: "SilentBlade",
   },
   {
-    name: "Mei Lin",
-    email: "supportlead@shinobiops.dev",
+    name: "Marcos",
+    email: "marcos@shinobiops.dev",
+    password: "Password123!",
+    role: "DEVELOPER",
+    ninjaAlias: "StormKunai",
+  },
+  {
+    name: "Ivson",
+    email: "ivson@shinobiops.dev",
+    password: "Password123!",
+    role: "DEVELOPER",
+    ninjaAlias: "VoidSerpent",
+  },
+  {
+    name: "Guilherme",
+    email: "guilherme@shinobiops.dev",
+    password: "Password123!",
+    role: "DEVELOPER",
+    ninjaAlias: "EmberShuriken",
+  },
+  // Support Lead (1)
+  {
+    name: "Alisson Rosa",
+    email: "alisson.rosa@shinobiops.dev",
     password: "Password123!",
     role: "SUPPORT_LEAD",
     ninjaAlias: "SwiftCrane",
   },
+  // Support Members (2)
   {
-    name: "Kenji Mori",
-    email: "support@shinobiops.dev",
+    name: "Bruno Carvalho",
+    email: "bruno@shinobiops.dev",
     password: "Password123!",
     role: "SUPPORT_MEMBER",
-    ninjaAlias: "GhostFox",
+    ninjaAlias: "CrimsonFang",
+  },
+  {
+    name: "Leticia Duarte",
+    email: "leticia@shinobiops.dev",
+    password: "Password123!",
+    role: "SUPPORT_MEMBER",
+    ninjaAlias: "MistSparrow",
+  },
+  // QA (1)
+  {
+    name: "Nicoli",
+    email: "nicoli@shinobiops.dev",
+    password: "Password123!",
+    role: "QA",
+    ninjaAlias: "ShadowSeal",
   },
 ]
 

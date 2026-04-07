@@ -1,5 +1,5 @@
-import { Severity } from "@prisma/client"
-import { Prisma } from "@prisma/client"
+import { Severity } from "@/generated/prisma/client"
+import { Prisma } from "@/generated/prisma/client"
 
 type TransactionClient = Prisma.TransactionClient
 

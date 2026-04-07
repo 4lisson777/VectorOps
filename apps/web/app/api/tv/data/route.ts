@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { TicketStatus } from "@prisma/client"
+import { TicketStatus } from "@/generated/prisma/client"
 import { db } from "@/lib/db"
 
 const OPEN_STATUSES: TicketStatus[] = [

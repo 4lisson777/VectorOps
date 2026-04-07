@@ -356,7 +356,7 @@ export function Header({ session, avatarUrl, onMenuClick }: HeaderProps) {
             <div className="flex flex-col gap-0.5">
               <span className="font-medium">{session.name}</span>
               <span className="text-xs text-muted-foreground">
-                {session.role.replace(/_/g, " ")}
+                {session.role?.replace(/_/g, " ")}
               </span>
             </div>
           </DropdownMenuLabel>

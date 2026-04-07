@@ -10,6 +10,7 @@
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {
+    "@types/node": "^25.5.2",
     "@workspace/eslint-config": "*",
     "@workspace/typescript-config": "*",
     "prettier": "^3.8.1",

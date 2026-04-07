@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { TicketStatus } from "@prisma/client"
+import { TicketStatus } from "@/generated/prisma/client"
 import { db } from "@/lib/db"
 import { requireAuth, requireRole } from "@/lib/auth"
 import { ticketUpdateSchema } from "@/lib/schemas/ticket-schemas"
