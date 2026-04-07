@@ -6,12 +6,14 @@
 
 const REQUIRED_ENV_VARS = ["SESSION_SECRET", "DATABASE_URL"] as const
 
-for (const key of REQUIRED_ENV_VARS) {
-  if (!process.env[key]) {
-    throw new Error(
-      `Missing required environment variable: ${key}. ` +
-        `Check your .env file or container configuration.`
-    )
+if (process.env.SKIP_ENV_VALIDATION !== "true") {
+  for (const key of REQUIRED_ENV_VARS) {
+    if (!process.env[key]) {
+      throw new Error(
+        `Missing required environment variable: ${key}. ` +
+          `Check your .env file or container configuration.`
+      )
+    }
   }
 }
 

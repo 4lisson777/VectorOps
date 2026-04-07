@@ -41,12 +41,12 @@ const SEVERITY_OPTIONS: {
   label: string
   dot: string
 }[] = [
-  { value: "LOW", label: "Baixa — Faixa Branca", dot: "bg-gray-200 border border-gray-400" },
-  { value: "MEDIUM", label: "Média — Faixa Verde", dot: "bg-green-500" },
-  { value: "HIGH", label: "Alta — Faixa Vermelha", dot: "bg-red-500" },
+  { value: "LOW", label: "Baixa", dot: "bg-gray-200 border border-gray-400" },
+  { value: "MEDIUM", label: "Média", dot: "bg-green-500" },
+  { value: "HIGH", label: "Alta", dot: "bg-red-500" },
   {
     value: "CRITICAL",
-    label: "Crítica — Faixa Preta",
+    label: "Crítica",
     dot: "bg-black dark:bg-gray-800 border border-gray-600",
   },
 ]
@@ -141,22 +141,29 @@ export function BugForm() {
 
     setIsPending(true)
     try {
+      const description = [
+        `Módulo afetado: ${result.data.affectedModule}`,
+        `\nPassos para reproduzir:\n${result.data.stepsToReproduce}`,
+        `\nComportamento esperado:\n${result.data.expectedBehavior}`,
+        `\nComportamento atual:\n${result.data.actualBehavior}`,
+      ].join("\n")
+
       const res = await fetch("/api/tickets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...result.data, type: "BUG" }),
+        body: JSON.stringify({ ...result.data, description, type: "BUG" }),
       })
 
       const data = (await res.json()) as { error?: string }
 
       if (!res.ok) {
         setServerError(
-          data.error ?? "Falha ao enviar relatório de ameaça. Tente novamente."
+          data.error ?? "Falha ao reportar o bug. Tente novamente."
         )
         return
       }
 
-      setSuccessMsg("Relatório de ameaça enviado com sucesso")
+      setSuccessMsg("Bug reportado com sucesso")
       setTimeout(() => router.push("/support/queue"), 800)
     } catch {
       setServerError("Erro de rede. Verifique sua conexão.")
@@ -433,7 +440,7 @@ export function BugForm() {
           "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]"
         )}
       >
-        {isPending ? "Enviando relatório…" : "Enviar Relatório de Ameaça"}
+        {isPending ? "Enviando…" : "Reportar Bug"}
       </Button>
     </form>
   )

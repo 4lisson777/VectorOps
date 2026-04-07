@@ -4,7 +4,7 @@ import { db } from "@/lib/db"
 import { requireAuth, requireRole } from "@/lib/auth"
 import { ticketUpdateSchema } from "@/lib/schemas/ticket-schemas"
 import {
-  createAndEmitNotifications,
+  createAndEmitNotificationsForTargets,
   getNotificationTargets,
 } from "@/lib/notifications"
 import { emitShinobiEvent } from "@/lib/sse-emitter"
@@ -227,14 +227,16 @@ export async function PATCH(
       payload: { ticketId: ticket.id, publicId: ticket.publicId, status },
     })
 
+    // Status-change notifications are always non-persistent (normalUserIds only)
     void getNotificationTargets(notificationType, existing.openedById)
-      .then((targetUserIds) =>
-        createAndEmitNotifications({
+      .then(({ normalUserIds, persistentUserIds }) =>
+        createAndEmitNotificationsForTargets({
           type: notificationType,
           title: `${ticket.type === "BUG" ? "Bug" : "Missão"} ${status === "DONE" ? "Concluída" : status === "CANCELLED" ? "Cancelada" : "Atualizada"}: ${ticket.title}`,
           body: `O status de ${ticket.publicId} mudou para ${status === "DONE" ? "Concluído" : status === "CANCELLED" ? "Cancelado" : status === "IN_PROGRESS" ? "Em Progresso" : status === "WAITING_FOR_INFO" ? "Aguardando" : "Aberto"}.`,
           ticketId: ticket.id,
-          targetUserIds,
+          normalUserIds,
+          persistentUserIds,
         })
       )
       .catch(console.error)

@@ -188,19 +188,22 @@ model ReorderRequest {
 }
 
 model Notification {
-  id        String           @id @default(cuid())
-  userId    String
-  type      NotificationType
-  title     String
-  body      String
-  ticketId  String?
-  isRead    Boolean          @default(false)
-  createdAt DateTime         @default(now())
+  id             String           @id @default(cuid())
+  userId         String
+  type           NotificationType
+  title          String
+  body           String
+  ticketId       String?
+  isRead         Boolean          @default(false)
+  requiresAck    Boolean          @default(false)
+  acknowledgedAt DateTime?
+  createdAt      DateTime         @default(now())
 
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   ticket Ticket? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
 
   @@index([userId, isRead])
+  @@index([userId, requiresAck, acknowledgedAt])
   @@map("notifications")
 }
 

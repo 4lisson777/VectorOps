@@ -3,8 +3,7 @@ set -e
 
 echo "Running database migrations..."
 cd /app/apps/web
-npx prisma migrate deploy
+prisma migrate deploy
 
 echo "Starting ShinobiOps..."
-cd /app
-exec node apps/web/server.js
+exec node /app/apps/web/server.js

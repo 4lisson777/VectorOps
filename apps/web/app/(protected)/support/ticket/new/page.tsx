@@ -1,7 +1,7 @@
 import { TicketForm } from "@/components/tickets/ticket-form"
 
 export const metadata = {
-  title: "Novo Chamado (Missão) — ShinobiOps",
+  title: "Novo Chamado — ShinobiOps",
 }
 
 // Server component — renders the TicketForm client component.

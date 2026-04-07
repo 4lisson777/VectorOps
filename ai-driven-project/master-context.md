@@ -1,7 +1,7 @@
 # Master Context — ShinobiOps
 
 **System Version:** 3.2.0  
-**Last Updated:** 2026-04-06 (Phase 5 tasks audit: 15/16 done; 5.15 pending; Translation complete (5.16); All UI fully PT-BR)  
+**Last Updated:** 2026-04-07 (Persistent Notifications: useBrowserNotifications, usePersistentNotifications, PersistentNotificationBanner, PersistentNotificationManager — fully integrated)  
 **Maintainer:** Alisson (Tech Lead)  
 **Project Type:** Internal Fullstack Web Application (Next.js Monorepo)  
 **Language:** PT-BR (product UI) / EN-US (source code & internal docs)
@@ -24,7 +24,7 @@ ShinobiOps is an internal platform for Inovar Sistemas that unites customer supp
 | CTX-FEAT-001 | Mission Board | `features/mission-board.md` | Feature | 2026-04-06 | Priority queue, ticket cards, reorder flow | CTX-CORE-002, CTX-FEAT-003 |
 | CTX-FEAT-002 | Ninja Board | `features/ninja-board.md` | Feature | 2026-04-06 | Dev team overview, status cards, TV mode — Ninja Board + DeveloperCard implemented; TV mode page exists but TvBoard is a stub | CTX-CORE-002, CTX-INFRA-003 |
 | CTX-FEAT-003 | Ticket Lifecycle | `features/ticket-lifecycle.md` | Feature | 2026-04-06 | Ticket/Bug CRUD, statuses, timeline events | CTX-CORE-002 |
-| CTX-FEAT-004 | Notifications | `features/notifications.md` | Feature | 2026-04-06 | SSE push, sound alerts, notification center — fully implemented; missing: new ticket/bug banner on Ninja Board (3.13) | CTX-INFRA-003, CTX-CORE-002 |
+| CTX-FEAT-004 | Notifications | `features/notifications.md` | Feature | 2026-04-07 | SSE push, sound alerts, notification center — fully implemented; persistent notifications with 30s repeat + browser Notifications API added | CTX-INFRA-003, CTX-CORE-002 |
 | CTX-FEAT-005 | Checkpoints | `features/checkpoints.md` | Feature | 2026-04-06 | Status Scroll system, configurable intervals — Full UI + API implementation; schema migrated | CTX-CORE-002, CTX-FEAT-004 |
 | CTX-FEAT-006 | Smoke Signals | `features/smoke-signals.md` | Feature | 2026-04-06 | Help request system between developers — Full UI + API implementation (including sound triggers) | CTX-CORE-002, CTX-FEAT-004 |
 | CTX-INFRA-001 | Deployment | `infrastructure/deployment.md` | Infrastructure | 2026-04-05 | Docker, docker-compose, production config | CTX-INFRA-002 |

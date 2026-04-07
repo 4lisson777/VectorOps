@@ -166,6 +166,20 @@ Entrypoint: runs `prisma migrate deploy` before starting the server (safe to run
 `lib/env.ts` throws immediately if `SESSION_SECRET` or `DATABASE_URL` are missing.
 Imported as a side-effect in `app/layout.tsx` via `import "@/lib/env"`.
 
+### Persistent Notifications Pattern (feature: 20260407_persistent-notifications)
+
+#### `getNotificationTargets` returns `{ normalUserIds, persistentUserIds }` (not a flat array)
+All callers must destructure and call `createAndEmitNotificationsForTargets` (not `createAndEmitNotifications`).
+Routes that pass `targetUserIds` directly (reorder-requests, help-requests) still use `createAndEmitNotifications` — that's correct.
+
+#### How to acknowledge a notification
+`PATCH /api/notifications/[id]/acknowledge` — no body needed.
+Sets `acknowledgedAt = new Date()`, emits `notification:acknowledged` SSE event.
+Returns 409 if already acked or if `requiresAck` is false.
+
+#### Prisma generate must be run when migration adds new columns to existing models
+The old generated client won't have the new fields. Run `npx prisma generate` (from `apps/web/`) after applying migrations.
+
 ### Gotchas
 - The monorepo uses `"type": "module"` in `apps/web/package.json` — imports use ESM
 - SQLite enums are stored as TEXT in the DB (SQLite has no native enum type)

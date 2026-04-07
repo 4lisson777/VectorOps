@@ -1,26 +1,30 @@
 # Tech Leader -- Short-Term Memory
 
 ## Current Task
-- **Name:** Task 5.16 -- Translate ShinobiOps to Brazilian Portuguese
-- **Plan folder:** `ai-driven-project/prompt-engineering/20260406_pt-br-translation/`
-- **Scope:** Frontend-only
-- **Status:** Plan created, ready for frontend-specialist execution
+- **Name:** Persistent Sound & Browser Notifications for Ticket Assignment
+- **Plan folder:** `ai-driven-project/prompt-engineering/20260407_persistent-notifications/`
+- **Scope:** Full-stack
+- **Status:** COMPLETE (backend + frontend done, QA skipped)
 
 ## Key Decisions
-- Rejected React Context + hook approach from original plan -- does not work in Server Components
-- Adopted simple `t()` utility function imported directly (works in both server and client components)
-- Translation file is a typed TypeScript const object (not JSON) for type safety
-- No locale switcher -- app is permanently Portuguese
-- API responses stay in English
-- 10 stub component files identified and excluded from translation scope
-- Actual translation scope: ~27 real component files + ~19 pages with strings + infrastructure files
-- Date formatting to use pt-BR locale throughout
+- QA and TECH_LEAD receive persistent (repeating) notifications when tickets/bugs are created — not just regular notifications
+- DEV users assigned a ticket receive persistent notifications
+- Regular DEV users still get normal (non-persistent) notifications for new tickets/bugs per existing behavior
+- Two new columns on Notification model: `requiresAck` (Boolean) and `acknowledgedAt` (DateTime?)
+- New SSE event type: `notification:acknowledged` for cross-tab sync
+- New API endpoints: `PATCH /api/notifications/[id]/acknowledge` and `GET /api/notifications/pending`
+- 30-second repeat interval on frontend (shared interval for all pending notifications)
+- Uses existing Web Audio API and adds Chrome Notifications API (no new dependencies)
+- `getNotificationTargets` needs refactoring to return persistent vs. normal user lists
 
 ## Architecture Notes
-- 11 components are Server Components (no "use client"): most are stubs, but ticket-timeline.tsx (225 lines) has real English strings
-- Most pages are Server Components with hardcoded English in headings, descriptions, metadata
-- my-items/page.tsx is a large Server Component page with extensive English strings and en-US date formatting
-- ticket/[publicId]/page.tsx is the most string-heavy page (~50+ translatable strings)
+- Notification center (`notification-center.tsx`) already handles sound via `useSoundAlerts` and subscribes to SSE
+- `lib/notifications.ts` has `getNotificationTargets()` and `createAndEmitNotifications()` — both need modification
+- SSE route already filters `notification:new` by userId — same filter needed for `notification:acknowledged`
+- Ticket creation (`POST /api/tickets`) and assignment (`POST /api/tickets/[id]/assign`) already call `createAndEmitNotifications` — these just need to pass `requiresAck` flag
+- Backend should be done first so frontend can integrate with real endpoints
 
 ## Plan Files
-- Frontend: `ai-driven-project/prompt-engineering/20260406_pt-br-translation/task-request-frontend.md`
+- Backend: `ai-driven-project/prompt-engineering/20260407_persistent-notifications/task-request-backend.md`
+- Frontend: `ai-driven-project/prompt-engineering/20260407_persistent-notifications/task-request-frontend.md`
+- Communication: `.claude/communication/20260407_persistent-notifications.md`

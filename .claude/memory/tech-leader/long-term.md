@@ -32,6 +32,12 @@ Admin component stubs exist returning null: command-dojo-overview, team-manageme
 - Tickets API at /api/tickets already supports search, pagination, and basic filters
 - TV mode page lives under (public) route group for no-auth access
 - Admin layout is transparent pass-through; role guard is in middleware
+- Notification system: `lib/notifications.ts` has `getNotificationTargets()` (role-based targeting) + `createAndEmitNotifications()` (bulk create + SSE emit)
+- SSE route filters events by userId for `notification:new` — any new per-user event types need the same filter
+- Sound alerts use Web Audio API oscillator tones (no audio files); mute stored in localStorage
+- SSE context uses pub/sub pattern via React context; components subscribe via `useSSEContext().subscribe()`
+- Notification center already plays sounds on `notification:new` events based on type-to-tone mapping
+- Ticket creation and assignment APIs already call notification functions fire-and-forget style
 
 ## Context System
 - Master context at ai-driven-project/master-context.md

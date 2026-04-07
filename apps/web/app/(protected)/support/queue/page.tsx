@@ -5,7 +5,7 @@ import { MissionBoard } from "@/components/tickets/mission-board"
 import type { TicketWithRelations } from "@/components/tickets/mission-board"
 
 export const metadata = {
-  title: "Quadro de Missões — ShinobiOps",
+  title: "Fila de Chamados — ShinobiOps",
 }
 
 // Server component — fetches tickets directly via Prisma and passes them to the
@@ -47,9 +47,9 @@ export default async function SupportQueuePage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Quadro de Missões</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Fila de Chamados</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Todas as missões ativas ordenadas por prioridade. Missões canceladas estão ocultas.
+          Todos os chamados ativos, ordenados por prioridade. Cancelados estão ocultos.
         </p>
       </div>
       <MissionBoard

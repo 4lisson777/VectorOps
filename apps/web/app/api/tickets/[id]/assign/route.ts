@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 import { requireRole } from "@/lib/auth"
 import { assignSchema } from "@/lib/schemas/ticket-schemas"
 import {
-  createAndEmitNotifications,
+  createAndEmitNotificationsForTargets,
   getNotificationTargets,
 } from "@/lib/notifications"
 import { emitShinobiEvent } from "@/lib/sse-emitter"
@@ -136,15 +136,16 @@ export async function POST(
     payload: { ticketId: ticket.id, publicId: ticket.publicId, assignedToId },
   })
 
-  // Fire-and-forget: notify the assignee without blocking the response
+  // Fire-and-forget: notify the assignee (persistent) without blocking the response
   void getNotificationTargets("TICKET_ASSIGNED", undefined, assignedToId)
-    .then((targetUserIds) =>
-      createAndEmitNotifications({
+    .then(({ normalUserIds, persistentUserIds }) =>
+      createAndEmitNotificationsForTargets({
         type: "TICKET_ASSIGNED",
         title: `Missão Atribuída: ${ticket.title}`,
         body: `${ticket.publicId} foi atribuída a você`,
         ticketId: ticket.id,
-        targetUserIds,
+        normalUserIds,
+        persistentUserIds,
       })
     )
     .catch(console.error)

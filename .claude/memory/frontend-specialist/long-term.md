@@ -91,6 +91,13 @@
 - `useSoundAlerts` — `apps/web/hooks/use-sound-alerts.ts` (lazy AudioContext, 5 tones A-E)
 - `useNotifications` — `apps/web/hooks/use-notifications.ts` (fetch + SSE + markRead/markAllRead)
 - `NotificationCenter` — `apps/web/components/layout/notification-center.tsx` (Popover + bell badge)
+
+### Implemented Components (Persistent Notifications)
+- `useBrowserNotifications` — `apps/web/hooks/use-browser-notifications.ts` (requestPermission, showNotification, closeNotification; deduplicates by tag)
+- `usePersistentNotifications` — `apps/web/hooks/use-persistent-notifications.ts` (pendingRef pattern for stable interval callback; 30s repeat; SSE subscription; acknowledges via API)
+- `PersistentNotificationBanner` — `apps/web/components/notifications/persistent-notification-banner.tsx` (fixed top-right overlay; individual + "Reconhecer Todas" bulk ack)
+- `PersistentNotificationManager` — `apps/web/components/notifications/persistent-notification-manager.tsx` (thin orchestrator; mounted inside SSEProvider in AppShell)
+- `AppShell` updated to mount PersistentNotificationManager inside SSEProvider
 - `DeveloperCard` + `DevCardData` type — `apps/web/components/dev/developer-card.tsx`
 - `NinjaBoard` — `apps/web/components/dev/ninja-board.tsx`
 - `NotificationRouting` — `apps/web/components/admin/notification-routing.tsx`
@@ -137,6 +144,10 @@
 - GET /api/users/[id]/notifications — get notifyTickets/notifyBugs (TECH_LEAD only)
 - PATCH /api/users/[id]/notifications — set notifyTickets/notifyBugs (TECH_LEAD only)
 
+### API Endpoints (Persistent Notifications) — Called by frontend
+- GET /api/notifications/pending — returns all requiresAck=true && acknowledgedAt=null notifications for current user
+- PATCH /api/notifications/[id]/acknowledge — acknowledges a notification (sets acknowledgedAt); emits SSE `notification:acknowledged` for cross-tab sync
+
 ### API Endpoints (Phase 1)
 - POST /api/auth/login
 - POST /api/auth/register
@@ -152,6 +163,15 @@
 - GET /api/tickets — list tickets (used in server components directly via Prisma instead)
 - PATCH /api/tickets/[id] — update status, severity, deadline
 - POST /api/tickets/[id]/assign — assign ticket to a user ({ assignedToId: string })
+
+### Persistent Notification Patterns
+- `pendingRef` pattern: keep a `useRef` in sync with state via `useEffect` so the `setInterval` callback always sees fresh state without being recreated on every state change
+- `notification:acknowledged` SSE event payload: `{ notificationId: string; userId: string }` — remove matching id from pending queue
+- `notification:new` SSE payload now includes `requiresAck: boolean` and `id` fields
+- Browser Notifications: use `tag` param to replace (not stack) OS-level notification on repeated ticks
+- Close existing notification before re-creating with same tag to force re-alert on macOS
+- Sound tone mapping for persistent: TICKET_CREATED=A, BUG_CREATED=B, TICKET_ASSIGNED=A
+- `PersistentNotificationManager` mounts inside SSEProvider (not outside) so it can call `useSSEContext()`
 
 ### Key Gotchas
 - `radix-ui` package re-exports all primitives — use `import { Avatar } from "radix-ui"` pattern

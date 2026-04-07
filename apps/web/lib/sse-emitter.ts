@@ -8,6 +8,7 @@ export type ShinobiEventType =
   | "ticket:cancelled"
   | "developer:status_changed"
   | "notification:new"
+  | "notification:acknowledged"
   | "help_request:new"
   | "help_request:responded"
   | "checkpoint:prompt"

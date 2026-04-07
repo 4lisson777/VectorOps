@@ -23,9 +23,9 @@ function getRoleHome(role: Role): string {
 
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
   { value: "SUPPORT_MEMBER", label: "Membro de Suporte" },
-  // { value: "SUPPORT_LEAD", label: "Líder de Suporte" },
+  { value: "SUPPORT_LEAD", label: "Líder de Suporte" },
   { value: "DEVELOPER", label: "Ninja (Desenvolvedor)" },
-  // { value: "TECH_LEAD", label: "Jōnin (Tech Lead)" },
+  { value: "TECH_LEAD", label: "Jōnin (Tech Lead)" },
 ]
 
 interface FieldErrors {

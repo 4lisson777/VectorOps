@@ -192,6 +192,8 @@ exports.Prisma.NotificationScalarFieldEnum = {
   body: 'body',
   ticketId: 'ticketId',
   isRead: 'isRead',
+  requiresAck: 'requiresAck',
+  acknowledgedAt: 'acknowledgedAt',
   createdAt: 'createdAt'
 };
 
@@ -245,7 +247,8 @@ exports.Role = exports.$Enums.Role = {
   TECH_LEAD: 'TECH_LEAD',
   DEVELOPER: 'DEVELOPER',
   SUPPORT_LEAD: 'SUPPORT_LEAD',
-  SUPPORT_MEMBER: 'SUPPORT_MEMBER'
+  SUPPORT_MEMBER: 'SUPPORT_MEMBER',
+  QA: 'QA'
 };
 
 exports.DevStatus = exports.$Enums.DevStatus = {

@@ -126,7 +126,7 @@ function ScrollIcon() {
 function getNavItems(role: Role): { primary: NavItem[]; secondary?: NavItem[] } {
   const supportPrimary: NavItem[] = [
     { label: "Início do Suporte", href: "/support", icon: <GridIcon /> },
-    { label: "Painel de Missões", href: "/support/queue", icon: <ListIcon /> },
+    { label: "Fila de Chamados", href: "/support/queue", icon: <ListIcon /> },
     { label: "Meus Itens", href: "/support/my-items", icon: <UserIcon /> },
   ]
   const supportSecondary: NavItem[] = [

@@ -60,9 +60,14 @@ const STATUS_CONFIG: Record<
     className:
       "bg-blue-500/10 text-blue-600 border-blue-500/20 dark:text-blue-400",
   },
+  AWAY: {
+    label: "Ausente",
+    className:
+      "bg-gray-500/10 text-gray-600 border-gray-500/20 dark:text-gray-400",
+  },
 }
 
-const ALL_STATUSES = ["ACTIVE", "IN_CHECKPOINT", "BLOCKED", "HELPING"] as const
+const ALL_STATUSES = ["ACTIVE", "IN_CHECKPOINT", "BLOCKED", "HELPING", "AWAY"] as const
 
 function StatusBadge({
   status,
@@ -191,7 +196,8 @@ export function DeveloperCard({
                         s === "ACTIVE" && "bg-green-500",
                         s === "IN_CHECKPOINT" && "bg-amber-500",
                         s === "BLOCKED" && "bg-red-500",
-                        s === "HELPING" && "bg-blue-500"
+                        s === "HELPING" && "bg-blue-500",
+                        s === "AWAY" && "bg-gray-400"
                       )}
                     />
                     {STATUS_CONFIG[s]?.label}

@@ -4,6 +4,7 @@ import * as React from "react"
 import { Header } from "@/components/layout/header"
 import { Sidebar } from "@/components/layout/sidebar"
 import { SSEProvider } from "@/lib/sse-context"
+import { PersistentNotificationManager } from "@/components/notifications/persistent-notification-manager"
 import type { SessionData } from "@/lib/session"
 import type { Role } from "@/lib/types"
 
@@ -29,6 +30,8 @@ export function AppShell({ session, avatarUrl, children }: AppShellProps) {
 
       {/* Main area — wrapped in SSEProvider so all children share one EventSource */}
       <SSEProvider>
+        {/* Persistent notification overlay — lives inside SSEProvider for SSE access */}
+        <PersistentNotificationManager />
         <div className="flex flex-1 flex-col overflow-hidden">
           <Header
             session={session}

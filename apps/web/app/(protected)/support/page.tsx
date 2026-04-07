@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@workspace/ui/components/button"
 
 export const metadata = {
-  title: "Início do Suporte — ShinobiOps",
+  title: "Suporte — ShinobiOps",
 }
 
 // Support home — action selection screen.
@@ -76,7 +76,7 @@ export default function SupportPage() {
             </svg>
           </div>
           <div>
-            <h2 className="text-base font-semibold">Relatório de Ameaça</h2>
+            <h2 className="text-base font-semibold">Reportar Bug</h2>
             <p className="mt-1 text-xs text-muted-foreground">
               Erros reportados por clientes que parecem ser defeitos no software
             </p>

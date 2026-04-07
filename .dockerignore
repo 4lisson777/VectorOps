@@ -1,0 +1,35 @@
+# Dependencies (reinstalled during build)
+node_modules
+**/node_modules
+
+# Git
+.git
+.gitignore
+
+# Next.js build output
+**/.next
+**/out
+
+# Persisted data
+data
+**/*.db
+**/*.db-wal
+**/*.db-shm
+
+# Environment files (injected at runtime)
+**/.env
+**/.env.*
+
+# Dev / editor files
+.DS_Store
+*.log
+.vscode
+.idea
+
+# Test / CI artifacts
+coverage
+**/__tests__
+**/*.test.ts
+**/*.spec.ts
+playwright-report
+test-results

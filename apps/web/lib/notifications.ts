@@ -3,55 +3,88 @@ import { db } from "@/lib/db"
 import { emitShinobiEvent } from "@/lib/sse-emitter"
 
 /**
- * Resolves which user IDs should receive a notification based on type.
+ * Segments notification recipients into two groups:
+ * - `normalUserIds`: receive a regular (non-persistent) notification
+ * - `persistentUserIds`: receive a persistent notification (`requiresAck: true`)
  *
- * - TICKET_CREATED: active DEVs / TECH_LEADs with notifyTickets = true
- * - BUG_CREATED: active DEVs / TECH_LEADs with notifyBugs = true
- * - TICKET_DONE / TICKET_CANCELLED / TICKET_STATUS_CHANGED: the ticket opener
- * - TICKET_ASSIGNED: the assigned user
- * - HELP_REQUEST_NEW: all active DEVs / TECH_LEADs except the requester
- * - HELP_REQUEST_RESPONDED: the original requester
- * - CHECKPOINT_PROMPT: targeted per-user (pass userId via assignedToId)
+ * Targeting rules:
+ * - TICKET_CREATED / BUG_CREATED:
+ *     * QA + TECH_LEAD with the relevant notify flag → persistent
+ *     * DEVELOPER with the relevant notify flag → normal
+ * - TICKET_ASSIGNED: assigned developer → persistent
+ * - TICKET_DONE / TICKET_CANCELLED / TICKET_STATUS_CHANGED: ticket opener → normal
+ * - HELP_REQUEST_NEW: all active DEVs/TECH_LEADs except requester → normal
+ * - HELP_REQUEST_RESPONDED / CHECKPOINT_PROMPT: targeted user → normal
  */
 export async function getNotificationTargets(
   type: NotificationType,
   ticketOpenedById?: string,
   assignedToId?: string
-): Promise<string[]> {
+): Promise<{ normalUserIds: string[]; persistentUserIds: string[] }> {
   switch (type) {
     case "TICKET_CREATED": {
       const users = await db.user.findMany({
         where: {
-          role: { in: ["DEVELOPER", "TECH_LEAD"] },
+          role: { in: ["DEVELOPER", "TECH_LEAD", "QA"] },
           notifyTickets: true,
           isActive: true,
         },
-        select: { id: true },
+        select: { id: true, role: true },
       })
-      return users.map((u) => u.id)
+      const normalUserIds: string[] = []
+      const persistentUserIds: string[] = []
+      for (const u of users) {
+        if (u.role === "QA" || u.role === "TECH_LEAD") {
+          persistentUserIds.push(u.id)
+        } else {
+          normalUserIds.push(u.id)
+        }
+      }
+      return { normalUserIds, persistentUserIds }
     }
 
     case "BUG_CREATED": {
       const users = await db.user.findMany({
         where: {
-          role: { in: ["DEVELOPER", "TECH_LEAD"] },
+          role: { in: ["DEVELOPER", "TECH_LEAD", "QA"] },
           notifyBugs: true,
           isActive: true,
         },
-        select: { id: true },
+        select: { id: true, role: true },
       })
-      return users.map((u) => u.id)
+      const normalUserIds: string[] = []
+      const persistentUserIds: string[] = []
+      for (const u of users) {
+        if (u.role === "QA" || u.role === "TECH_LEAD") {
+          persistentUserIds.push(u.id)
+        } else {
+          normalUserIds.push(u.id)
+        }
+      }
+      return { normalUserIds, persistentUserIds }
     }
 
     case "TICKET_DONE":
     case "TICKET_CANCELLED":
     case "TICKET_STATUS_CHANGED":
-      return ticketOpenedById ? [ticketOpenedById] : []
+      return {
+        normalUserIds: ticketOpenedById ? [ticketOpenedById] : [],
+        persistentUserIds: [],
+      }
 
     case "TICKET_ASSIGNED":
+      // Assigned developer always gets a persistent notification
+      return {
+        normalUserIds: [],
+        persistentUserIds: assignedToId ? [assignedToId] : [],
+      }
+
     case "HELP_REQUEST_RESPONDED":
     case "CHECKPOINT_PROMPT":
-      return assignedToId ? [assignedToId] : []
+      return {
+        normalUserIds: assignedToId ? [assignedToId] : [],
+        persistentUserIds: [],
+      }
 
     case "HELP_REQUEST_NEW": {
       // All active devs/tech leads except the requester (ticketOpenedById reused as requesterId)
@@ -63,11 +96,14 @@ export async function getNotificationTargets(
         },
         select: { id: true },
       })
-      return users.map((u) => u.id)
+      return {
+        normalUserIds: users.map((u) => u.id),
+        persistentUserIds: [],
+      }
     }
 
     default:
-      return []
+      return { normalUserIds: [], persistentUserIds: [] }
   }
 }
 
@@ -77,11 +113,14 @@ interface CreateNotificationsParams {
   body: string
   ticketId?: string
   targetUserIds: string[]
+  requiresAck?: boolean
 }
 
 /**
  * Bulk-creates Notification rows for all target users and emits an SSE
  * "notification:new" event per recipient so connected clients update in real time.
+ * When `requiresAck` is true, the notification is marked as persistent and the
+ * SSE payload includes `requiresAck: true` so the frontend can start the repeat interval.
  */
 export async function createAndEmitNotifications({
   type,
@@ -89,6 +128,7 @@ export async function createAndEmitNotifications({
   body,
   ticketId,
   targetUserIds,
+  requiresAck = false,
 }: CreateNotificationsParams): Promise<void> {
   if (targetUserIds.length === 0) return
 
@@ -99,13 +139,54 @@ export async function createAndEmitNotifications({
       title,
       body,
       ticketId: ticketId ?? null,
+      requiresAck,
     })),
   })
 
   for (const userId of targetUserIds) {
     emitShinobiEvent({
       type: "notification:new",
-      payload: { userId, type, title, body, ticketId: ticketId ?? null },
+      payload: { userId, type, title, body, ticketId: ticketId ?? null, requiresAck },
     })
   }
+}
+
+/**
+ * Convenience wrapper: creates and emits notifications for both normal and persistent
+ * recipients of a single notification event in one call.
+ * Used by routes that call `getNotificationTargets` (which now returns both groups).
+ */
+export async function createAndEmitNotificationsForTargets({
+  type,
+  title,
+  body,
+  ticketId,
+  normalUserIds,
+  persistentUserIds,
+}: {
+  type: NotificationType
+  title: string
+  body: string
+  ticketId?: string
+  normalUserIds: string[]
+  persistentUserIds: string[]
+}): Promise<void> {
+  await Promise.all([
+    createAndEmitNotifications({
+      type,
+      title,
+      body,
+      ticketId,
+      targetUserIds: normalUserIds,
+      requiresAck: false,
+    }),
+    createAndEmitNotifications({
+      type,
+      title,
+      body,
+      ticketId,
+      targetUserIds: persistentUserIds,
+      requiresAck: true,
+    }),
+  ])
 }

@@ -41,27 +41,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends openssl && rm -
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
+ENV NODE_PATH=/app/node_modules
 
-RUN groupadd --system --gid 1001 nodejs && \
-    useradd --system --uid 1001 --gid nodejs nextjs
+# node:20-slim already has a 'node' user with uid/gid 1000
 
 # Copy standalone output
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/public ./apps/web/public
+COPY --from=builder --chown=node:node /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=node:node /app/apps/web/.next/static ./apps/web/.next/static
+COPY --from=builder --chown=node:node /app/apps/web/public ./apps/web/public
 
 # Copy Prisma schema, migrations, and generated client for runtime migration
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/prisma ./apps/web/prisma
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/generated ./apps/web/generated
-COPY --from=builder --chown=nextjs:nodejs /app/apps/web/node_modules/.prisma ./apps/web/node_modules/.prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.bin/prisma /usr/local/bin/prisma
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder --chown=node:node /app/apps/web/prisma ./apps/web/prisma
+COPY --from=builder --chown=node:node /app/apps/web/generated ./apps/web/generated
+COPY --from=builder --chown=node:node /app/apps/web/node_modules/.prisma ./apps/web/node_modules/.prisma
+COPY --from=builder --chown=node:node /app/node_modules/.bin/prisma /usr/local/bin/prisma
+COPY --from=builder --chown=node:node /app/node_modules/@prisma ./node_modules/@prisma
 
 # Copy entrypoint
-COPY --chown=nextjs:nodejs entrypoint.sh /app/entrypoint.sh
+COPY --chown=node:node entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-USER nextjs
+USER node
 
 EXPOSE 3000
 

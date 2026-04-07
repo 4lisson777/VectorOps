@@ -33,10 +33,10 @@ const SEVERITY_OPTIONS: {
   label: string
   dot: string
 }[] = [
-  { value: "LOW", label: "Baixa — Faixa Branca", dot: "bg-gray-200 border border-gray-400" },
-  { value: "MEDIUM", label: "Média — Faixa Verde", dot: "bg-green-500" },
-  { value: "HIGH", label: "Alta — Faixa Vermelha", dot: "bg-red-500" },
-  { value: "CRITICAL", label: "Crítica — Faixa Preta", dot: "bg-black dark:bg-gray-800 border border-gray-600" },
+  { value: "LOW", label: "Baixa", dot: "bg-gray-200 border border-gray-400" },
+  { value: "MEDIUM", label: "Média", dot: "bg-green-500" },
+  { value: "HIGH", label: "Alta", dot: "bg-red-500" },
+  { value: "CRITICAL", label: "Crítica", dot: "bg-black dark:bg-gray-800 border border-gray-600" },
 ]
 
 export function TicketForm() {
@@ -78,16 +78,17 @@ export function TicketForm() {
         body: JSON.stringify({ ...result.data, type: "TICKET" }),
       })
 
-      const data = (await res.json()) as { error?: string }
+      const data = (await res.json()) as { ticket?: { publicId: string }; error?: string }
 
       if (!res.ok) {
         setServerError(data.error ?? "Falha ao criar o chamado. Tente novamente.")
         return
       }
 
-      setSuccessMsg("Missão criada com sucesso")
+      setSuccessMsg("Chamado criado com sucesso")
       // Brief delay so the user sees the success message before redirect
-      setTimeout(() => router.push("/support/queue"), 800)
+      const publicId = data.ticket?.publicId
+      setTimeout(() => router.push(publicId ? `/ticket/${publicId}` : "/support/queue"), 800)
     } catch {
       setServerError("Erro de rede. Verifique sua conexão.")
     } finally {
@@ -224,7 +225,7 @@ export function TicketForm() {
           "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
         )}
       >
-        {isPending ? "Enviando missão…" : "Enviar Missão"}
+        {isPending ? "Enviando chamado…" : "Enviar Chamado"}
       </Button>
     </form>
   )

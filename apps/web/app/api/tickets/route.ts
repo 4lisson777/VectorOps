@@ -11,7 +11,7 @@ import {
   ticketFilterSchema,
 } from "@/lib/schemas/ticket-schemas"
 import {
-  createAndEmitNotifications,
+  createAndEmitNotificationsForTargets,
   getNotificationTargets,
 } from "@/lib/notifications"
 import { emitShinobiEvent } from "@/lib/sse-emitter"
@@ -195,18 +195,27 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     payload: { ticketId: ticket.id, publicId: ticket.publicId, type: ticket.type },
   })
 
-  // Fire-and-forget: emit per-user notifications without blocking the response
+  // Fire-and-forget: emit per-user notifications without blocking the response.
+  // QA and TECH_LEAD users receive persistent notifications (requiresAck: true);
+  // DEVELOPER users receive normal notifications.
   const notificationType = isBug ? "BUG_CREATED" : "TICKET_CREATED"
+  const severityLabel =
+    ticket.severity === "LOW"
+      ? "Baixa"
+      : ticket.severity === "MEDIUM"
+        ? "Média"
+        : ticket.severity === "HIGH"
+          ? "Alta"
+          : "Crítica"
   void getNotificationTargets(notificationType)
-    .then((targetUserIds) =>
-      createAndEmitNotifications({
+    .then(({ normalUserIds, persistentUserIds }) =>
+      createAndEmitNotificationsForTargets({
         type: notificationType,
-        title: isBug
-          ? `Novo Bug: ${ticket.title}`
-          : `Nova Missão: ${ticket.title}`,
-        body: `${ticket.publicId} — Severidade ${ticket.severity === "LOW" ? "Baixa" : ticket.severity === "MEDIUM" ? "Média" : ticket.severity === "HIGH" ? "Alta" : "Crítica"}`,
+        title: isBug ? `Novo Bug: ${ticket.title}` : `Nova Missão: ${ticket.title}`,
+        body: `${ticket.publicId} — Severidade ${severityLabel}`,
         ticketId: ticket.id,
-        targetUserIds,
+        normalUserIds,
+        persistentUserIds,
       })
     )
     .catch(console.error)

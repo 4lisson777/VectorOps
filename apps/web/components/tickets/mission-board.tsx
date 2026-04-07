@@ -191,7 +191,7 @@ export function MissionBoard({
           onChange={(e) => setSearch(e.target.value)}
           className="sm:max-w-xs"
         />
-          {filtered.length} de {initialTickets.length} missões
+          {filtered.length} de {initialTickets.length} {mode === "support" ? "chamados" : "missões"}
       </div>
 
       {/* Filters */}
@@ -275,7 +275,7 @@ export function MissionBoard({
       <div className="flex flex-col gap-2">
         {filtered.length === 0 ? (
           <div className="rounded-lg border border-dashed border-border py-12 text-center text-sm text-muted-foreground">
-            Nenhuma missão corresponde aos filtros atuais.
+            {mode === "support" ? "Nenhum chamado corresponde aos filtros atuais." : "Nenhuma missão corresponde aos filtros atuais."}
           </div>
         ) : (
           filtered.map((ticket) => (

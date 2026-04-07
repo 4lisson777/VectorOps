@@ -282,36 +282,15 @@ export function TeamManagement() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell>
-                    <Skeleton className="size-9 rounded-full" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-28" />
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    <Skeleton className="h-4 w-40" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-8 w-36" />
-                  </TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    <Skeleton className="h-4 w-20" />
-                  </TableCell>
-                  <TableCell className="hidden lg:table-cell">
-                    <Skeleton className="h-4 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-6 w-12 rounded-full" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-8 w-20" />
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : users.length === 0 ? (
+            {(() => {
+            const filteredUsers = search
+              ? users.filter(
+                  (u) =>
+                    u.name.toLowerCase().includes(search.toLowerCase()) ||
+                    u.email.toLowerCase().includes(search.toLowerCase())
+                )
+              : users
+            return isLoading ? null : filteredUsers.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={8}
@@ -321,7 +300,7 @@ export function TeamManagement() {
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user) => (
+              filteredUsers.map((user) => (
                 <TableRow key={user.id}>
                   {/* Avatar */}
                   <TableCell>
@@ -423,7 +402,36 @@ export function TeamManagement() {
                   </TableCell>
                 </TableRow>
               ))
-            )}
+            )
+          })()}
+          {isLoading && Array.from({ length: 5 }).map((_, i) => (
+            <TableRow key={i}>
+              <TableCell>
+                <Skeleton className="size-9 rounded-full" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-4 w-28" />
+              </TableCell>
+              <TableCell className="hidden md:table-cell">
+                <Skeleton className="h-4 w-40" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-8 w-36" />
+              </TableCell>
+              <TableCell className="hidden sm:table-cell">
+                <Skeleton className="h-4 w-20" />
+              </TableCell>
+              <TableCell className="hidden lg:table-cell">
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-6 w-12 rounded-full" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-8 w-20" />
+              </TableCell>
+            </TableRow>
+          ))}
           </TableBody>
         </Table>
       </div>

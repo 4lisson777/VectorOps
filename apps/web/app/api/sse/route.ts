@@ -26,9 +26,10 @@ export async function GET(): Promise<Response> {
       }, 25_000)
 
       function onEvent(event: ShinobiEvent) {
-        // notification:new → only forward to the intended recipient
+        // notification:new / notification:acknowledged → only forward to the intended recipient
         if (
-          event.type === "notification:new" &&
+          (event.type === "notification:new" ||
+            event.type === "notification:acknowledged") &&
           event.payload.userId !== userId
         ) {
           return

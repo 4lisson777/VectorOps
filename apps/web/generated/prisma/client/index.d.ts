@@ -77,7 +77,8 @@ export namespace $Enums {
   TECH_LEAD: 'TECH_LEAD',
   DEVELOPER: 'DEVELOPER',
   SUPPORT_LEAD: 'SUPPORT_LEAD',
-  SUPPORT_MEMBER: 'SUPPORT_MEMBER'
+  SUPPORT_MEMBER: 'SUPPORT_MEMBER',
+  QA: 'QA'
 };
 
 export type Role = (typeof Role)[keyof typeof Role]
@@ -8258,6 +8259,8 @@ export namespace Prisma {
     body: string | null
     ticketId: string | null
     isRead: boolean | null
+    requiresAck: boolean | null
+    acknowledgedAt: Date | null
     createdAt: Date | null
   }
 
@@ -8269,6 +8272,8 @@ export namespace Prisma {
     body: string | null
     ticketId: string | null
     isRead: boolean | null
+    requiresAck: boolean | null
+    acknowledgedAt: Date | null
     createdAt: Date | null
   }
 
@@ -8280,6 +8285,8 @@ export namespace Prisma {
     body: number
     ticketId: number
     isRead: number
+    requiresAck: number
+    acknowledgedAt: number
     createdAt: number
     _all: number
   }
@@ -8293,6 +8300,8 @@ export namespace Prisma {
     body?: true
     ticketId?: true
     isRead?: true
+    requiresAck?: true
+    acknowledgedAt?: true
     createdAt?: true
   }
 
@@ -8304,6 +8313,8 @@ export namespace Prisma {
     body?: true
     ticketId?: true
     isRead?: true
+    requiresAck?: true
+    acknowledgedAt?: true
     createdAt?: true
   }
 
@@ -8315,6 +8326,8 @@ export namespace Prisma {
     body?: true
     ticketId?: true
     isRead?: true
+    requiresAck?: true
+    acknowledgedAt?: true
     createdAt?: true
     _all?: true
   }
@@ -8399,6 +8412,8 @@ export namespace Prisma {
     body: string
     ticketId: string | null
     isRead: boolean
+    requiresAck: boolean
+    acknowledgedAt: Date | null
     createdAt: Date
     _count: NotificationCountAggregateOutputType | null
     _min: NotificationMinAggregateOutputType | null
@@ -8427,6 +8442,8 @@ export namespace Prisma {
     body?: boolean
     ticketId?: boolean
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     ticket?: boolean | Notification$ticketArgs<ExtArgs>
@@ -8440,6 +8457,8 @@ export namespace Prisma {
     body?: boolean
     ticketId?: boolean
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     ticket?: boolean | Notification$ticketArgs<ExtArgs>
@@ -8453,6 +8472,8 @@ export namespace Prisma {
     body?: boolean
     ticketId?: boolean
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: boolean
     createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     ticket?: boolean | Notification$ticketArgs<ExtArgs>
@@ -8466,10 +8487,12 @@ export namespace Prisma {
     body?: boolean
     ticketId?: boolean
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: boolean
     createdAt?: boolean
   }
 
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "title" | "body" | "ticketId" | "isRead" | "createdAt", ExtArgs["result"]["notification"]>
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "title" | "body" | "ticketId" | "isRead" | "requiresAck" | "acknowledgedAt" | "createdAt", ExtArgs["result"]["notification"]>
   export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     ticket?: boolean | Notification$ticketArgs<ExtArgs>
@@ -8497,6 +8520,8 @@ export namespace Prisma {
       body: string
       ticketId: string | null
       isRead: boolean
+      requiresAck: boolean
+      acknowledgedAt: Date | null
       createdAt: Date
     }, ExtArgs["result"]["notification"]>
     composites: {}
@@ -8930,6 +8955,8 @@ export namespace Prisma {
     readonly body: FieldRef<"Notification", 'String'>
     readonly ticketId: FieldRef<"Notification", 'String'>
     readonly isRead: FieldRef<"Notification", 'Boolean'>
+    readonly requiresAck: FieldRef<"Notification", 'Boolean'>
+    readonly acknowledgedAt: FieldRef<"Notification", 'DateTime'>
     readonly createdAt: FieldRef<"Notification", 'DateTime'>
   }
     
@@ -14714,6 +14741,8 @@ export namespace Prisma {
     body: 'body',
     ticketId: 'ticketId',
     isRead: 'isRead',
+    requiresAck: 'requiresAck',
+    acknowledgedAt: 'acknowledgedAt',
     createdAt: 'createdAt'
   };
 
@@ -15367,6 +15396,8 @@ export namespace Prisma {
     body?: StringFilter<"Notification"> | string
     ticketId?: StringNullableFilter<"Notification"> | string | null
     isRead?: BoolFilter<"Notification"> | boolean
+    requiresAck?: BoolFilter<"Notification"> | boolean
+    acknowledgedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     ticket?: XOR<TicketNullableScalarRelationFilter, TicketWhereInput> | null
@@ -15380,6 +15411,8 @@ export namespace Prisma {
     body?: SortOrder
     ticketId?: SortOrderInput | SortOrder
     isRead?: SortOrder
+    requiresAck?: SortOrder
+    acknowledgedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
     ticket?: TicketOrderByWithRelationInput
@@ -15396,6 +15429,8 @@ export namespace Prisma {
     body?: StringFilter<"Notification"> | string
     ticketId?: StringNullableFilter<"Notification"> | string | null
     isRead?: BoolFilter<"Notification"> | boolean
+    requiresAck?: BoolFilter<"Notification"> | boolean
+    acknowledgedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     ticket?: XOR<TicketNullableScalarRelationFilter, TicketWhereInput> | null
@@ -15409,6 +15444,8 @@ export namespace Prisma {
     body?: SortOrder
     ticketId?: SortOrderInput | SortOrder
     isRead?: SortOrder
+    requiresAck?: SortOrder
+    acknowledgedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     _count?: NotificationCountOrderByAggregateInput
     _max?: NotificationMaxOrderByAggregateInput
@@ -15426,6 +15463,8 @@ export namespace Prisma {
     body?: StringWithAggregatesFilter<"Notification"> | string
     ticketId?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     isRead?: BoolWithAggregatesFilter<"Notification"> | boolean
+    requiresAck?: BoolWithAggregatesFilter<"Notification"> | boolean
+    acknowledgedAt?: DateTimeNullableWithAggregatesFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
   }
 
@@ -16212,6 +16251,8 @@ export namespace Prisma {
     title: string
     body: string
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: Date | string | null
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutNotificationsInput
     ticket?: TicketCreateNestedOneWithoutNotificationsInput
@@ -16225,6 +16266,8 @@ export namespace Prisma {
     body: string
     ticketId?: string | null
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -16234,6 +16277,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    requiresAck?: BoolFieldUpdateOperationsInput | boolean
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
     ticket?: TicketUpdateOneWithoutNotificationsNestedInput
@@ -16247,6 +16292,8 @@ export namespace Prisma {
     body?: StringFieldUpdateOperationsInput | string
     ticketId?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    requiresAck?: BoolFieldUpdateOperationsInput | boolean
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -16258,6 +16305,8 @@ export namespace Prisma {
     body: string
     ticketId?: string | null
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -16267,6 +16316,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    requiresAck?: BoolFieldUpdateOperationsInput | boolean
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -16278,6 +16329,8 @@ export namespace Prisma {
     body?: StringFieldUpdateOperationsInput | string
     ticketId?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    requiresAck?: BoolFieldUpdateOperationsInput | boolean
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -17160,6 +17213,8 @@ export namespace Prisma {
     body?: SortOrder
     ticketId?: SortOrder
     isRead?: SortOrder
+    requiresAck?: SortOrder
+    acknowledgedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -17171,6 +17226,8 @@ export namespace Prisma {
     body?: SortOrder
     ticketId?: SortOrder
     isRead?: SortOrder
+    requiresAck?: SortOrder
+    acknowledgedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -17182,6 +17239,8 @@ export namespace Prisma {
     body?: SortOrder
     ticketId?: SortOrder
     isRead?: SortOrder
+    requiresAck?: SortOrder
+    acknowledgedAt?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -18689,6 +18748,8 @@ export namespace Prisma {
     title: string
     body: string
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: Date | string | null
     createdAt?: Date | string
     ticket?: TicketCreateNestedOneWithoutNotificationsInput
   }
@@ -18700,6 +18761,8 @@ export namespace Prisma {
     body: string
     ticketId?: string | null
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -18935,6 +18998,8 @@ export namespace Prisma {
     body?: StringFilter<"Notification"> | string
     ticketId?: StringNullableFilter<"Notification"> | string | null
     isRead?: BoolFilter<"Notification"> | boolean
+    requiresAck?: BoolFilter<"Notification"> | boolean
+    acknowledgedAt?: DateTimeNullableFilter<"Notification"> | Date | string | null
     createdAt?: DateTimeFilter<"Notification"> | Date | string
   }
 
@@ -19219,6 +19284,8 @@ export namespace Prisma {
     title: string
     body: string
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: Date | string | null
     createdAt?: Date | string
     user: UserCreateNestedOneWithoutNotificationsInput
   }
@@ -19230,6 +19297,8 @@ export namespace Prisma {
     title: string
     body: string
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -20821,6 +20890,8 @@ export namespace Prisma {
     body: string
     ticketId?: string | null
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -21052,6 +21123,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    requiresAck?: BoolFieldUpdateOperationsInput | boolean
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     ticket?: TicketUpdateOneWithoutNotificationsNestedInput
   }
@@ -21063,6 +21136,8 @@ export namespace Prisma {
     body?: StringFieldUpdateOperationsInput | string
     ticketId?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    requiresAck?: BoolFieldUpdateOperationsInput | boolean
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21073,6 +21148,8 @@ export namespace Prisma {
     body?: StringFieldUpdateOperationsInput | string
     ticketId?: NullableStringFieldUpdateOperationsInput | string | null
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    requiresAck?: BoolFieldUpdateOperationsInput | boolean
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21164,6 +21241,8 @@ export namespace Prisma {
     title: string
     body: string
     isRead?: boolean
+    requiresAck?: boolean
+    acknowledgedAt?: Date | string | null
     createdAt?: Date | string
   }
 
@@ -21230,6 +21309,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    requiresAck?: BoolFieldUpdateOperationsInput | boolean
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutNotificationsNestedInput
   }
@@ -21241,6 +21322,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    requiresAck?: BoolFieldUpdateOperationsInput | boolean
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -21251,6 +21334,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     body?: StringFieldUpdateOperationsInput | string
     isRead?: BoolFieldUpdateOperationsInput | boolean
+    requiresAck?: BoolFieldUpdateOperationsInput | boolean
+    acknowledgedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

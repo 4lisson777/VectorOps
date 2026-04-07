@@ -4,7 +4,7 @@ import { db } from "@/lib/db"
 import { requireRole } from "@/lib/auth"
 import { emitShinobiEvent } from "@/lib/sse-emitter"
 
-const devStatusValues = ["ACTIVE", "IN_CHECKPOINT", "BLOCKED", "HELPING"] as const
+const devStatusValues = ["ACTIVE", "IN_CHECKPOINT", "BLOCKED", "HELPING", "AWAY"] as const
 
 const statusSchema = z.object({
   devStatus: z.enum(devStatusValues).optional(),

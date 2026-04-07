@@ -28,6 +28,31 @@ function parseMetadata(raw: string): Record<string, string> {
   }
 }
 
+const STATUS_LABELS: Record<string, string> = {
+  OPEN: "Aberto",
+  IN_PROGRESS: "Em Progresso",
+  WAITING_FOR_INFO: "Aguardando Info",
+  DONE: "Concluído",
+  CANCELLED: "Cancelado",
+}
+
+const SEVERITY_LABELS: Record<string, string> = {
+  LOW: "Baixa",
+  MEDIUM: "Média",
+  HIGH: "Alta",
+  CRITICAL: "Crítica",
+}
+
+function translateStatus(val: string | undefined): string {
+  if (!val) return "?"
+  return STATUS_LABELS[val] ?? val
+}
+
+function translateSeverity(val: string | undefined): string {
+  if (!val) return "?"
+  return SEVERITY_LABELS[val] ?? val
+}
+
 function getEventLabel(
   eventType: string,
   actorName: string,
@@ -37,13 +62,13 @@ function getEventLabel(
     case "CREATED":
       return `Aberto por ${actorName}`
     case "STATUS_CHANGED":
-      return `Status alterado de ${meta.from ?? "?"} para ${meta.to ?? "?"} por ${actorName}`
+      return `Status alterado de ${translateStatus(meta.oldStatus ?? meta.from)} para ${translateStatus(meta.newStatus ?? meta.to)} por ${actorName}`
     case "ASSIGNED":
       return `Atribuído a ${meta.assigneeName ?? meta.assigneeId ?? "alguém"} por ${actorName}`
     case "REASSIGNED":
       return `Reatribuído de ${meta.fromName ?? meta.fromId ?? "?"} para ${meta.toName ?? meta.toId ?? "?"} por ${actorName}`
     case "SEVERITY_CHANGED":
-      return `Severidade alterada de ${meta.from ?? "?"} para ${meta.to ?? "?"} por ${actorName}`
+      return `Severidade alterada de ${translateSeverity(meta.oldSeverity ?? meta.from)} para ${translateSeverity(meta.newSeverity ?? meta.to)} por ${actorName}`
     case "DEADLINE_CHANGED":
       return `Prazo atualizado por ${actorName}`
     case "PRIORITY_REORDERED":
