@@ -268,11 +268,9 @@ export function NinjaBoard({
         <div
           className="flex items-center justify-between rounded border px-4 py-2.5 text-sm font-medium"
           style={{
-            backgroundColor: newArrival.type === "BUG" ? "var(--st-blocked-bg)" : "var(--st-sampling-bg)",
-            color: newArrival.type === "BUG" ? "var(--st-blocked)" : "var(--st-sampling)",
-            borderColor: newArrival.type === "BUG"
-              ? "color-mix(in oklab, var(--st-blocked) 30%, transparent)"
-              : "color-mix(in oklab, var(--st-sampling) 30%, transparent)",
+            borderColor: "color-mix(in oklab, var(--warning) 45%, transparent)",
+            backgroundColor: "color-mix(in oklab, var(--warning) 10%, transparent)",
+            color: "color-mix(in oklab, var(--warning) 60%, var(--foreground))",
           }}
         >
           <span>
@@ -297,15 +295,16 @@ export function NinjaBoard({
         <div
           className="flex items-start justify-between gap-4 rounded border px-4 py-3 text-sm"
           style={{
-            backgroundColor: "var(--st-resonating-bg)",
-            borderColor: "color-mix(in oklab, var(--st-resonating) 30%, transparent)",
+            borderColor: "color-mix(in oklab, var(--flux) 50%, transparent)",
+            backgroundColor: "color-mix(in oklab, var(--flux) 10%, transparent)",
+            color: "color-mix(in oklab, var(--flux) 60%, var(--foreground))",
           }}
         >
           <div className="flex flex-col gap-0.5">
-            <span className="font-semibold" style={{ color: "var(--st-resonating)" }}>
+            <span className="font-semibold">
               Pedido de Ajuda — {incomingHelp.requesterAlias}
             </span>
-            <span className="text-muted-foreground">{incomingHelp.contextMessage}</span>
+            <span className="opacity-80">{incomingHelp.contextMessage}</span>
           </div>
           <div className="flex shrink-0 gap-2">
             <button
@@ -351,17 +350,17 @@ export function NinjaBoard({
 
       {/* Stats bar */}
       <div className="flex flex-wrap gap-3">
-        <StatPill label="Ativos" count={activeCount} tokenColor="--st-coupled" />
+        <StatPill label="Ativos" count={activeCount} />
         {blockedCount > 0 && (
-          <StatPill label="Bloqueados" count={blockedCount} tokenColor="--st-blocked" />
+          <StatPill label="Bloqueados" count={blockedCount} />
         )}
         {inCheckpointCount > 0 && (
-          <StatPill label="Em Atualização" count={inCheckpointCount} tokenColor="--st-sampling" />
+          <StatPill label="Em Atualização" count={inCheckpointCount} />
         )}
         {helpingCount > 0 && (
-          <StatPill label="Ajudando" count={helpingCount} tokenColor="--st-resonating" />
+          <StatPill label="Ajudando" count={helpingCount} />
         )}
-        <StatPill label="Total" count={devs.length} tokenColor="--muted-foreground" />
+        <StatPill label="Total" count={devs.length} />
       </div>
 
       {/* Developer grid */}
@@ -400,28 +399,11 @@ export function NinjaBoard({
   )
 }
 
-function StatPill({
-  label,
-  count,
-  tokenColor,
-}: {
-  label: string
-  count: number
-  tokenColor: string
-}) {
+function StatPill({ label, count }: { label: string; count: number }) {
   return (
-    <div
-      className="flex items-center gap-1.5 rounded border px-3 py-1 text-xs font-medium"
-      style={{
-        backgroundColor: tokenColor === "--muted-foreground"
-          ? "color-mix(in oklab, var(--muted-foreground) 10%, transparent)"
-          : `color-mix(in oklab, var(${tokenColor}) 10%, transparent)`,
-        color: `var(${tokenColor})`,
-        borderColor: `color-mix(in oklab, var(${tokenColor}) 20%, transparent)`,
-      }}
-    >
-      <span className="font-mono tabular-nums">{count}</span>
-      <span>{label}</span>
+    <div className="flex items-baseline gap-1.5 rounded border border-border bg-card px-3 py-1.5 text-[11px] uppercase tracking-[0.06em] text-muted-foreground">
+      <span className="font-mono text-[15px] font-bold tracking-normal text-foreground normal-case">{count}</span>
+      {label}
     </div>
   )
 }

@@ -74,7 +74,7 @@ export function TicketCard({
   const isUnassigned = !ticket.assignedToId
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-xs transition-shadow hover:shadow-sm sm:flex-row sm:items-center sm:gap-4">
+    <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4 shadow-xs hover:border-[color-mix(in_oklab,var(--ring)_40%,var(--border))] transition-colors sm:flex-row sm:items-center sm:gap-4">
       {/* Left: severity + publicId + title */}
       <div className="flex flex-1 flex-col gap-1.5 min-w-0">
         <div className="flex flex-wrap items-center gap-2">
@@ -128,7 +128,7 @@ export function TicketCard({
           <span
             className={cn(
               "font-medium",
-              isPastDue ? "text-destructive" : "text-muted-foreground"
+              isPastDue ? "text-[var(--warning)]" : "text-muted-foreground"
             )}
           >
             Prazo{" "}

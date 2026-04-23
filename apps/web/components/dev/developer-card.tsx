@@ -106,7 +106,13 @@ function StatusBadge({
       )}
       style={config.style}
     >
-      <span className={cn("size-1.5 rounded-full shrink-0", config.dot)} style={{ backgroundColor: "currentColor" }} />
+      <span
+        className={cn("size-1.5 rounded-full shrink-0", config.dot)}
+        style={{
+          backgroundColor: "currentColor",
+          ...(key === "HELPING" ? { boxShadow: "0 0 0 3px color-mix(in oklab, currentColor 25%, transparent)" } : {})
+        }}
+      />
       {config.label}
     </span>
   )
@@ -170,13 +176,21 @@ export function DeveloperCard({
   }
 
   return (
-    <Card className="flex flex-col gap-4 p-5">
+    <Card
+      className={cn("flex flex-col gap-4 p-5", isCurrentUser && "ring-1 ring-ring")}
+      style={isCurrentUser ? { boxShadow: "var(--shadow-plasma)" } : undefined}
+    >
       <CardContent className="flex flex-col gap-4 p-0">
         {/* Avatar + name + alias */}
         <div className="flex items-center gap-3">
           <UserAvatar name={dev.name} avatarUrl={dev.avatarUrl} size="md" />
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold">{dev.name}</p>
+            <p className="truncate text-sm font-semibold">
+              {dev.name}
+              {isCurrentUser && (
+                <span style={{ fontSize: 10, color: "var(--flux)", marginLeft: 4 }}>(você)</span>
+              )}
+            </p>
             <p className="truncate text-xs text-muted-foreground">
               {dev.ninjaAlias}
             </p>
@@ -253,28 +267,18 @@ export function DeveloperCard({
                 type="button"
                 onClick={handleEditStart}
                 disabled={isSavingTask}
-                className="w-full rounded px-2 py-1 text-left text-xs hover:bg-muted/60"
+                className="w-full text-left"
                 aria-label="Clique para editar a tarefa atual"
               >
-                {dev.currentTask ? (
-                  <span className="text-foreground">{dev.currentTask}</span>
-                ) : (
-                  <span className="italic text-muted-foreground">
-                    Sem tarefa atual
-                  </span>
-                )}
+                <div className="rounded px-2.5 py-2 text-xs leading-[1.45] min-h-[36px] font-sans" style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}>
+                  {dev.currentTask ?? <span className="italic">Sem tarefa atual</span>}
+                </div>
               </button>
             )
           ) : (
-            <p className="px-2 text-xs">
-              {dev.currentTask ? (
-                dev.currentTask
-              ) : (
-                <span className="italic text-muted-foreground">
-                  Sem tarefa atual
-                </span>
-              )}
-            </p>
+            <div className="rounded px-2.5 py-2 text-xs leading-[1.45] min-h-[36px] font-sans" style={{ background: "var(--muted)", color: "var(--muted-foreground)" }}>
+              {dev.currentTask ?? <span className="italic">Sem tarefa atual</span>}
+            </div>
           )}
         </div>
 
@@ -284,24 +288,22 @@ export function DeveloperCard({
             Ticket Atribuído
           </p>
           {dev.assignedTicket ? (
-            <div className="flex flex-col gap-1 rounded-md border border-border bg-muted/30 px-3 py-2">
-              <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-medium text-foreground">
-                  {dev.assignedTicket.publicId}
-                </span>
-                <SeverityBadge
-                  severity={
-                    dev.assignedTicket.severity as
-                      | "LOW"
-                      | "MEDIUM"
-                      | "HIGH"
-                      | "CRITICAL"
-                  }
-                />
-              </div>
-              <p className="line-clamp-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 border-t border-dashed border-border pt-2 min-w-0">
+              <SeverityBadge
+                severity={
+                  dev.assignedTicket.severity as
+                    | "LOW"
+                    | "MEDIUM"
+                    | "HIGH"
+                    | "CRITICAL"
+                }
+              />
+              <span className="font-mono text-xs font-medium text-foreground shrink-0">
+                {dev.assignedTicket.publicId}
+              </span>
+              <span className="truncate text-xs text-muted-foreground min-w-0">
                 {dev.assignedTicket.title}
-              </p>
+              </span>
             </div>
           ) : (
             <p className="px-2 text-xs italic text-muted-foreground">

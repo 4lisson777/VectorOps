@@ -373,7 +373,7 @@ export function Header({ session, avatarUrl, organizationName, onMenuClick }: He
         <ImpersonationBanner organizationName={organizationName} />
       )}
 
-      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <header className="flex h-[54px] shrink-0 items-center gap-3 border-b border-border bg-card px-4">
         {/* Hamburger — only on small screens */}
         <button
           type="button"
