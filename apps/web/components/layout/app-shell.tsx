@@ -28,6 +28,14 @@ export function AppShell({ session, avatarUrl, organizationName, children }: App
         role={session.role as Role}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
+        userName={session.name}
+        userInitials={session.name
+          .split(" ")
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((w) => w[0])
+          .join("")
+          .toUpperCase()}
       />
 
       {/* Main area — wrapped in SSEProvider so all children share one EventSource */}
