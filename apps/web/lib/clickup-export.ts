@@ -67,5 +67,5 @@ ${bug.actualBehavior}
 
 ---
 
-*Exported from ShinobiOps — ${new Date().toLocaleString()}*`
+*Exported from VectorOps — ${new Date().toLocaleString()}*`
 }

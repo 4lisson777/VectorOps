@@ -54,7 +54,7 @@ export function StatusScrollModal({
       })
       if (!res.ok) {
         const data = await res.json() as { error?: string }
-        setError(data.error ?? "Falha ao enviar checkpoint.")
+        setError(data.error ?? "Falha ao enviar atualização.")
         return
       }
       // Reset form
@@ -74,10 +74,10 @@ export function StatusScrollModal({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>📜 Status Scroll</DialogTitle>
+          <DialogTitle>Atualização de Status</DialogTitle>
         </DialogHeader>
         <p className="text-sm text-muted-foreground">
-          Hora de uma rápida verificação. Informe à sua equipe no que você está trabalhando.
+          Informe sua equipe no que você está trabalhando agora.
         </p>
         <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">

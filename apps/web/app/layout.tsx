@@ -2,32 +2,33 @@
 import "@/lib/env"
 
 import type { Metadata } from "next"
-import { Geist_Mono, Roboto } from "next/font/google"
+import { IBM_Plex_Sans, JetBrains_Mono } from "next/font/google"
 
 import "@workspace/ui/globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@workspace/ui/lib/utils"
 
-const roboto = Roboto({
+const ibmPlexSans = IBM_Plex_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-sans",
   display: "swap",
 })
 
-const fontMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
   variable: "--font-mono",
   display: "swap",
 })
 
 export const metadata: Metadata = {
   title: {
-    default: "ShinobiOps",
-    template: "%s | ShinobiOps",
+    default: "VectorOps",
+    template: "%s | VectorOps",
   },
   description:
-    "Internal issue escalation and team coordination platform for Inovar Sistemas.",
+    "Signals in. Vectors out. Work coordination platform for Inovar Sistemas.",
 }
 
 export default function RootLayout({
@@ -39,7 +40,7 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       suppressHydrationWarning
-      className={cn("antialiased", roboto.variable, fontMono.variable)}
+      className={cn("antialiased", ibmPlexSans.variable, jetbrainsMono.variable)}
     >
       <body className="font-sans">
         <ThemeProvider>{children}</ThemeProvider>

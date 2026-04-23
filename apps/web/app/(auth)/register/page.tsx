@@ -1,8 +1,8 @@
 import { RegisterForm } from "@/components/auth/register-form"
 
 export const metadata = {
-  title: "Criar conta — ShinobiOps",
-  description: "Crie sua conta no ShinobiOps",
+  title: "Criar conta — VectorOps",
+  description: "Crie sua conta no VectorOps",
 }
 
 interface RegisterPageProps {

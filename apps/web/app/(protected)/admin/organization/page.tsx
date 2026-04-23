@@ -4,7 +4,7 @@ import { OrganizationSettings } from "@/components/admin/organization-settings"
 import { InviteManagement } from "@/components/admin/invite-management"
 
 export const metadata = {
-  title: "Organização — ShinobiOps",
+  title: "Organização — VectorOps",
 }
 
 // TECH_LEAD only — allows managing org settings and invite codes.

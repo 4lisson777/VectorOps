@@ -276,7 +276,7 @@ function GlobalSearch() {
                           className={cn(
                             "text-xs",
                             result.type === "BUG"
-                              ? "border-[oklch(0.56_0.22_15)] bg-[oklch(0.56_0.22_15)]/10 text-[oklch(0.56_0.22_15)]"
+                              ? "border-[oklch(0.68_0.22_320)] bg-[oklch(0.68_0.22_320)]/10 text-[oklch(0.68_0.22_320)]"
                               : ""
                           )}
                         >

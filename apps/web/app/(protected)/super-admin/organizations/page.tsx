@@ -1,7 +1,7 @@
 import { OrgList } from "@/components/super-admin/org-list"
 
 export const metadata = {
-  title: "Organizações — Super Admin | ShinobiOps",
+  title: "Organizações — Super Admin | VectorOps",
 }
 
 export default function SuperAdminOrganizationsPage() {

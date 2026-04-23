@@ -1,7 +1,7 @@
 import { TvBoard } from "@/components/tv/tv-board"
 
 export const metadata = {
-  title: "Painel Ninja — Modo TV | ShinobiOps",
+  title: "Painel — Modo TV | VectorOps",
 }
 
 interface TvPageProps {

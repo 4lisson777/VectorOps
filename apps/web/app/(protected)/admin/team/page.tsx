@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session"
 import { TeamManagement } from "@/components/admin/team-management"
 
 export const metadata = {
-  title: "Gerenciamento de Equipe — ShinobiOps",
+  title: "Gerenciamento de Equipe — VectorOps",
 }
 
 export default async function AdminTeamPage() {

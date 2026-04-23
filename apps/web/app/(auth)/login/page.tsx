@@ -1,8 +1,8 @@
 import { LoginForm } from "@/components/auth/login-form"
 
 export const metadata = {
-  title: "Entrar — ShinobiOps",
-  description: "Faça login no ShinobiOps",
+  title: "Entrar — VectorOps",
+  description: "Faça login no VectorOps",
 }
 
 // Server Component: just renders the client form.

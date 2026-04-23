@@ -174,8 +174,8 @@ function NewInviteDialog({ organizationId, onCreated }: NewInviteDialogProps) {
           size="sm"
           className={cn(
             "text-sm font-semibold",
-            "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]",
-            "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
+            "bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]",
+            "dark:bg-[oklch(0.68_0.22_320)] dark:hover:bg-[oklch(0.58_0.22_320)]"
           )}
         >
           + Novo Convite
@@ -328,8 +328,8 @@ function NewInviteDialog({ organizationId, onCreated }: NewInviteDialogProps) {
                 disabled={isPending || !role}
                 className={cn(
                   "text-sm font-semibold",
-                  "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]",
-                  "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
+                  "bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]",
+                  "dark:bg-[oklch(0.68_0.22_320)] dark:hover:bg-[oklch(0.58_0.22_320)]"
                 )}
               >
                 {isPending ? "Criando…" : "Criar convite"}

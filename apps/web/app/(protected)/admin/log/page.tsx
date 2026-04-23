@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session"
 import { TicketLog } from "@/components/admin/ticket-log"
 
 export const metadata = {
-  title: "Registro de Missões — ShinobiOps",
+  title: "Log — VectorOps",
 }
 
 export default async function AdminLogPage() {

@@ -2,7 +2,7 @@ import Link from "next/link"
 import { Button } from "@workspace/ui/components/button"
 
 export const metadata = {
-  title: "Suporte — ShinobiOps",
+  title: "Suporte — VectorOps",
 }
 
 // Support home — action selection screen.

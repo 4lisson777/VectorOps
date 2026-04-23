@@ -337,8 +337,8 @@ export function RegisterForm({ initialInviteCode }: RegisterFormProps) {
               disabled={isPending}
               className={cn(
                 "mt-1 h-10 w-full text-sm font-semibold",
-                "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]",
-                "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
+                "bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]",
+                "dark:bg-[oklch(0.68_0.22_320)] dark:hover:bg-[oklch(0.58_0.22_320)]"
               )}
             >
               {isPending ? "Criando organização…" : "Criar organização"}
@@ -419,8 +419,8 @@ export function RegisterForm({ initialInviteCode }: RegisterFormProps) {
               disabled={isPending || isValidatingInvite}
               className={cn(
                 "mt-1 h-10 w-full text-sm font-semibold",
-                "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]",
-                "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
+                "bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]",
+                "dark:bg-[oklch(0.68_0.22_320)] dark:hover:bg-[oklch(0.58_0.22_320)]"
               )}
             >
               {isPending ? "Entrando na organização…" : "Entrar na organização"}
@@ -434,7 +434,7 @@ export function RegisterForm({ initialInviteCode }: RegisterFormProps) {
         Já tem uma conta?{" "}
         <Link
           href="/login"
-          className="font-medium text-[oklch(0.56_0.22_15)] underline-offset-4 hover:underline"
+          className="font-medium text-[oklch(0.68_0.22_320)] underline-offset-4 hover:underline"
         >
           Entrar
         </Link>

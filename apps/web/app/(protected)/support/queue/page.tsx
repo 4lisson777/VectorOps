@@ -5,7 +5,7 @@ import { MissionBoard } from "@/components/tickets/mission-board"
 import type { TicketWithRelations } from "@/components/tickets/mission-board"
 
 export const metadata = {
-  title: "Fila de Chamados — ShinobiOps",
+  title: "Fila de Chamados — VectorOps",
 }
 
 // Server component — fetches tickets directly via Prisma and passes them to the

@@ -5,7 +5,7 @@ import { MissionBoard } from "@/components/tickets/mission-board"
 import type { TicketWithRelations } from "@/components/tickets/mission-board"
 
 export const metadata = {
-  title: "Quadro de Missões — ShinobiOps",
+  title: "Quadro — VectorOps",
 }
 
 // Server component — fetches tickets and developer list directly via Prisma.
@@ -54,9 +54,9 @@ export default async function DevQueuePage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight">Quadro de Missões</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Quadro</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Missões ativas ordenadas por prioridade. Assuma chamados e filtre por tipo, severidade ou responsável.
+          Tickets ativos ordenados por prioridade. Assuma e filtre por tipo, prioridade ou responsável.
         </p>
       </div>
       <MissionBoard

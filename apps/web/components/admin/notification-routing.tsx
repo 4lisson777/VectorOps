@@ -226,7 +226,7 @@ export function NotificationRouting({ eligibleRoles }: NotificationRoutingProps)
                     {member.avatarUrl && (
                       <AvatarImage src={member.avatarUrl} alt={member.name} />
                     )}
-                    <AvatarFallback className="bg-[oklch(0.56_0.22_15)] text-white text-xs">
+                    <AvatarFallback className="bg-[oklch(0.68_0.22_320)] text-white text-xs">
                       {getInitials(member.name)}
                     </AvatarFallback>
                   </Avatar>

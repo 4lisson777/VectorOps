@@ -3,7 +3,7 @@ import { getSession } from "@/lib/session"
 import { CheckpointConfig } from "@/components/admin/checkpoint-config"
 
 export const metadata = {
-  title: "Configuração do Status Scroll — ShinobiOps",
+  title: "Atualizações de Status — VectorOps",
 }
 
 export default async function AdminCheckpointsPage() {

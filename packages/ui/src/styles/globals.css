@@ -9,7 +9,8 @@
 
 @theme inline {
     --font-heading: var(--font-sans);
-    --color-shinobi-crimson: var(--shinobi-crimson);
+    --font-mono: var(--font-mono);
+    --color-flux: var(--flux);
     --color-sidebar-ring: var(--sidebar-ring);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -41,97 +42,185 @@
     --color-card: var(--card);
     --color-foreground: var(--foreground);
     --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+    /* Rectilinear radii — cap at 6px */
+    --radius-sm: 2px;
+    --radius-md: 4px;
+    --radius-lg: 6px;
+    --radius-xl: 6px;
+    --radius-2xl: 6px;
+    --radius-3xl: 6px;
+    --radius-4xl: 6px;
     --font-sans: var(--font-sans);
 }
 
+/* ---- VectorOps Design System — Light Mode ------------------------------ */
 :root {
-    /* ShinobiOps light mode — off-white surfaces with navy/crimson identity */
-    --background: oklch(0.98 0.002 240);          /* near-white with cool tint */
-    --foreground: oklch(0.12 0.02 255);            /* deep navy text */
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.12 0.02 255);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.12 0.02 255);
-    /* Primary = deep navy #1A1A2E */
-    --primary: oklch(0.18 0.05 265);
-    --primary-foreground: oklch(0.97 0 0);
-    /* Crimson accent #E94560 */
-    --shinobi-crimson: oklch(0.56 0.22 15);
-    --secondary: oklch(0.94 0.005 255);
-    --secondary-foreground: oklch(0.12 0.02 255);
-    --muted: oklch(0.94 0.005 255);
-    --muted-foreground: oklch(0.5 0.015 255);
-    --accent: oklch(0.56 0.22 15);                /* crimson as accent */
-    --accent-foreground: oklch(0.97 0 0);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.88 0.008 255);
-    --input: oklch(0.88 0.008 255);
-    --ring: oklch(0.56 0.22 15);                  /* crimson ring */
-    --chart-1: oklch(0.56 0.22 15);
-    --chart-2: oklch(0.18 0.05 265);
-    --chart-3: oklch(0.666 0.179 58.318);
-    --chart-4: oklch(0.555 0.163 48.998);
-    --chart-5: oklch(0.473 0.137 46.201);
-    --radius: 0.45rem;
-    /* Sidebar uses deep navy */
-    --sidebar: oklch(0.18 0.05 265);
-    --sidebar-foreground: oklch(0.97 0 0);
-    --sidebar-primary: oklch(0.56 0.22 15);       /* crimson active */
-    --sidebar-primary-foreground: oklch(0.97 0 0);
-    --sidebar-accent: oklch(0.24 0.06 265);        /* slightly lighter navy hover */
-    --sidebar-accent-foreground: oklch(0.97 0 0);
-    --sidebar-border: oklch(0.28 0.04 265);
-    --sidebar-ring: oklch(0.56 0.22 15);
+    /* Core palette */
+    --vo-graphite:   oklch(0.17 0.02 250);
+    --vo-graphite-2: oklch(0.22 0.02 250);
+    --vo-graphite-3: oklch(0.30 0.02 250);
+    --vo-paper:      oklch(0.985 0.003 240);
+    --vo-paper-2:    oklch(0.965 0.004 240);
+    --vo-plasma:     oklch(0.68 0.22 320);
+    --vo-plasma-hi:  oklch(0.74 0.22 320);
+    --vo-plasma-lo:  oklch(0.58 0.22 320);
+    --vo-flux:       oklch(0.78 0.17 195);
+    --vo-amber:      oklch(0.78 0.15 70);
+    --vo-crimson:    oklch(0.60 0.22 25);
+
+    /* Magnitude ramp — monotonic luminance on plasma (replaces belt-rank severity) */
+    --mag-1-bg:  oklch(0.985 0.003 240);
+    --mag-1-fg:  oklch(0.35 0.02 250);
+    --mag-1-br:  oklch(0.88 0.01 250);
+
+    --mag-2-bg:  oklch(0.93 0.06 320);
+    --mag-2-fg:  oklch(0.32 0.10 320);
+    --mag-2-br:  oklch(0.82 0.10 320);
+
+    --mag-3-bg:  oklch(0.78 0.14 320);
+    --mag-3-fg:  oklch(0.20 0.05 320);
+    --mag-3-br:  oklch(0.68 0.18 320);
+
+    --mag-4-bg:  oklch(0.68 0.22 320);
+    --mag-4-fg:  oklch(0.99 0 0);
+    --mag-4-br:  oklch(0.56 0.22 320);
+
+    --mag-5-bg:  oklch(0.58 0.22 320);
+    --mag-5-fg:  oklch(0.99 0 0);
+    --mag-5-br:  oklch(0.78 0.17 195);
+
+    /* Carrier status */
+    --st-coupled:       oklch(0.60 0.18 145);
+    --st-coupled-bg:    color-mix(in oklab, oklch(0.60 0.18 145) 10%, transparent);
+    --st-sampling:      var(--vo-amber);
+    --st-sampling-bg:   color-mix(in oklab, var(--vo-amber) 12%, transparent);
+    --st-blocked:       var(--vo-crimson);
+    --st-blocked-bg:    color-mix(in oklab, var(--vo-crimson) 10%, transparent);
+    --st-resonating:    var(--vo-flux);
+    --st-resonating-bg: color-mix(in oklab, var(--vo-flux) 12%, transparent);
+    --st-offline:       oklch(0.55 0.01 250);
+    --st-offline-bg:    color-mix(in oklab, oklch(0.55 0.01 250) 10%, transparent);
+
+    /* Semantic tokens */
+    --background:         var(--vo-paper);
+    --foreground:         var(--vo-graphite);
+    --card:               oklch(1 0 0);
+    --card-foreground:    var(--vo-graphite);
+    --popover:            oklch(1 0 0);
+    --popover-foreground: var(--vo-graphite);
+    --primary:            var(--vo-plasma);
+    --primary-foreground: oklch(0.99 0 0);
+    --secondary:          var(--vo-paper-2);
+    --secondary-foreground: var(--vo-graphite);
+    --muted:              oklch(0.95 0.005 250);
+    --muted-foreground:   oklch(0.50 0.015 250);
+    --accent:             var(--vo-plasma);
+    --accent-foreground:  oklch(0.99 0 0);
+    --flux:               var(--vo-flux);
+    --destructive:        var(--vo-crimson);
+    --warning:            var(--vo-amber);
+    --border:             oklch(0.90 0.008 250);
+    --input:              oklch(0.90 0.008 250);
+    --ring:               var(--vo-plasma);
+    --grid:               oklch(0.90 0.008 250 / 0.55);
+
+    /* Sidebar — always graphite */
+    --sidebar:                    var(--vo-graphite);
+    --sidebar-foreground:         oklch(0.97 0.003 240);
+    --sidebar-primary:            var(--vo-plasma);
+    --sidebar-primary-foreground: oklch(0.99 0 0);
+    --sidebar-accent:             var(--vo-graphite-2);
+    --sidebar-accent-foreground:  oklch(0.97 0.003 240);
+    --sidebar-border:             var(--vo-graphite-3);
+    --sidebar-ring:               var(--vo-plasma);
+
+    /* Radii — rectilinear */
+    --radius: 4px;
+
+    /* Shadows */
+    --shadow-xs:     0 1px 0 0 oklch(0.17 0.02 250 / 0.04);
+    --shadow-sm:     0 1px 2px 0 oklch(0.17 0.02 250 / 0.06);
+    --shadow-plasma: 0 0 0 3px color-mix(in oklab, var(--vo-plasma) 28%, transparent);
+    --shadow-flux:   0 0 0 3px color-mix(in oklab, var(--vo-flux) 30%, transparent);
+
+    /* Typography */
+    --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    --font-heading: var(--font-sans);
+
+    /* Charts */
+    --chart-1: var(--vo-plasma);
+    --chart-2: var(--vo-flux);
+    --chart-3: var(--vo-amber);
+    --chart-4: var(--vo-crimson);
+    --chart-5: oklch(0.78 0.14 320);
 }
 
+/* ---- Dark mode — graphite base ----------------------------------------- */
 .dark {
-    /* ShinobiOps dark mode — deep navy base */
-    --background: oklch(0.12 0.03 265);           /* #1A1A2E equivalent */
-    --foreground: oklch(0.95 0.005 240);
-    --card: oklch(0.16 0.04 265);
-    --card-foreground: oklch(0.95 0.005 240);
-    --popover: oklch(0.16 0.04 265);
-    --popover-foreground: oklch(0.95 0.005 240);
-    --primary: oklch(0.56 0.22 15);               /* crimson as primary in dark */
-    --primary-foreground: oklch(0.97 0 0);
-    --shinobi-crimson: oklch(0.56 0.22 15);
-    --secondary: oklch(0.22 0.04 265);
-    --secondary-foreground: oklch(0.95 0.005 240);
-    --muted: oklch(0.22 0.04 265);
-    --muted-foreground: oklch(0.65 0.015 255);
-    --accent: oklch(0.56 0.22 15);
-    --accent-foreground: oklch(0.97 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 12%);
-    --ring: oklch(0.56 0.22 15);
-    --chart-1: oklch(0.56 0.22 15);
-    --chart-2: oklch(0.879 0.169 91.605);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.666 0.179 58.318);
-    --chart-5: oklch(0.555 0.163 48.998);
-    --sidebar: oklch(0.13 0.035 265);
-    --sidebar-foreground: oklch(0.95 0.005 240);
-    --sidebar-primary: oklch(0.56 0.22 15);
-    --sidebar-primary-foreground: oklch(0.97 0 0);
-    --sidebar-accent: oklch(0.20 0.045 265);
-    --sidebar-accent-foreground: oklch(0.95 0.005 240);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.56 0.22 15);
+    --background:         var(--vo-graphite);
+    --foreground:         oklch(0.96 0.004 240);
+    --card:               var(--vo-graphite-2);
+    --card-foreground:    oklch(0.96 0.004 240);
+    --popover:            var(--vo-graphite-2);
+    --popover-foreground: oklch(0.96 0.004 240);
+    --primary:            var(--vo-plasma);
+    --primary-foreground: oklch(0.99 0 0);
+    --secondary:          oklch(0.24 0.02 250);
+    --secondary-foreground: oklch(0.96 0.004 240);
+    --muted:              oklch(0.24 0.02 250);
+    --muted-foreground:   oklch(0.65 0.015 250);
+    --accent:             var(--vo-plasma);
+    --accent-foreground:  oklch(0.99 0 0);
+    --destructive:        var(--vo-crimson);
+    --warning:            var(--vo-amber);
+    --border:             oklch(1 0 0 / 0.10);
+    --input:              oklch(1 0 0 / 0.12);
+    --ring:               var(--vo-plasma);
+    --grid:               oklch(1 0 0 / 0.06);
+
+    --sidebar:                    oklch(0.13 0.02 250);
+    --sidebar-foreground:         oklch(0.96 0.004 240);
+    --sidebar-primary:            var(--vo-plasma);
+    --sidebar-primary-foreground: oklch(0.99 0 0);
+    --sidebar-accent:             oklch(0.20 0.02 250);
+    --sidebar-accent-foreground:  oklch(0.96 0.004 240);
+    --sidebar-border:             oklch(1 0 0 / 0.08);
+    --sidebar-ring:               var(--vo-plasma);
+
+    --mag-1-bg: oklch(0.22 0.02 250);
+    --mag-1-fg: oklch(0.75 0.01 250);
+    --mag-1-br: oklch(0.30 0.02 250);
+
+    --chart-1: var(--vo-plasma);
+    --chart-2: var(--vo-flux);
+    --chart-3: var(--vo-amber);
+    --chart-4: oklch(0.769 0.188 70.08);
+    --chart-5: oklch(0.666 0.179 58.318);
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: "ss01", "cv11";
     }
+}
+
+/* ---- Field background — 8px dot grid ---------------------------------- */
+.vo-field-grid {
+    background-image: radial-gradient(circle at 1px 1px, var(--grid) 1px, transparent 0);
+    background-size: 16px 16px;
+}
+.vo-field-grid.dense {
+    background-size: 8px 8px;
+}
+
+/* ---- Auth hero — drafting-paper grid lines ---------------------------- */
+.vo-auth-grid {
+    background-image:
+        repeating-linear-gradient(0deg,  oklch(1 0 0 / 0.05) 0 1px, transparent 1px 48px),
+        repeating-linear-gradient(90deg, oklch(1 0 0 / 0.05) 0 1px, transparent 1px 48px);
 }

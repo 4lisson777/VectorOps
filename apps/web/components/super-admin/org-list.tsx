@@ -111,7 +111,7 @@ function CreateOrgDialog({ onCreated }: CreateOrgDialogProps) {
           size="sm"
           className={cn(
             "text-sm font-semibold",
-            "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]"
+            "bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]"
           )}
         >
           + Criar Organização
@@ -160,7 +160,7 @@ function CreateOrgDialog({ onCreated }: CreateOrgDialogProps) {
               disabled={isPending || !name.trim()}
               className={cn(
                 "text-sm font-semibold",
-                "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]"
+                "bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]"
               )}
             >
               {isPending ? "Criando…" : "Criar"}

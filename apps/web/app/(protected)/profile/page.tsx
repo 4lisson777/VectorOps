@@ -1,7 +1,7 @@
 import { ProfileForm } from "@/components/profile/profile-form"
 
 export const metadata = {
-  title: "Perfil — ShinobiOps",
+  title: "Perfil — VectorOps",
 }
 
 export default function ProfilePage() {

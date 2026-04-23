@@ -96,7 +96,7 @@ export function TicketCard({
             variant={ticket.type === "BUG" ? "destructive" : "outline"}
             className={
               ticket.type === "BUG"
-                ? "border-[oklch(0.56_0.22_15)] bg-[oklch(0.56_0.22_15)]/10 text-[oklch(0.56_0.22_15)]"
+                ? "border-[oklch(0.68_0.22_320)] bg-[oklch(0.68_0.22_320)]/10 text-[oklch(0.68_0.22_320)]"
                 : "border-[oklch(0.18_0.05_265)] text-[oklch(0.18_0.05_265)] dark:border-primary dark:text-primary"
             }
           >
@@ -178,7 +178,7 @@ export function TicketCard({
             type="button"
             size="sm"
             onClick={() => onAssignToMe?.(ticket.id)}
-            className="text-xs bg-[oklch(0.18_0.05_265)] text-white hover:bg-[oklch(0.24_0.06_265)] dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
+            className="text-xs bg-[oklch(0.18_0.05_265)] text-white hover:bg-[oklch(0.24_0.06_265)] dark:bg-[oklch(0.68_0.22_320)] dark:hover:bg-[oklch(0.58_0.22_320)]"
           >
             Atribuir a mim
           </Button>

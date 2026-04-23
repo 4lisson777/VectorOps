@@ -1,54 +1,47 @@
 import Link from "next/link"
 
 export const metadata = {
-  title: "Missão Não Encontrada — ShinobiOps",
+  title: "Página Não Encontrada — VectorOps",
 }
 
-// 404 page — ninja theme: the mission file has been shredded.
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-[oklch(0.12_0.03_265)] p-8 text-center">
-      {/* Shuriken decoration */}
-      <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-[oklch(0.56_0.22_15)]/20">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-[oklch(0.17_0.02_250)] p-8 text-center">
+      {/* Vector mark decoration */}
+      <div className="flex h-20 w-20 items-center justify-center rounded-[6px] bg-[oklch(0.68_0.22_320)]/20">
         <svg
-          className="size-12 text-[oklch(0.56_0.22_15)]"
+          className="size-10 text-[oklch(0.68_0.22_320)]"
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           aria-hidden="true"
         >
-          <path
-            d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"
-            fill="currentColor"
-            opacity="0.7"
-          />
-          <circle cx="12" cy="12" r="2.5" fill="oklch(0.12 0.03 265)" />
+          <line x1="4" y1="17" x2="20" y2="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <polyline points="14,5 20,7 18,13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <line x1="11" y1="13" x2="13" y2="11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
 
-      {/* Error code */}
       <div>
-        <p className="text-sm font-medium tracking-widest text-[oklch(0.56_0.22_15)] uppercase">
-          Arquivo de Missão — 404
+        <p className="font-mono text-sm font-medium uppercase tracking-widest text-[oklch(0.68_0.22_320)]">
+          404
         </p>
-        <h1 className="mt-2 text-4xl font-bold text-white">Missão Não Encontrada</h1>
+        <h1 className="mt-2 text-4xl font-bold text-white">Página Não Encontrada</h1>
         <p className="mt-3 max-w-md text-sm text-white/50">
-          O pergaminho que você busca foi destruído ou nunca existiu. As sombras
-          não guardam registro deste caminho.
+          O caminho que você buscou não existe ou foi removido.
         </p>
       </div>
 
-      {/* Actions */}
       <div className="flex flex-col items-center gap-3 sm:flex-row">
         <Link
           href="/"
-          className="inline-flex h-9 items-center justify-center rounded-md bg-[oklch(0.56_0.22_15)] px-4 text-sm font-medium text-white transition-colors hover:bg-[oklch(0.50_0.22_15)]"
+          className="inline-flex h-9 items-center justify-center rounded bg-[oklch(0.68_0.22_320)] px-4 text-sm font-medium text-white transition-colors hover:bg-[oklch(0.74_0.22_320)]"
         >
-          Voltar à Base
+          Voltar ao Início
         </Link>
         <Link
           href="/support"
-          className="inline-flex h-9 items-center justify-center rounded-md border border-white/20 px-4 text-sm font-medium text-white/70 transition-colors hover:border-white/40 hover:text-white"
+          className="inline-flex h-9 items-center justify-center rounded border border-white/20 px-4 text-sm font-medium text-white/70 transition-colors hover:border-white/40 hover:text-white"
         >
           Suporte
         </Link>

@@ -36,70 +36,55 @@ interface TvData {
   organizationName?: string
 }
 
-// ---- Severity badge config ------------------------------------------------
+// ---- Severity badge config — plasma luminance ramp ----------------------
 
-const SEVERITY_STYLES: Record<Severity, { label: string; cls: string }> = {
+const SEVERITY_STYLES: Record<Severity, { label: string; bgVar: string; fgVar: string; brVar: string }> = {
   LOW: {
     label: "Baixa",
-    cls: "bg-white/10 text-white border-white/20",
+    bgVar: "--mag-2-bg", fgVar: "--mag-2-fg", brVar: "--mag-2-br",
   },
   MEDIUM: {
     label: "Média",
-    cls: "bg-green-500/20 text-green-300 border-green-500/30",
+    bgVar: "--mag-3-bg", fgVar: "--mag-3-fg", brVar: "--mag-3-br",
   },
   HIGH: {
     label: "Alta",
-    cls: "bg-red-500/20 text-red-300 border-red-500/30",
+    bgVar: "--mag-4-bg", fgVar: "--mag-4-fg", brVar: "--mag-4-br",
   },
   CRITICAL: {
     label: "Crítica",
-    cls: "bg-black/60 text-white border-white/10",
+    bgVar: "--mag-5-bg", fgVar: "--mag-5-fg", brVar: "--mag-5-br",
   },
 }
 
-// ---- Dev status config ---------------------------------------------------
+// ---- Dev status config — carrier status tokens ---------------------------
 
-const STATUS_STYLES: Record<string, { label: string; cls: string }> = {
-  ACTIVE: {
-    label: "Ativo",
-    cls: "bg-green-500/20 text-green-300 border-green-500/30",
-  },
-  IN_CHECKPOINT: {
-    label: "Status Scroll",
-    cls: "bg-amber-500/20 text-amber-300 border-amber-500/30",
-  },
-  BLOCKED: {
-    label: "Bloqueado",
-    cls: "bg-red-500/20 text-red-300 border-red-500/30",
-  },
-  HELPING: {
-    label: "Ajudando",
-    cls: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-  },
+const STATUS_STYLES: Record<string, { label: string; tokenColor: string }> = {
+  ACTIVE:        { label: "Ativo",           tokenColor: "--st-coupled" },
+  IN_CHECKPOINT: { label: "Em Atualização",  tokenColor: "--st-sampling" },
+  BLOCKED:       { label: "Bloqueado",       tokenColor: "--st-blocked" },
+  HELPING:       { label: "Ajudando",        tokenColor: "--st-resonating" },
 }
 
-// ---- Shuriken logo -------------------------------------------------------
+// ---- VectorOps logo -------------------------------------------------------
 
-function ShurikenLogo() {
+function VectorOpsLogo() {
   return (
     <div className="flex items-center gap-3">
-      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[oklch(0.56_0.22_15)]">
+      <div className="flex h-12 w-12 items-center justify-center rounded bg-[oklch(0.68_0.22_320)]">
         <svg
-          className="size-7 text-white"
+          className="size-6 text-white"
           viewBox="0 0 24 24"
           fill="none"
           aria-hidden="true"
         >
-          <path
-            d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z"
-            fill="currentColor"
-            opacity="0.9"
-          />
-          <circle cx="12" cy="12" r="2" fill="oklch(0.12 0.03 265)" />
+          <line x1="4" y1="17" x2="20" y2="7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          <polyline points="14,5 20,7 18,13" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <line x1="11" y1="13" x2="13" y2="11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
         </svg>
       </div>
       <span className="text-2xl font-bold text-white">
-        Shinobi<span className="text-[oklch(0.56_0.22_15)]">Ops</span>
+        Vector<span className="text-[oklch(0.68_0.22_320)]">Ops</span>
       </span>
     </div>
   )
@@ -116,15 +101,17 @@ function SeverityCountBadge({
   count: number
   label: string
 }) {
-  const { cls } = SEVERITY_STYLES[severity]
+  const { bgVar, fgVar, brVar } = SEVERITY_STYLES[severity]
   return (
     <div
-      className={cn(
-        "flex flex-col items-center gap-0.5 rounded-lg border px-3 py-2",
-        cls
-      )}
+      className="flex flex-col items-center gap-0.5 rounded border px-3 py-2"
+      style={{
+        backgroundColor: `var(${bgVar})`,
+        color: `var(${fgVar})`,
+        borderColor: `var(${brVar})`,
+      }}
     >
-      <span className="text-2xl font-bold tabular-nums leading-none">{count}</span>
+      <span className="font-mono text-2xl font-bold tabular-nums leading-none">{count}</span>
       <span className="text-xs font-medium opacity-80">{label}</span>
     </div>
   )
@@ -154,10 +141,12 @@ function TvDevCard({ dev }: { dev: Developer }) {
 
       {/* Status badge */}
       <span
-        className={cn(
-          "inline-flex self-start items-center rounded-full border px-3 py-1 text-sm font-semibold",
-          statusStyle.cls
-        )}
+        className="inline-flex self-start items-center rounded border px-3 py-1 text-sm font-semibold"
+        style={{
+          backgroundColor: `color-mix(in oklab, var(${statusStyle.tokenColor}) 12%, transparent)`,
+          color: `var(${statusStyle.tokenColor})`,
+          borderColor: `color-mix(in oklab, var(${statusStyle.tokenColor}) 30%, transparent)`,
+        }}
       >
         {statusStyle.label}
       </span>
@@ -177,7 +166,7 @@ function TvDevCard({ dev }: { dev: Developer }) {
       {/* Assigned ticket */}
       <div>
         <p className="mb-1 text-xs font-medium uppercase tracking-wider text-white/40">
-          Missão Ativa
+          Ticket Atribuído
         </p>
         {dev.assignedTicket ? (
           <div className="rounded-lg border border-white/10 bg-white/5 px-3 py-2">
@@ -186,10 +175,12 @@ function TvDevCard({ dev }: { dev: Developer }) {
                 {dev.assignedTicket.publicId}
               </span>
               <span
-                className={cn(
-                  "inline-flex items-center rounded-full border px-2 py-0.5 text-xs font-medium",
-                  SEVERITY_STYLES[dev.assignedTicket.severity]?.cls
-                )}
+                className="inline-flex items-center rounded border px-2 py-0.5 text-xs font-medium"
+                style={{
+                  backgroundColor: `var(${SEVERITY_STYLES[dev.assignedTicket.severity]?.bgVar ?? "--mag-2-bg"})`,
+                  color: `var(${SEVERITY_STYLES[dev.assignedTicket.severity]?.fgVar ?? "--mag-2-fg"})`,
+                  borderColor: `var(${SEVERITY_STYLES[dev.assignedTicket.severity]?.brVar ?? "--mag-2-br"})`,
+                }}
               >
                 {SEVERITY_STYLES[dev.assignedTicket.severity]?.label}
               </span>
@@ -199,7 +190,7 @@ function TvDevCard({ dev }: { dev: Developer }) {
             </p>
           </div>
         ) : (
-          <p className="text-sm italic text-white/30">Sem missão ativa</p>
+          <p className="text-sm italic text-white/30">Sem ticket atribuído</p>
         )}
       </div>
     </div>
@@ -292,13 +283,13 @@ export function TvBoard({ orgSlug }: TvBoardProps) {
   // ---- TV disabled state --------------------------------------------------
   if (isDisabled) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[oklch(0.12_0.03_265)] p-8 text-center">
-        <ShurikenLogo />
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[oklch(0.17_0.02_250)] p-8 text-center">
+        <VectorOpsLogo />
         <p className="mt-4 text-lg font-semibold text-white/60">
           O Modo TV está desativado no momento.
         </p>
         <p className="text-sm text-white/30">
-          Um Tech Lead pode ativá-lo no Command Dojo.
+          Um Tech Lead pode ativá-lo no Painel Geral.
         </p>
       </div>
     )
@@ -307,11 +298,11 @@ export function TvBoard({ orgSlug }: TvBoardProps) {
   const severities: Severity[] = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]
 
   return (
-    <div className="min-h-screen bg-[oklch(0.12_0.03_265)] p-6 flex flex-col gap-6">
+    <div className="min-h-screen bg-[oklch(0.17_0.02_250)] p-6 flex flex-col gap-6">
       {/* Top bar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-1">
-          <ShurikenLogo />
+          <VectorOpsLogo />
           {orgName && (
             <span className="text-xs text-white/40 pl-1">{orgName}</span>
           )}

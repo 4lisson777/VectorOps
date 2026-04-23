@@ -263,15 +263,17 @@ export function NinjaBoard({
 
   return (
     <div className="flex min-h-full flex-col gap-6 p-6">
-      {/* 3.13 — New ticket/bug arrival banner */}
+      {/* New ticket/bug arrival banner */}
       {newArrival && (
         <div
-          className={cn(
-            "flex items-center justify-between rounded-lg border px-4 py-2.5 text-sm font-medium",
-            newArrival.type === "BUG"
-              ? "border-red-500/40 bg-red-500/10 text-red-700 dark:text-red-400"
-              : "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400"
-          )}
+          className="flex items-center justify-between rounded border px-4 py-2.5 text-sm font-medium"
+          style={{
+            backgroundColor: newArrival.type === "BUG" ? "var(--st-blocked-bg)" : "var(--st-sampling-bg)",
+            color: newArrival.type === "BUG" ? "var(--st-blocked)" : "var(--st-sampling)",
+            borderColor: newArrival.type === "BUG"
+              ? "color-mix(in oklab, var(--st-blocked) 30%, transparent)"
+              : "color-mix(in oklab, var(--st-sampling) 30%, transparent)",
+          }}
         >
           <span>
             {newArrival.type === "BUG" ? "Novo bug" : "Novo chamado"}{" "}
@@ -282,7 +284,7 @@ export function NinjaBoard({
               if (arrivalTimerRef.current) clearTimeout(arrivalTimerRef.current)
               setNewArrival(null)
             }}
-            className="ml-4 text-current opacity-60 hover:opacity-100"
+            className="ml-4 opacity-60 hover:opacity-100"
             aria-label="Dispensar"
           >
             ✕
@@ -290,12 +292,18 @@ export function NinjaBoard({
         </div>
       )}
 
-      {/* 4.4 — Incoming help request banner */}
+      {/* Incoming help request banner — flux color (help domain) */}
       {incomingHelp && (
-        <div className="flex items-start justify-between gap-4 rounded-lg border border-blue-500/40 bg-blue-500/10 px-4 py-3 text-sm">
+        <div
+          className="flex items-start justify-between gap-4 rounded border px-4 py-3 text-sm"
+          style={{
+            backgroundColor: "var(--st-resonating-bg)",
+            borderColor: "color-mix(in oklab, var(--st-resonating) 30%, transparent)",
+          }}
+        >
           <div className="flex flex-col gap-0.5">
-            <span className="font-semibold text-blue-700 dark:text-blue-300">
-              Sinal de Fumaça de {incomingHelp.requesterAlias}
+            <span className="font-semibold" style={{ color: "var(--st-resonating)" }}>
+              Pedido de Ajuda — {incomingHelp.requesterAlias}
             </span>
             <span className="text-muted-foreground">{incomingHelp.contextMessage}</span>
           </div>
@@ -303,13 +311,14 @@ export function NinjaBoard({
             <button
               onClick={() => void handleHelpRespond(incomingHelp.helpRequestId)}
               disabled={isRespondingHelp}
-              className="rounded-md bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
+              className="rounded px-3 py-1.5 text-xs font-semibold text-[oklch(0.17_0.02_250)] disabled:opacity-50"
+              style={{ backgroundColor: "var(--st-resonating)" }}
             >
-              Posso ajudar
+              Ajudar
             </button>
             <button
               onClick={() => setIncomingHelp(null)}
-              className="rounded-md px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
+              className="rounded px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground"
             >
               Dispensar
             </button>
@@ -320,36 +329,39 @@ export function NinjaBoard({
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Painel Ninja</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Painel</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Visão geral da equipe em tempo real
           </p>
         </div>
-        {/* 4.2 — Send Smoke Signal button */}
         {isDevRole && (
           <button
             onClick={() => setSmokeSignalOpen(true)}
-            className="flex items-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-500/20 dark:text-amber-400"
+            className="flex items-center gap-2 rounded border px-3 py-2 text-sm font-medium"
+            style={{
+              backgroundColor: "var(--st-resonating-bg)",
+              color: "var(--st-resonating)",
+              borderColor: "color-mix(in oklab, var(--st-resonating) 30%, transparent)",
+            }}
           >
-            <span>🔥</span>
-            Enviar Sinal de Fumaça
+            Pedir Ajuda
           </button>
         )}
       </div>
 
       {/* Stats bar */}
       <div className="flex flex-wrap gap-3">
-        <StatPill label="Ativos" count={activeCount} color="text-green-600 dark:text-green-400" bg="bg-green-500/10" />
+        <StatPill label="Ativos" count={activeCount} tokenColor="--st-coupled" />
         {blockedCount > 0 && (
-          <StatPill label="Bloqueados" count={blockedCount} color="text-red-600 dark:text-red-400" bg="bg-red-500/10" />
+          <StatPill label="Bloqueados" count={blockedCount} tokenColor="--st-blocked" />
         )}
         {inCheckpointCount > 0 && (
-          <StatPill label="No Status Scroll" count={inCheckpointCount} color="text-amber-600 dark:text-amber-400" bg="bg-amber-500/10" />
+          <StatPill label="Em Atualização" count={inCheckpointCount} tokenColor="--st-sampling" />
         )}
         {helpingCount > 0 && (
-          <StatPill label="Ajudando" count={helpingCount} color="text-blue-600 dark:text-blue-400" bg="bg-blue-500/10" />
+          <StatPill label="Ajudando" count={helpingCount} tokenColor="--st-resonating" />
         )}
-        <StatPill label="Total" count={devs.length} color="text-muted-foreground" bg="bg-muted/40" />
+        <StatPill label="Total" count={devs.length} tokenColor="--muted-foreground" />
       </div>
 
       {/* Developer grid */}
@@ -391,23 +403,24 @@ export function NinjaBoard({
 function StatPill({
   label,
   count,
-  color,
-  bg,
+  tokenColor,
 }: {
   label: string
   count: number
-  color: string
-  bg: string
+  tokenColor: string
 }) {
   return (
     <div
-      className={cn(
-        "flex items-center gap-1.5 rounded-full border border-transparent px-3 py-1 text-xs font-medium",
-        bg,
-        color
-      )}
+      className="flex items-center gap-1.5 rounded border px-3 py-1 text-xs font-medium"
+      style={{
+        backgroundColor: tokenColor === "--muted-foreground"
+          ? "color-mix(in oklab, var(--muted-foreground) 10%, transparent)"
+          : `color-mix(in oklab, var(${tokenColor}) 10%, transparent)`,
+        color: `var(${tokenColor})`,
+        borderColor: `color-mix(in oklab, var(${tokenColor}) 20%, transparent)`,
+      }}
     >
-      <span className="tabular-nums">{count}</span>
+      <span className="font-mono tabular-nums">{count}</span>
       <span>{label}</span>
     </div>
   )

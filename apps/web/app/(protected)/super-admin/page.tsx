@@ -9,7 +9,7 @@ import {
 import { db } from "@/lib/db"
 
 export const metadata = {
-  title: "Super Admin — ShinobiOps",
+  title: "Super Admin — VectorOps",
 }
 
 async function getStats() {

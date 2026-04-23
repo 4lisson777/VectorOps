@@ -222,7 +222,7 @@ export function TicketForm() {
         className={cn(
           "mt-1 h-10 w-full text-sm font-semibold",
           "bg-[oklch(0.18_0.05_265)] text-white hover:bg-[oklch(0.24_0.06_265)]",
-          "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
+          "dark:bg-[oklch(0.68_0.22_320)] dark:hover:bg-[oklch(0.58_0.22_320)]"
         )}
       >
         {isPending ? "Enviando chamado…" : "Enviar Chamado"}

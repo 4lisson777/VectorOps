@@ -5,7 +5,7 @@ import { NinjaBoard } from "@/components/dev/ninja-board"
 import type { DevCardData } from "@/components/dev/developer-card"
 
 export const metadata = {
-  title: "Painel Ninja — ShinobiOps",
+  title: "Painel — VectorOps",
 }
 
 export default async function NinjaBoardPage() {

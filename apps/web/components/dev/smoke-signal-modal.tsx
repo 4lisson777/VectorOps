@@ -45,7 +45,7 @@ export function SmokeSignalModal({ open, onOpenChange }: SmokeSignalModalProps) 
       })
       if (!res.ok) {
         const data = await res.json() as { error?: string }
-        setError(data.error ?? "Falha ao enviar sinal de fumaça.")
+        setError(data.error ?? "Falha ao enviar pedido de ajuda.")
         return
       }
       handleClose()
@@ -62,7 +62,7 @@ export function SmokeSignalModal({ open, onOpenChange }: SmokeSignalModalProps) 
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>🔥 Enviar Sinal de Fumaça</DialogTitle>
+          <DialogTitle>Pedir Ajuda</DialogTitle>
         </DialogHeader>
         <form onSubmit={(e) => void handleSubmit(e)} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
@@ -81,7 +81,7 @@ export function SmokeSignalModal({ open, onOpenChange }: SmokeSignalModalProps) 
             />
             <p
               className={`text-right text-xs ${
-                remaining <= 20 ? "text-red-500" : "text-muted-foreground"
+                remaining <= 20 ? "text-destructive" : "text-muted-foreground"
               }`}
             >
               {remaining} caracteres restantes
@@ -103,7 +103,7 @@ export function SmokeSignalModal({ open, onOpenChange }: SmokeSignalModalProps) 
               type="submit"
               disabled={isSubmitting || message.trim().length === 0}
             >
-              {isSubmitting ? "Enviando…" : "Enviar Sinal"}
+              {isSubmitting ? "Enviando…" : "Pedir Ajuda"}
             </Button>
           </DialogFooter>
         </form>

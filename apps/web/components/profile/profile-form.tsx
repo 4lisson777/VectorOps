@@ -237,7 +237,7 @@ export function ProfileForm() {
           {user?.avatarUrl && (
             <AvatarImage src={user.avatarUrl} alt={user.name} />
           )}
-          <AvatarFallback className="bg-[oklch(0.56_0.22_15)] text-white text-lg">
+          <AvatarFallback className="bg-[oklch(0.68_0.22_320)] text-white text-lg">
             {getInitials(name || "?")}
           </AvatarFallback>
         </Avatar>
@@ -305,13 +305,13 @@ export function ProfileForm() {
 
           {/* Ninja alias */}
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="ninjaAlias">Apelido Ninja</Label>
+            <Label htmlFor="ninjaAlias">Apelido</Label>
             <Input
               id="ninjaAlias"
               type="text"
               value={ninjaAlias}
               onChange={(e) => setNinjaAlias(e.target.value)}
-              placeholder="Seu codinome no clã"
+              placeholder="Seu apelido no time"
               aria-invalid={!!profileFieldErrors.ninjaAlias}
               disabled={profileSaving}
             />
@@ -326,7 +326,7 @@ export function ProfileForm() {
             type="submit"
             size="default"
             disabled={profileSaving}
-            className="self-start bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]"
+            className="self-start bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]"
           >
             {profileSaving ? "Salvando…" : "Salvar Alterações"}
           </Button>
@@ -415,7 +415,7 @@ export function ProfileForm() {
             type="submit"
             size="default"
             disabled={passwordSaving}
-            className="self-start bg-[oklch(0.18_0.05_265)] text-white hover:bg-[oklch(0.24_0.06_265)] dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
+            className="self-start bg-[oklch(0.18_0.05_265)] text-white hover:bg-[oklch(0.24_0.06_265)] dark:bg-[oklch(0.68_0.22_320)] dark:hover:bg-[oklch(0.58_0.22_320)]"
           >
             {passwordSaving ? "Atualizando…" : "Atualizar Senha"}
           </Button>
@@ -449,7 +449,7 @@ export function ProfileForm() {
             className={cn(
               "relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors",
               soundEnabled
-                ? "bg-[oklch(0.56_0.22_15)]"
+                ? "bg-[oklch(0.68_0.22_320)]"
                 : "bg-muted"
             )}
           >

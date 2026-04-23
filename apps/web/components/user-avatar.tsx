@@ -15,7 +15,7 @@ function nameToColorIndex(name: string): number {
 
 // Predefined set of accessible background/text color pairs
 const FALLBACK_COLORS = [
-  "bg-[oklch(0.56_0.22_15)] text-white",       // crimson
+  "bg-[oklch(0.68_0.22_320)] text-white",       // crimson
   "bg-[oklch(0.45_0.18_265)] text-white",       // navy-ish
   "bg-emerald-600 text-white",
   "bg-violet-600 text-white",

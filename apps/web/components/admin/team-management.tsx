@@ -42,8 +42,8 @@ interface User {
 }
 
 const ROLE_LABELS: Record<Role, string> = {
-  TECH_LEAD: "Jōnin (Tech Lead)",
-  DEVELOPER: "Ninja (Desenvolvedor)",
+  TECH_LEAD: "Tech Lead",
+  DEVELOPER: "Desenvolvedor",
   SUPPORT_LEAD: "Líder de Suporte",
   SUPPORT_MEMBER: "Membro de Suporte",
   QA: "QA",

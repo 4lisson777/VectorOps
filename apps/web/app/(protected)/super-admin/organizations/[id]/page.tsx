@@ -3,7 +3,7 @@ import { Button } from "@workspace/ui/components/button"
 import { OrgDetail } from "@/components/super-admin/org-detail"
 
 export const metadata = {
-  title: "Detalhes da Organização — Super Admin | ShinobiOps",
+  title: "Detalhes da Organização — Super Admin | VectorOps",
 }
 
 interface OrgDetailPageProps {

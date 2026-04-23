@@ -88,7 +88,7 @@ export async function POST(
     void createAndEmitNotifications({
       type: "HELP_REQUEST_RESPONDED",
       title: `${responder.ninjaAlias} pode te ajudar`,
-      body: `${responder.name} respondeu ao seu Sinal de Fumaça.`,
+      body: `${responder.name} pode te ajudar com seu pedido.`,
       targetUserIds: [helpRequest.requestedById],
     }).catch(console.error)
 

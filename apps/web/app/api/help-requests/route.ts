@@ -83,7 +83,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       })
       await createAndEmitNotifications({
         type: "HELP_REQUEST_NEW",
-        title: `Sinal de Fumaça de ${helpRequest.requestedBy.ninjaAlias}`,
+        title: `Pedido de ajuda de ${helpRequest.requestedBy.ninjaAlias}`,
         body: helpRequest.contextMessage,
         targetUserIds: targets.map((u) => u.id),
       })

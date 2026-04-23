@@ -211,8 +211,8 @@ export function LoginForm() {
               onClick={() => void handleOrgSelect()}
               className={cn(
                 "flex-1 text-sm font-semibold",
-                "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]",
-                "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
+                "bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]",
+                "dark:bg-[oklch(0.68_0.22_320)] dark:hover:bg-[oklch(0.58_0.22_320)]"
               )}
             >
               {isPending ? "Entrando…" : "Confirmar"}
@@ -229,8 +229,8 @@ export function LoginForm() {
           disabled={isPending}
           className={cn(
             "mt-1 h-10 w-full text-sm font-semibold",
-            "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]",
-            "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
+            "bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]",
+            "dark:bg-[oklch(0.68_0.22_320)] dark:hover:bg-[oklch(0.58_0.22_320)]"
           )}
         >
           {isPending ? "Entrando…" : "Entrar"}
@@ -242,7 +242,7 @@ export function LoginForm() {
         Novo usuário?{" "}
         <Link
           href="/register"
-          className="font-medium text-[oklch(0.56_0.22_15)] underline-offset-4 hover:underline"
+          className="font-medium text-[oklch(0.68_0.22_320)] underline-offset-4 hover:underline"
         >
           Criar conta
         </Link>

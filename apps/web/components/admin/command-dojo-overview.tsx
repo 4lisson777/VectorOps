@@ -48,26 +48,35 @@ interface CommandDojoOverviewProps {
   initialTvConfig: TvConfig | null
 }
 
-// ---- Severity color helpers -----------------------------------------------
+// Severity labels (PT-BR product vocabulary)
+const SEVERITY_LABELS: Record<string, string> = {
+  LOW: "Baixa",
+  MEDIUM: "Média",
+  HIGH: "Alta",
+  CRITICAL: "Crítica",
+}
 
-const SEVERITY_COLORS: Record<string, string> = {
-  LOW: "text-neutral-500 bg-neutral-500/10 border-neutral-500/20",
-  MEDIUM: "text-green-600 bg-green-500/10 border-green-500/20 dark:text-green-400",
-  HIGH: "text-red-600 bg-red-500/10 border-red-500/20 dark:text-red-400",
-  CRITICAL: "text-white bg-black/80 border-black/30 dark:bg-white/10 dark:text-white",
+// Maps to plasma luminance ramp tokens (matches SeverityBadge)
+const SEVERITY_MAG: Record<string, "m2" | "m3" | "m4" | "m5"> = {
+  LOW: "m2",
+  MEDIUM: "m3",
+  HIGH: "m4",
+  CRITICAL: "m5",
 }
 
 function SeverityPill({ severity, count }: { severity: string; count: number }) {
-  const cls = SEVERITY_COLORS[severity] ?? ""
+  const m = SEVERITY_MAG[severity] ?? "m2"
   return (
     <span
-      className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium",
-        cls
-      )}
+      className="inline-flex items-center gap-1.5 rounded border px-2.5 py-0.5 text-xs font-medium"
+      style={{
+        backgroundColor: `var(--${m}-bg)`,
+        color: `var(--${m}-fg)`,
+        borderColor: `var(--${m}-br)`,
+      }}
     >
-      <span className="tabular-nums font-bold">{count}</span>
-      {severity.charAt(0) + severity.slice(1).toLowerCase()}
+      <span className="font-mono tabular-nums font-bold">{count}</span>
+      {SEVERITY_LABELS[severity] ?? severity}
     </span>
   )
 }
@@ -195,7 +204,7 @@ export function CommandDojoOverview({
       {/* Page header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Dojô de Comando</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Painel Geral</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Visão geral da equipe e métricas em tempo real
           </p>
@@ -294,7 +303,7 @@ export function CommandDojoOverview({
             {isRefreshing && !stats ? (
               <Skeleton className="h-8 w-12" />
             ) : (
-              <span className="text-2xl font-bold tabular-nums text-[oklch(0.56_0.22_15)]">
+              <span className="text-2xl font-bold tabular-nums text-[oklch(0.68_0.22_320)]">
                 {stats?.unassignedCount ?? 0}
               </span>
             )}
@@ -384,7 +393,7 @@ export function CommandDojoOverview({
                     </div>
                     <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
                       <div
-                        className="h-full rounded-full bg-[oklch(0.56_0.22_15)] transition-all"
+                        className="h-full rounded-full bg-[oklch(0.68_0.22_320)] transition-all"
                         style={{
                           width: `${Math.round((dev.openTicketCount / maxWorkload) * 100)}%`,
                         }}
@@ -455,7 +464,7 @@ export function CommandDojoOverview({
               type="button"
               onClick={() => void handleSaveTvConfig()}
               disabled={isSavingTv}
-              className="bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]"
+              className="bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]"
             >
               {isSavingTv ? "Salvando…" : "Salvar Configurações da TV"}
             </Button>

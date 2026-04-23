@@ -13,7 +13,7 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     // Log the error for observability; in production this would go to a monitoring service
-    console.error("[ShinobiOps] Unhandled error:", error)
+    console.error("[VectorOps] Unhandled error:", error)
   }, [error])
 
   return (

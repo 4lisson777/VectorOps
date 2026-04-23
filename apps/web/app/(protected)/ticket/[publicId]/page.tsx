@@ -22,7 +22,7 @@ export async function generateMetadata({
   params: Promise<{ publicId: string }>
 }) {
   const { publicId } = await params
-  return { title: `${publicId} — ShinobiOps` }
+  return { title: `${publicId} — VectorOps` }
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -319,7 +319,7 @@ export default async function TicketDetailPage({
           {/* Timeline */}
           <div className="flex flex-col gap-4">
             <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-              Registro de Missões
+              Histórico
             </h2>
             <TicketTimeline events={timelineEvents} />
           </div>

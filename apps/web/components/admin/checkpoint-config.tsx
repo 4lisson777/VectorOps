@@ -190,9 +190,9 @@ export function CheckpointConfig() {
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Configurações dos Pergaminhos de Status</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Configurações dos Atualizações de Status</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Configure solicitações automáticas de Pergaminhos de Status e reveja o histórico de respostas.
+          Configure solicitações automáticas de Atualizações de Status e reveja o histórico de respostas.
         </p>
       </div>
 
@@ -214,10 +214,10 @@ export function CheckpointConfig() {
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <Label htmlFor="checkpoint-enabled" className="font-medium">
-                    Ativar Pergaminhos de Status
+                    Ativar Atualizações de Status
                   </Label>
                   <p className="text-xs text-muted-foreground mt-0.5">
-                    Quando ativado, os desenvolvedores recebem solicitações automáticas de Pergaminhos de Status.
+                    Quando ativado, os desenvolvedores recebem solicitações automáticas de Atualizações de Status.
                   </p>
                 </div>
                 <Switch
@@ -284,7 +284,7 @@ export function CheckpointConfig() {
                   type="button"
                   onClick={() => void handleSaveConfig()}
                   disabled={isSaving}
-                  className="bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]"
+                  className="bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]"
                 >
                   {isSaving ? "Salvando…" : "Salvar Configurações"}
                 </Button>
@@ -406,7 +406,7 @@ export function CheckpointConfig() {
                       colSpan={5}
                       className="py-10 text-center text-sm italic text-muted-foreground"
                     >
-                      Nenhuma resposta de Pergaminho de Status encontrada.
+                      Nenhuma resposta de Atualização de Status encontrada.
                     </TableCell>
                   </TableRow>
                 ) : (

@@ -218,8 +218,8 @@ export function OrganizationSettings() {
               disabled={isSaving || !name.trim() || name.trim() === org?.name}
               className={cn(
                 "text-sm font-semibold",
-                "bg-[oklch(0.56_0.22_15)] text-white hover:bg-[oklch(0.50_0.22_15)]",
-                "dark:bg-[oklch(0.56_0.22_15)] dark:hover:bg-[oklch(0.50_0.22_15)]"
+                "bg-[oklch(0.68_0.22_320)] text-white hover:bg-[oklch(0.58_0.22_320)]",
+                "dark:bg-[oklch(0.68_0.22_320)] dark:hover:bg-[oklch(0.58_0.22_320)]"
               )}
             >
               {isSaving ? "Salvando…" : "Salvar alterações"}

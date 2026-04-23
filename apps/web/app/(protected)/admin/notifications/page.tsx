@@ -1,7 +1,7 @@
 import { AdminNotificationsContent } from "@/components/admin/admin-notifications-content"
 
 export const metadata = {
-  title: "Roteamento de Notificacoes — ShinobiOps",
+  title: "Roteamento de Notificacoes — VectorOps",
 }
 
 export default function AdminNotificationsPage() {
