@@ -78,6 +78,28 @@
 - `/support/queue/loading.tsx` — Mission Board skeleton
 - `/ticket/[publicId]/loading.tsx` — Ticket detail skeleton
 
+### Multitenancy UI Patterns (2026-04-23)
+- Impersonation detection: `session.isSuperAdmin && session.originalOrganizationId && originalOrganizationId !== organizationId`
+- Super-admin GET /api/super-admin/organizations returns `pagination` object (not flat fields)
+- Super-admin GET /api/super-admin/organizations/[id] returns `totalTicketCount` and `activeTicketCount` as top-level numbers
+- POST /api/super-admin/organizations doesn't return counts — default to 0
+- TV route requires `?org=SLUG` — returns 400 without it
+- `/api/auth/me` returns `organizationName` and `organizationSlug` as flat fields on user object
+- Invite code validation: GET /api/invites/[code]; errors: 404=not found, 409=used, 410=expired, 403=inactive org
+- Register modes: presence of `organizationName` = create-org mode; `inviteCode` = join mode
+- Login 409 response: `{ error: "...", organizations: [{ name, slug }] }`
+- ImpersonationBanner: amber colors, calls POST /api/super-admin/stop-impersonating
+- Org settings: GET/PATCH /api/organizations/current (no /[id] needed for current user's org)
+- Invite management: uses /api/organizations/[id]/invites (id from session.organizationId)
+
+### Implemented Components (Multitenancy Phase)
+- `OrganizationSettings` — `apps/web/components/admin/organization-settings.tsx`
+- `InviteManagement` + `NewInviteDialog` + `InviteRow` — `apps/web/components/admin/invite-management.tsx`
+- `OrgList` + `CreateOrgDialog` — `apps/web/components/super-admin/org-list.tsx`
+- `OrgDetail` — `apps/web/components/super-admin/org-detail.tsx`
+- Super-admin pages: `/super-admin/`, `/super-admin/organizations`, `/super-admin/organizations/[id]`
+- Org settings page: `/admin/organization`
+
 ### Implemented Components (Phase 1)
 - `Input`, `Label`, `Card*`, `Badge`, `Avatar*`, `Separator`, `DropdownMenu*`, `Select*`, `Tabs*` — all in `packages/ui/src/components/`
 - `SeverityBadge` — implemented in `packages/ui/src/components/severity-badge.tsx`

@@ -17,26 +17,40 @@ export default async function ProtectedLayout({
     redirect("/login")
   }
 
-  // Fetch avatarUrl for the header avatar — minimal select to avoid heavy payload
+  // Fetch avatarUrl and org name for the header — minimal selects to keep payload small
   let avatarUrl: string | null = null
+  let organizationName: string | null = null
   try {
     const user = await db.user.findUnique({
       where: { id: session.userId },
-      select: { avatarUrl: true, isActive: true },
+      select: {
+        avatarUrl: true,
+        isActive: true,
+        organization: { select: { name: true } },
+      },
     })
     if (!user || !user.isActive) {
       session.destroy()
       redirect("/login")
     }
     avatarUrl = user.avatarUrl
+    organizationName = user.organization?.name ?? null
   } catch {
-    // DB unavailable during build or early boot — proceed without avatar
+    // DB unavailable during build or early boot — proceed without avatar / org name
   }
 
   return (
     <AppShell
-      session={{ userId: session.userId, role: session.role, name: session.name }}
+      session={{
+        userId: session.userId,
+        role: session.role,
+        name: session.name,
+        organizationId: session.organizationId,
+        isSuperAdmin: session.isSuperAdmin ?? false,
+        originalOrganizationId: session.originalOrganizationId,
+      }}
       avatarUrl={avatarUrl}
+      organizationName={organizationName}
     >
       {children}
     </AppShell>

@@ -20,16 +20,19 @@ interface SeedUser {
   password: string
   role: "TECH_LEAD" | "DEVELOPER" | "SUPPORT_LEAD" | "SUPPORT_MEMBER" | "QA"
   ninjaAlias: string
+  isSuperAdmin?: boolean
 }
 
-const SEED_USERS: SeedUser[] = [
-  // Tech Lead (1)
+// Primary organization users (Inovar Sistemas)
+const INOVAR_USERS: SeedUser[] = [
+  // Super Admin + Tech Lead (1)
   {
     name: "Alisson Lima",
     email: "alisson.lima@shinobiops.dev",
     password: "Password123!",
     role: "TECH_LEAD",
     ninjaAlias: "IronJonin",
+    isSuperAdmin: true,
   },
   // Developers (4)
   {
@@ -93,6 +96,31 @@ const SEED_USERS: SeedUser[] = [
   },
 ]
 
+// Test organization users (Test Company — for dev multitenancy testing)
+const TEST_COMPANY_USERS: SeedUser[] = [
+  {
+    name: "Test Lead",
+    email: "lead@testcompany.dev",
+    password: "Password123!",
+    role: "TECH_LEAD",
+    ninjaAlias: "PhantomSensei",
+  },
+  {
+    name: "Test Developer",
+    email: "dev@testcompany.dev",
+    password: "Password123!",
+    role: "DEVELOPER",
+    ninjaAlias: "DustKunai",
+  },
+  {
+    name: "Test Support",
+    email: "support@testcompany.dev",
+    password: "Password123!",
+    role: "SUPPORT_MEMBER",
+    ninjaAlias: "IronSparrow",
+  },
+]
+
 interface RoleNotificationDefault {
   role: "TECH_LEAD" | "DEVELOPER" | "QA" | "SUPPORT_LEAD" | "SUPPORT_MEMBER"
   notifyOnCreation: boolean
@@ -107,49 +135,146 @@ const ROLE_NOTIFICATION_DEFAULTS: RoleNotificationDefault[] = [
   { role: "SUPPORT_MEMBER", notifyOnCreation: false, notifyOnAssignment: false },
 ]
 
-async function main(): Promise<void> {
-  console.log("Applying SQLite pragmas...")
-  await applyPragmas()
-
-  console.log("Seeding development users...")
-
-  for (const seedUser of SEED_USERS) {
+async function seedOrganizationUsers(
+  orgId: string,
+  users: SeedUser[]
+): Promise<void> {
+  for (const seedUser of users) {
     const passwordHash = await bcrypt.hash(seedUser.password, 12)
 
+    // Upsert by (organizationId, email) compound unique — use findFirst + id for the where clause.
+    // On update: only overwrite isSuperAdmin if the seed definition sets it to true,
+    // to avoid inadvertently demoting an existing super-admin on re-seed.
+    const existingUser = await prisma.user.findFirst({
+      where: { organizationId: orgId, email: seedUser.email },
+    })
     const user = await prisma.user.upsert({
-      where: { email: seedUser.email },
-      update: {},
+      where: { id: existingUser?.id ?? "" },
+      update: seedUser.isSuperAdmin ? { isSuperAdmin: true } : {},
       create: {
+        organizationId: orgId,
         name: seedUser.name,
         email: seedUser.email,
         passwordHash,
         role: seedUser.role,
         ninjaAlias: seedUser.ninjaAlias,
+        isSuperAdmin: seedUser.isSuperAdmin ?? false,
       },
     })
 
-    console.log(`  Created/found user: ${user.name} (${user.role}) — ${user.email}`)
+    const superTag = user.isSuperAdmin ? " [SUPER_ADMIN]" : ""
+    console.log(
+      `    Created/found user: ${user.name} (${user.role})${superTag} — ${user.email}`
+    )
   }
+}
 
-  console.log("Seeding role notification configs...")
+async function seedOrgConfigs(orgId: string): Promise<void> {
+  // CheckpointConfig — one per org
+  const existingCheckpointConfig = await prisma.checkpointConfig.findFirst({
+    where: { organizationId: orgId },
+  })
+  await prisma.checkpointConfig.upsert({
+    where: { id: existingCheckpointConfig?.id ?? "" },
+    update: {},
+    create: {
+      organizationId: orgId,
+      intervalMinutes: 60,
+      activeHoursStart: "09:00",
+      activeHoursEnd: "18:00",
+      isEnabled: true,
+    },
+  })
+  console.log("    Upserted CheckpointConfig")
 
+  // TvConfig — one per org
+  const existingTvConfig = await prisma.tvConfig.findFirst({
+    where: { organizationId: orgId },
+  })
+  await prisma.tvConfig.upsert({
+    where: { id: existingTvConfig?.id ?? "" },
+    update: {},
+    create: {
+      organizationId: orgId,
+      isEnabled: true,
+      refreshInterval: 30,
+    },
+  })
+  console.log("    Upserted TvConfig")
+
+  // RoleNotificationConfig — one row per (org, role)
   for (const defaults of ROLE_NOTIFICATION_DEFAULTS) {
     await prisma.roleNotificationConfig.upsert({
-      where: { role: defaults.role },
+      where: { organizationId_role: { organizationId: orgId, role: defaults.role } },
       update: {},
       create: {
+        organizationId: orgId,
         role: defaults.role,
         notifyOnCreation: defaults.notifyOnCreation,
         notifyOnAssignment: defaults.notifyOnAssignment,
       },
     })
-
     console.log(
-      `  Upserted role config: ${defaults.role} (creation=${defaults.notifyOnCreation}, assignment=${defaults.notifyOnAssignment})`
+      `    Upserted RoleNotificationConfig: ${defaults.role} (creation=${defaults.notifyOnCreation}, assignment=${defaults.notifyOnAssignment})`
     )
   }
+}
 
-  console.log("Seeding complete.")
+async function main(): Promise<void> {
+  console.log("Applying SQLite pragmas...")
+  await applyPragmas()
+
+  // ── Organization 1: Inovar Sistemas (default / production org) ───────────
+  console.log('\nSeeding organization: "Inovar Sistemas"...')
+  const inovarOrg = await prisma.organization.upsert({
+    where: { slug: "inovar-sistemas" },
+    update: {},
+    create: {
+      name: "Inovar Sistemas",
+      slug: "inovar-sistemas",
+      isActive: true,
+    },
+  })
+  console.log(`  Organization ID: ${inovarOrg.id}`)
+
+  console.log("  Seeding users...")
+  await seedOrganizationUsers(inovarOrg.id, INOVAR_USERS)
+
+  console.log("  Seeding org configs...")
+  await seedOrgConfigs(inovarOrg.id)
+
+  // ── Organization 2: Test Company (dev multitenancy testing) ──────────────
+  console.log('\nSeeding organization: "Test Company"...')
+  const testOrg = await prisma.organization.upsert({
+    where: { slug: "test-company" },
+    update: {},
+    create: {
+      name: "Test Company",
+      slug: "test-company",
+      isActive: true,
+    },
+  })
+  console.log(`  Organization ID: ${testOrg.id}`)
+
+  console.log("  Seeding users...")
+  await seedOrganizationUsers(testOrg.id, TEST_COMPANY_USERS)
+
+  console.log("  Seeding org configs...")
+  await seedOrgConfigs(testOrg.id)
+
+  console.log("\nSeeding complete.")
+  console.log("")
+  console.log("Seed credentials (all passwords: Password123!):")
+  console.log("  Inovar Sistemas:")
+  console.log("    TECH_LEAD + SUPER_ADMIN : alisson.lima@shinobiops.dev")
+  console.log("    DEVELOPER               : matheus@shinobiops.dev")
+  console.log("    SUPPORT_LEAD            : alisson.rosa@shinobiops.dev")
+  console.log("    SUPPORT_MEMBER          : bruno@shinobiops.dev")
+  console.log("    QA                      : nicoli@shinobiops.dev")
+  console.log("  Test Company:")
+  console.log("    TECH_LEAD               : lead@testcompany.dev")
+  console.log("    DEVELOPER               : dev@testcompany.dev")
+  console.log("    SUPPORT_MEMBER          : support@testcompany.dev")
 }
 
 main()

@@ -11,12 +11,14 @@ import type { Role } from "@/lib/types"
 interface AppShellProps {
   session: SessionData
   avatarUrl?: string | null
+  /** Organization name from /api/auth/me, displayed next to logo in header */
+  organizationName?: string | null
   children: React.ReactNode
 }
 
 // AppShell wraps authenticated pages with the header + sidebar layout.
 // Sidebar open/close state lives here so both components share it.
-export function AppShell({ session, avatarUrl, children }: AppShellProps) {
+export function AppShell({ session, avatarUrl, organizationName, children }: AppShellProps) {
   const [sidebarOpen, setSidebarOpen] = React.useState(false)
 
   return (
@@ -36,6 +38,7 @@ export function AppShell({ session, avatarUrl, children }: AppShellProps) {
           <Header
             session={session}
             avatarUrl={avatarUrl}
+            organizationName={organizationName}
             onMenuClick={() => setSidebarOpen((prev) => !prev)}
           />
           <main className="flex-1 overflow-y-auto bg-background">

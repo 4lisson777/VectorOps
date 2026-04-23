@@ -118,7 +118,17 @@ function ClockIcon() {
 function ScrollIcon() {
   return (
     <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-      <path d="M8 21h12a2 2 0 0 0 0-4H8a2 2 0 0 1 0-4h12a2 2 0 0 0 0-4H8a2 2 0 1 1 0-4h8" />
+      <path d="M8 21h12a2 2 0 0 0 0-4H8a2 2 0 0 1 0-4h12a2 2 0 0 0 0-4H8a2 2 1 1 1 0-4h8" />
+    </svg>
+  )
+}
+
+function BuildingIcon() {
+  return (
+    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M9 22V12h6v10" />
+      <path d="M9 7h.01M15 7h.01M9 12h.01M15 12h.01" />
     </svg>
   )
 }
@@ -147,6 +157,7 @@ function getNavItems(role: Role): { primary: NavItem[]; secondary?: NavItem[] } 
     { label: "Equipe", href: "/admin/team", icon: <TeamIcon /> },
     { label: "Notificações", href: "/admin/notifications", icon: <BellIcon /> },
     { label: "Pergaminhos de Status", href: "/admin/checkpoints", icon: <ClockIcon /> },
+    { label: "Organização", href: "/admin/organization", icon: <BuildingIcon /> },
     { label: "Log", href: "/admin/log", icon: <ScrollIcon /> },
   ]
   const qaPrimary: NavItem[] = [

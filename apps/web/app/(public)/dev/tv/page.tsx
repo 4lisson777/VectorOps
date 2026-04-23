@@ -4,8 +4,16 @@ export const metadata = {
   title: "Painel Ninja — Modo TV | ShinobiOps",
 }
 
+interface TvPageProps {
+  searchParams: Promise<{ org?: string }>
+}
+
 // TV Mode — full-screen read-only Ninja Board for office displays.
 // Public route — no authentication required.
-export default function TvPage() {
-  return <TvBoard />
+// Accepts ?org=SLUG to scope the board to a specific organization.
+export default async function TvPage({ searchParams }: TvPageProps) {
+  const params = await searchParams
+  const orgSlug = params.org ?? undefined
+
+  return <TvBoard orgSlug={orgSlug} />
 }

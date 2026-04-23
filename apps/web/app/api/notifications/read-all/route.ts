@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server"
-import { db } from "@/lib/db"
-import { requireAuth } from "@/lib/auth"
+import { getTenantDb } from "@/lib/tenant-db"
+import { requireTenantAuth } from "@/lib/auth"
 
 export async function PATCH(): Promise<NextResponse> {
-  const { session, error } = await requireAuth()
-  if (error) return error
+  return requireTenantAuth(async (session) => {
+    const tenantDb = getTenantDb()
+    const result = await tenantDb.notification.updateMany({
+      where: { userId: session.userId, isRead: false },
+      data: { isRead: true },
+    })
 
-  const result = await db.notification.updateMany({
-    where: { userId: session.userId, isRead: false },
-    data: { isRead: true },
+    return NextResponse.json({ count: result.count })
   })
-
-  return NextResponse.json({ count: result.count })
 }

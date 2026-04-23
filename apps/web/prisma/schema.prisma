@@ -83,22 +83,67 @@ enum NotificationType {
   CHECKPOINT_PROMPT
 }
 
+model Organization {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users                  User[]
+  tickets                Ticket[]
+  notifications          Notification[]
+  helpRequests           HelpRequest[]
+  helpRequestResponses   HelpRequestResponse[]
+  checkpoints            Checkpoint[]
+  checkpointConfigs      CheckpointConfig[]
+  tvConfigs              TvConfig[]
+  roleNotificationConfigs RoleNotificationConfig[]
+  invites                Invite[]
+
+  @@map("organizations")
+}
+
+model Invite {
+  id             String    @id @default(cuid())
+  organizationId String
+  code           String    @unique
+  role           Role
+  email          String?
+  expiresAt      DateTime
+  usedById       String?
+  usedAt         DateTime?
+  createdById    String
+  createdAt      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  usedBy       User?        @relation("UsedInvites", fields: [usedById], references: [id])
+  createdBy    User         @relation("CreatedInvites", fields: [createdById], references: [id])
+
+  @@map("invites")
+}
+
 model User {
-  id            String  @id @default(cuid())
-  name          String
-  email         String  @unique
-  passwordHash  String
-  role          Role
-  avatarUrl     String?
-  ninjaAlias    String
-  isActive      Boolean @default(true)
-  notifyTickets Boolean @default(true)
-  notifyBugs    Boolean @default(true)
-  soundEnabled  Boolean @default(true)
-  devStatus     DevStatus? @default(ACTIVE)
-  currentTask   String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id             String     @id @default(cuid())
+  organizationId String
+  name           String
+  email          String
+  passwordHash   String
+  role           Role
+  avatarUrl      String?
+  ninjaAlias     String
+  isActive       Boolean    @default(true)
+  isSuperAdmin   Boolean    @default(false)
+  notifyTickets  Boolean    @default(true)
+  notifyBugs     Boolean    @default(true)
+  soundEnabled   Boolean    @default(true)
+  devStatus      DevStatus? @default(ACTIVE)
+  currentTask    String?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id])
 
   openedTickets     Ticket[]              @relation("OpenedTickets")
   assignedTickets   Ticket[]              @relation("AssignedTickets")
@@ -109,28 +154,33 @@ model User {
   requestedHelp     HelpRequest[]         @relation("RequestedHelp")
   helpResponses     HelpRequestResponse[] @relation("RespondedHelp")
   checkpoints       Checkpoint[]
+  usedInvites       Invite[]              @relation("UsedInvites")
+  createdInvites    Invite[]              @relation("CreatedInvites")
 
+  @@unique([organizationId, email])
   @@map("users")
 }
 
 model Ticket {
-  id            String       @id @default(cuid())
-  publicId      String       @unique
-  title         String
-  description   String
-  type          TicketType
-  severity      Severity
-  status        TicketStatus @default(OPEN)
-  deadline      DateTime
-  priorityOrder Int
-  openedById    String
-  assignedToId  String?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  resolvedAt    DateTime?
+  id             String       @id @default(cuid())
+  organizationId String
+  publicId       String       @unique
+  title          String
+  description    String
+  type           TicketType
+  severity       Severity
+  status         TicketStatus @default(OPEN)
+  deadline       DateTime
+  priorityOrder  Int
+  openedById     String
+  assignedToId   String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  resolvedAt     DateTime?
 
-  openedBy   User  @relation("OpenedTickets", fields: [openedById], references: [id])
-  assignedTo User? @relation("AssignedTickets", fields: [assignedToId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+  openedBy     User         @relation("OpenedTickets", fields: [openedById], references: [id])
+  assignedTo   User?         @relation("AssignedTickets", fields: [assignedToId], references: [id])
 
   bugReport       BugReport?
   events          TicketEvent[]
@@ -141,14 +191,14 @@ model Ticket {
 }
 
 model BugReport {
-  id                String      @id @default(cuid())
-  ticketId          String      @unique
-  affectedModule    String
-  stepsToReproduce  String
-  expectedBehavior  String
-  actualBehavior    String
-  environment       Environment
-  customerId        String?
+  id               String      @id @default(cuid())
+  ticketId         String      @unique
+  affectedModule   String
+  stepsToReproduce String
+  expectedBehavior String
+  actualBehavior   String
+  environment      Environment
+  customerId       String?
 
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
 
@@ -189,6 +239,7 @@ model ReorderRequest {
 
 model Notification {
   id             String           @id @default(cuid())
+  organizationId String
   userId         String
   type           NotificationType
   title          String
@@ -199,8 +250,9 @@ model Notification {
   acknowledgedAt DateTime?
   createdAt      DateTime         @default(now())
 
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  ticket Ticket? @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ticket       Ticket?      @relation(fields: [ticketId], references: [id], onDelete: SetNull)
 
   @@index([userId, isRead])
   @@index([userId, requiresAck, acknowledgedAt])
@@ -209,37 +261,43 @@ model Notification {
 
 model HelpRequest {
   id             String   @id @default(cuid())
+  organizationId String
   requestedById  String
   contextMessage String
   createdAt      DateTime @default(now())
 
-  requestedBy User                  @relation("RequestedHelp", fields: [requestedById], references: [id])
-  responses   HelpRequestResponse[]
+  organization Organization @relation(fields: [organizationId], references: [id])
+  requestedBy  User         @relation("RequestedHelp", fields: [requestedById], references: [id])
+  responses    HelpRequestResponse[]
 
   @@map("help_requests")
 }
 
 model HelpRequestResponse {
-  id            String   @id @default(cuid())
-  helpRequestId String
-  responderId   String
-  respondedAt   DateTime @default(now())
+  id             String   @id @default(cuid())
+  organizationId String
+  helpRequestId  String
+  responderId    String
+  respondedAt    DateTime @default(now())
 
-  helpRequest HelpRequest @relation(fields: [helpRequestId], references: [id], onDelete: Cascade)
-  responder   User        @relation("RespondedHelp", fields: [responderId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+  helpRequest  HelpRequest  @relation(fields: [helpRequestId], references: [id], onDelete: Cascade)
+  responder    User          @relation("RespondedHelp", fields: [responderId], references: [id])
 
   @@map("help_request_responses")
 }
 
 model Checkpoint {
-  id          String   @id @default(cuid())
-  userId      String
-  currentTask String
-  isBlocked   Boolean
-  notes       String?
-  createdAt   DateTime @default(now())
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  currentTask    String
+  isBlocked      Boolean
+  notes          String?
+  createdAt      DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  organization Organization @relation(fields: [organizationId], references: [id])
+  user         User         @relation(fields: [userId], references: [id])
 
   @@index([userId, createdAt])
   @@map("checkpoints")
@@ -247,28 +305,38 @@ model Checkpoint {
 
 model CheckpointConfig {
   id               String  @id @default(cuid())
+  organizationId   String
   intervalMinutes  Int     @default(60)
   activeHoursStart String  @default("09:00")
   activeHoursEnd   String  @default("18:00")
   isEnabled        Boolean @default(true)
+
+  organization Organization @relation(fields: [organizationId], references: [id])
 
   @@map("checkpoint_config")
 }
 
 model TvConfig {
   id              String  @id @default(cuid())
+  organizationId  String
   isEnabled       Boolean @default(true)
   refreshInterval Int     @default(30)
+
+  organization Organization @relation(fields: [organizationId], references: [id])
 
   @@map("tv_config")
 }
 
 model RoleNotificationConfig {
   id                  String   @id @default(cuid())
-  role                Role     @unique
+  organizationId      String
+  role                Role
   notifyOnCreation    Boolean  @default(false)
   notifyOnAssignment  Boolean  @default(false)
   updatedAt           DateTime @updatedAt
 
+  organization Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([organizationId, role])
   @@map("role_notification_configs")
 }

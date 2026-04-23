@@ -1,7 +1,14 @@
 import { Severity } from "@/generated/prisma/client"
-import { Prisma } from "@/generated/prisma/client"
 
-type TransactionClient = Prisma.TransactionClient
+// Minimal interface for the ticket.count operation — compatible with both
+// Prisma.TransactionClient and the extended client's transaction type.
+// The extended client returns `number | {}` for count; we accept either.
+interface TicketCountClient {
+  ticket: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    count(args?: any): Promise<number | object>
+  }
+}
 
 // Lower weight number = higher priority. CRITICAL tickets always rank first.
 const SEVERITY_WEIGHT: Record<Severity, number> = {
@@ -13,12 +20,12 @@ const SEVERITY_WEIGHT: Record<Severity, number> = {
 
 export async function calculatePriorityOrder(
   severity: Severity,
-  tx: TransactionClient
+  tx: TicketCountClient
 ): Promise<number> {
   const weight = SEVERITY_WEIGHT[severity]
   // Count all active tickets whose severity has equal or higher priority weight.
   // The new ticket is placed after them — i.e., its position = count + 1.
-  const count = await tx.ticket.count({
+  const result = await tx.ticket.count({
     where: {
       status: { notIn: ["DONE", "CANCELLED"] },
       severity: {
@@ -28,5 +35,7 @@ export async function calculatePriorityOrder(
       },
     },
   })
+  // The extended client may return `number | {}` — coerce to number
+  const count = typeof result === "number" ? result : 0
   return count + 1
 }

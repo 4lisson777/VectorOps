@@ -200,6 +200,147 @@ Returns 409 if already acked or if `requiresAck` is false.
 #### Prisma generate must be run when migration adds new columns to existing models
 The old generated client won't have the new fields. Run `npx prisma generate` (from `apps/web/`) after applying migrations.
 
+### Phase MT-1 Patterns (Multitenancy Schema & Data Layer)
+
+#### organizationId columns are NOW non-nullable (completed in MT-5)
+All organizationId fields are `String` (non-nullable) in the Prisma schema as of migration `20260423093841_make_org_id_required`. The data migration ran before this, ensuring zero null values existed. Routes that create records must now always include organizationId — this is the source of ~15 TS errors to be fixed in MT-3.
+
+#### Tenant Context Infrastructure
+- `lib/tenant-context.ts`: AsyncLocalStorage wrapper. `runWithTenant(orgId, fn)` sets context; `getTenantId()` throws if not set; `getTenantIdOptional()` returns null if not set.
+- `lib/tenant-db.ts`: `getTenantDb()` returns a Prisma extension that auto-injects `organizationId` in where/data for all 9 tenant-scoped models. Does NOT touch Organization, Invite, BugReport, TicketEvent, ReorderRequest.
+- Middleware must call `runWithTenant` BEFORE any route handler that uses `getTenantDb()`.
+
+#### Compound unique constraints break findUnique({ where: { singleField } })
+When you change `@unique` on a field to `@@unique([organizationId, field])`, Prisma removes the single-field unique index. `findUnique({ where: { field } })` breaks with a TS type error. Fix: use `findFirst({ where: { field } })` as a stopgap until the route is refactored to include organizationId.
+
+#### SQLite database is locked by Next.js dev server
+Running `prisma migrate dev` while the dev server is running always fails with "database is locked". Steps to fix:
+1. `fuser /path/to/shinobiops.db` to find the PID
+2. Kill the next-server process (and turbo/node procs)
+3. Run the migration
+4. Restart dev server
+
+#### Invite model relations
+Invite has two FKs to User: `usedById` (User who used it) and `createdById` (User who created it). Both require named relation fields in Prisma:
+- `usedBy User? @relation("UsedInvites", ...)`
+- `createdBy User @relation("CreatedInvites", ...)`
+User model must declare `usedInvites Invite[] @relation("UsedInvites")` and `createdInvites Invite[] @relation("CreatedInvites")`.
+
+#### Data migration script lives in prisma/migrations/ (not prisma/)
+Prisma CLI ignores .ts files in the migrations directory (it only runs .sql files). The data migration script must be run manually with `npx tsx`.
+
+### Phase MT-5 Patterns (Data Migration & Seed)
+
+#### Two-step nullable → non-nullable migration pattern
+1. Add column as nullable (String?) in the first migration — existing rows are not affected
+2. Run a data migration script to backfill all nulls
+3. Verify zero nulls in the DB
+4. Change column to non-nullable (String) in schema; run second migration
+
+#### RoleNotificationConfig compound unique upsert syntax
+After `@@unique([organizationId, role])`, the upsert where clause is:
+`where: { organizationId_role: { organizationId, role } }` — Prisma auto-generates the compound unique key name as `{field1}_{field2}`.
+
+#### Data migration script: use $executeRawUnsafe when the field type changes
+Once organizationId is non-nullable, Prisma's type system rejects `where: { organizationId: null }`. Use raw SQL `WHERE "organizationId" IS NULL` via `$executeRawUnsafe` to keep the script safe. SQLite uses `?` positional placeholders.
+
+#### Seed script super-admin update pattern
+When upsert must set `isSuperAdmin: true` on an existing user:
+```ts
+update: seedUser.isSuperAdmin ? { isSuperAdmin: true } : {},
+```
+The `update: {}` pattern (no-op on existing) is fine for most fields but not for flags that should be enforced by the seed.
+
+#### db:migrate:mt script
+`apps/web/package.json` has `"db:migrate:mt": "tsx prisma/migrations/data-migration-multitenancy.ts"` for running the data migration. From root: `npm run db:migrate:mt -w web`.
+
+### Phase MT-2 Patterns (Auth, Session & Invite System)
+
+#### SessionData now includes organizationId and isSuperAdmin
+```ts
+interface SessionData { userId, role, name, organizationId, isSuperAdmin }
+```
+Existing sessions created before MT-2 are stale — users will be automatically logged out on next request since the new fields are missing and iron-session won't deserialize them correctly. This is expected and acceptable.
+
+#### requireTenantAuth pattern
+`requireTenantAuth(handler)` is a higher-order guard that combines `requireAuth()` + `runWithTenant(session.organizationId, handler)`. Use it in all tenant-scoped routes so `getTenantDb()` works safely inside the handler.
+
+#### Login multi-org disambiguation
+Login now uses `findMany` (not `findFirst`) on email to detect users registered in multiple orgs under the same email. If >1 match and no `organizationSlug` provided: 409 with `{ organizations: [{ name, slug }] }`. Frontend re-submits with `organizationSlug`.
+
+#### Register two-mode pattern
+Register detects mode from presence of `organizationName` key (create-org) vs `inviteCode` key (join-org) in the request body. Exactly one must be present or 400 is returned. Mode detection is done before schema parsing so we pick the right Zod schema.
+
+#### Org creation seeds default configs
+When creating a new org in register, a `$transaction` creates: Organization, User, CheckpointConfig, TvConfig, and 5 RoleNotificationConfig records. All with `organizationId`. This matches the seed script defaults.
+
+#### Invite code generation
+`generateInviteCode()` in `lib/invite-code.ts` uses `randomBytes(8)` + modulo over `"ABCDEFGHJKMNPQRSTUVWXYZ23456789"` (excludes 0/O/1/I/L). Codes are stored and compared uppercase. The code lookup in GET/register normalizes to `.toUpperCase()`.
+
+#### Array.find() returns T | undefined — TypeScript strict mode requires handling
+When `user = arr.find(...)` is followed by `if (!user) return`, TypeScript does NOT narrow `user` to non-undefined after the if block if the assignment and guard are inside a conditional branch. Workaround: extract into a helper function that returns `T | NextResponse` — TypeScript narrows correctly in the caller after `instanceof NextResponse` check.
+
+#### Invite revocation is soft-delete
+DELETE /api/organizations/[id]/invites/[inviteId] sets `expiresAt = new Date()` (now), making the invite immediately invalid without hard-deleting it for audit purposes.
+
+#### generateOrgSlug
+`lib/invite-code.ts` exports `generateOrgSlug(name)`: lowercase, replace `\s+` with `-`, remove `[^a-z0-9-]`, trim hyphens from edges. Returns empty string if the entire name was non-alphanumeric — register route returns 400 in that case.
+
+### Phase MT-3 Patterns (API Route Updates & SSE Scoping)
+
+#### requireTenantRole curried helper pattern
+```ts
+requireTenantRole(...roles)(async (session) => { ... })
+```
+Defined in `lib/auth.ts`. Combines `requireRole()` + `runWithTenant(session.organizationId, handler)`. Use for all tenant-scoped routes that also need a role check. `requireTenantAuth` is for any-authenticated routes.
+
+#### Extended client's `$transaction` tx type is NOT `Prisma.TransactionClient`
+Helper functions that accept `Prisma.TransactionClient` can't be called with the extended client's tx argument. Fix: define a minimal interface matching only the methods you call (e.g., `{ ticket: { count(args?: any): Promise<number | object> } }`) — both the raw and extended transaction clients satisfy it.
+
+#### Extended client `create` calls still require `organizationId` at TypeScript level
+Even though the Prisma extension injects `organizationId` at runtime, the generated types still demand it. Pattern: add `as any` cast to the `data` field with an explanatory comment `// organizationId is injected by the tenant-db Prisma extension`. Do NOT add organizationId manually — it creates a double-injection risk.
+
+#### Extended client `count` returns `number | {}` (not `number`)
+The Prisma extended client widens `count()` return type. Coerce: `typeof result === "number" ? result : 0` when computing arithmetic on the result.
+
+#### SSE event filtering by organizationId
+Pattern: events that include `payload.organizationId` are filtered in `sse/route.ts` — if the event's org doesn't match the session's org, the event is dropped. Events without `organizationId` in payload pass through (backward compat for any unmodified emitters). Always include `organizationId: session.organizationId` in all `emitShinobiEvent()` calls.
+
+#### TV route is public — use raw `db` with explicit organizationId scoping
+`/api/tv/data` has no session. It accepts `?org=SLUG`, resolves the org via `db.organization.findUnique({ where: { slug } })`, then uses the org's `id` explicitly in all `where` clauses. Do NOT use `getTenantDb()` here since there's no tenant context available (no session).
+
+#### help-requests POST — in-app target query
+The fire-and-forget block for in-app notifications in `POST /api/help-requests` previously used raw `db.user.findMany`. Now it uses `tenantDb.user.findMany` (captured before the fire-and-forget). The tenantDb is created in the same request context where `runWithTenant` is active, so it works correctly.
+
+#### HelpRequestResponse needs `organizationId` injected
+`HelpRequestResponse` IS in `TENANT_SCOPED_MODELS` in `tenant-db.ts`. So creating with `data: { helpRequestId, responderId }` requires the `as any` cast, like all other tenant-scoped creates.
+
+### Phase MT-4 Patterns (Middleware & Super Admin)
+
+#### Middleware super-admin guard
+Middleware reads `isSuperAdmin` from the decrypted session. The `/super-admin` prefix check runs BEFORE the ROLE_GUARDS loop with an early return, so super-admins bypass role checks for that path group. Non-super-admins are redirected to their role home. Both the middleware (early redirect) and the layout (server-component defense in depth) guard this path.
+
+#### x-organization-id header in middleware
+Middleware sets `x-organization-id` response header for all authenticated requests. This allows server components and SSE handlers that cannot use AsyncLocalStorage directly to read the org from the header.
+
+#### Super-admin routes use raw db, not getTenantDb()
+All `/api/super-admin/*` routes import `db` directly (not `getTenantDb()`) because they operate across tenants. The tenant context (AsyncLocalStorage) is NOT set for these routes. Using `getTenantDb()` here would throw "Tenant context not set".
+
+#### Impersonation session fields
+`session.originalOrganizationId` is optional — only set during impersonation. The impersonate endpoint only sets it on the FIRST call (guards with `if (!session.originalOrganizationId)`) to prevent nested impersonation from overwriting the real origin. Stop-impersonating clears it by setting `session.originalOrganizationId = undefined`.
+
+#### Organization relations in Prisma schema are plural arrays
+`checkpointConfigs` and `tvConfigs` (not singular) are the relation names on Organization — because an org can theoretically have multiple config rows (schema allows it). Always access `org.checkpointConfigs[0]` when you need the single config row. Use `take: 1` in include to avoid loading all rows.
+
+#### Active ticket count definition
+"Active" = status NOT IN ("DONE", "CANCELLED"). The TicketStatus enum has: OPEN, IN_PROGRESS, WAITING_FOR_INFO, DONE, CANCELLED. There is no "CLOSED" status.
+
+#### Zod enum → Prisma enum type mismatch
+`z.enum(ALL_ROLES as [string, ...string[]])` produces `string` output type (not Prisma `Role`). When passing this to Prisma `where.role`, TypeScript 2322 fires. Fix: chain `.transform((r) => r as Role)` and import `Role` from `@/generated/prisma/client`.
+
+#### OrgSelfUpdateSchema for TECH_LEAD self-service
+TECH_LEAD can update their org name but NOT slug or isActive directly. Use `OrgSelfUpdateSchema` (name only) in `/api/organizations/current PATCH`. Slug is auto-derived from name. isActive requires super-admin via `/api/super-admin/organizations/[id] PATCH`.
+
 ### Gotchas
 - The monorepo uses `"type": "module"` in `apps/web/package.json` — imports use ESM
 - SQLite enums are stored as TEXT in the DB (SQLite has no native enum type)

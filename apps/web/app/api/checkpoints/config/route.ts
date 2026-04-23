@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { db } from "@/lib/db"
-import { requireAuth, requireRole } from "@/lib/auth"
+import { getTenantDb } from "@/lib/tenant-db"
+import { requireTenantAuth, requireTenantRole } from "@/lib/auth"
 
 const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/
 
@@ -13,41 +13,43 @@ const updateSchema = z.object({
 })
 
 async function getOrCreateConfig() {
-  const existing = await db.checkpointConfig.findFirst()
+  const tenantDb = getTenantDb()
+  const existing = await tenantDb.checkpointConfig.findFirst()
   if (existing) return existing
-  return db.checkpointConfig.create({ data: {} })
+  // organizationId is injected by the tenant-db Prisma extension
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return tenantDb.checkpointConfig.create({ data: {} as any })
 }
 
 export async function GET(): Promise<NextResponse> {
-  const { error } = await requireAuth()
-  if (error) return error
-
-  const config = await getOrCreateConfig()
-  return NextResponse.json({ config })
+  return requireTenantAuth(async () => {
+    const config = await getOrCreateConfig()
+    return NextResponse.json({ config })
+  })
 }
 
 export async function PATCH(request: NextRequest): Promise<NextResponse> {
-  const { error } = await requireRole("TECH_LEAD")
-  if (error) return error
+  return requireTenantRole("TECH_LEAD")(async () => {
+    const body: unknown = await request.json()
+    const parsed = updateSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      )
+    }
 
-  const body: unknown = await request.json()
-  const parsed = updateSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    )
-  }
+    if (Object.keys(parsed.data).length === 0) {
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 })
+    }
 
-  if (Object.keys(parsed.data).length === 0) {
-    return NextResponse.json({ error: "No fields to update" }, { status: 400 })
-  }
+    const current = await getOrCreateConfig()
+    const tenantDb = getTenantDb()
+    const config = await tenantDb.checkpointConfig.update({
+      where: { id: current.id },
+      data: parsed.data,
+    })
 
-  const current = await getOrCreateConfig()
-  const config = await db.checkpointConfig.update({
-    where: { id: current.id },
-    data: parsed.data,
+    return NextResponse.json({ config })
   })
-
-  return NextResponse.json({ config })
 }

@@ -298,16 +298,67 @@ function GlobalSearch() {
   )
 }
 
+// ---- Impersonation Banner ------------------------------------------------
+
+interface ImpersonationBannerProps {
+  organizationName: string
+}
+
+function ImpersonationBanner({ organizationName }: ImpersonationBannerProps) {
+  const router = useRouter()
+  const [isStopping, setIsStopping] = React.useState(false)
+
+  async function handleStopImpersonating() {
+    setIsStopping(true)
+    try {
+      await fetch("/api/super-admin/stop-impersonating", { method: "POST" })
+      router.push("/super-admin")
+      router.refresh()
+    } catch {
+      // Ignore — page will reload
+    } finally {
+      setIsStopping(false)
+    }
+  }
+
+  return (
+    <div className="sticky top-0 z-50 flex items-center justify-between gap-3 bg-amber-500/15 border-b border-amber-500/30 px-4 py-2 text-sm">
+      <div className="flex items-center gap-2">
+        <span className="inline-flex h-2 w-2 rounded-full bg-amber-500" aria-hidden="true" />
+        <span className="font-medium text-amber-700 dark:text-amber-300">
+          Visualizando como:{" "}
+          <span className="font-semibold">{organizationName}</span>
+        </span>
+      </div>
+      <button
+        type="button"
+        onClick={() => void handleStopImpersonating()}
+        disabled={isStopping}
+        className="rounded px-2 py-0.5 text-xs font-medium bg-amber-500/20 text-amber-700 hover:bg-amber-500/30 dark:text-amber-300 dark:hover:bg-amber-500/25 transition-colors disabled:opacity-50"
+      >
+        {isStopping ? "Voltando…" : "Voltar"}
+      </button>
+    </div>
+  )
+}
+
 // ---- Header --------------------------------------------------------------
 
 interface HeaderProps {
   session: SessionData
   avatarUrl?: string | null
+  /** Organization name from /api/auth/me; shown next to the logo */
+  organizationName?: string | null
   onMenuClick: () => void
 }
 
-export function Header({ session, avatarUrl, onMenuClick }: HeaderProps) {
+export function Header({ session, avatarUrl, organizationName, onMenuClick }: HeaderProps) {
   const router = useRouter()
+
+  const isImpersonating =
+    session.isSuperAdmin &&
+    !!session.originalOrganizationId &&
+    session.originalOrganizationId !== session.organizationId
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" })
@@ -316,67 +367,102 @@ export function Header({ session, avatarUrl, onMenuClick }: HeaderProps) {
   }
 
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-      {/* Hamburger — only on small screens */}
-      <button
-        type="button"
-        aria-label="Abrir menu de navegação"
-        onClick={onMenuClick}
-        className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground lg:hidden"
-      >
-        <MenuIcon />
-      </button>
+    <div className="flex flex-col shrink-0">
+      {/* Impersonation banner — only shown to super-admin while impersonating */}
+      {isImpersonating && organizationName && (
+        <ImpersonationBanner organizationName={organizationName} />
+      )}
 
-      {/* Global search with debounced dropdown + Ctrl+K */}
-      <GlobalSearch />
+      <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        {/* Hamburger — only on small screens */}
+        <button
+          type="button"
+          aria-label="Abrir menu de navegação"
+          onClick={onMenuClick}
+          className="rounded-md p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground lg:hidden"
+        >
+          <MenuIcon />
+        </button>
 
-      {/* Notification center — live bell with unread badge and popover list */}
-      <NotificationCenter />
-
-      {/* User dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <button
-            type="button"
-            aria-label={`Menu do usuário ${session.name}`}
-            className="flex items-center gap-2 rounded-md p-1 hover:bg-muted"
-          >
-            <UserAvatar
-              name={session.name}
-              avatarUrl={avatarUrl}
-              size="sm"
-            />
-            <span className="hidden text-sm font-medium sm:inline">
-              {session.name}
+        {/* Org name badge — visible on larger screens */}
+        {organizationName && (
+          <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+            <span className="text-muted-foreground/40 text-sm" aria-hidden="true">/</span>
+            <span className="text-muted-foreground text-sm truncate max-w-[160px]">
+              {organizationName}
             </span>
-          </button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col gap-0.5">
-              <span className="font-medium">{session.name}</span>
-              <span className="text-xs text-muted-foreground">
-                {session.role?.replace(/_/g, " ")}
+          </div>
+        )}
+
+        {/* Global search with debounced dropdown + Ctrl+K */}
+        <GlobalSearch />
+
+        {/* Notification center — live bell with unread badge and popover list */}
+        <NotificationCenter />
+
+        {/* User dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              aria-label={`Menu do usuário ${session.name}`}
+              className="flex items-center gap-2 rounded-md p-1 hover:bg-muted"
+            >
+              <UserAvatar
+                name={session.name}
+                avatarUrl={avatarUrl}
+                size="sm"
+              />
+              <span className="hidden text-sm font-medium sm:inline">
+                {session.name}
               </span>
-            </div>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem asChild>
-            <Link href="/profile" className="flex items-center gap-2">
-              <UserIcon />
-              Perfil
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onClick={handleLogout}
-            className="flex items-center gap-2 text-destructive focus:text-destructive"
-          >
-            <LogOutIcon />
-            Sair
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </header>
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col gap-0.5">
+                <span className="font-medium">{session.name}</span>
+                <span className="text-xs text-muted-foreground">
+                  {session.role?.replace(/_/g, " ")}
+                </span>
+                {organizationName && (
+                  <span className="text-xs text-muted-foreground truncate">
+                    {organizationName}
+                  </span>
+                )}
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/profile" className="flex items-center gap-2">
+                <UserIcon />
+                Perfil
+              </Link>
+            </DropdownMenuItem>
+            {session.isSuperAdmin && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/super-admin" className="flex items-center gap-2">
+                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                      <path d="M12 2L13.09 8.26L19 6L15.45 11.25L22 12L15.45 12.75L19 18L13.09 15.74L12 22L10.91 15.74L5 18L8.55 12.75L2 12L8.55 11.25L5 6L10.91 8.26L12 2Z" />
+                    </svg>
+                    Super Admin
+                  </Link>
+                </DropdownMenuItem>
+              </>
+            )}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="flex items-center gap-2 text-destructive focus:text-destructive"
+            >
+              <LogOutIcon />
+              Sair
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </header>
+    </div>
   )
 }

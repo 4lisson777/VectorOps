@@ -32,6 +32,8 @@ interface TvData {
   ticketCounts: Record<Severity, number>
   bugCounts: Record<Severity, number>
   refreshInterval: number
+  /** Organization name returned by the API when scoped by slug */
+  organizationName?: string
 }
 
 // ---- Severity badge config ------------------------------------------------
@@ -232,15 +234,24 @@ function LiveClock() {
 
 // ---- TvBoard component ---------------------------------------------------
 
-export function TvBoard() {
+interface TvBoardProps {
+  /** Organization slug — passed from ?org=SLUG URL query parameter. Required by the API. */
+  orgSlug?: string
+}
+
+export function TvBoard({ orgSlug }: TvBoardProps) {
   const [data, setData] = React.useState<TvData | null>(null)
+  const [orgName, setOrgName] = React.useState<string | null>(null)
   const [isDisabled, setIsDisabled] = React.useState(false)
   const [lastUpdated, setLastUpdated] = React.useState<Date | null>(null)
   const intervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
 
   async function fetchData() {
     try {
-      const res = await fetch("/api/tv/data")
+      const url = orgSlug
+        ? `/api/tv/data?org=${encodeURIComponent(orgSlug)}`
+        : "/api/tv/data"
+      const res = await fetch(url)
       if (res.status === 503) {
         setIsDisabled(true)
         return
@@ -250,6 +261,7 @@ export function TvBoard() {
       setData(json)
       setLastUpdated(new Date())
       setIsDisabled(false)
+      if (json.organizationName) setOrgName(json.organizationName)
 
       // Update polling interval dynamically based on server config
       if (intervalRef.current) {
@@ -298,7 +310,12 @@ export function TvBoard() {
     <div className="min-h-screen bg-[oklch(0.12_0.03_265)] p-6 flex flex-col gap-6">
       {/* Top bar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <ShurikenLogo />
+        <div className="flex flex-col gap-1">
+          <ShurikenLogo />
+          {orgName && (
+            <span className="text-xs text-white/40 pl-1">{orgName}</span>
+          )}
+        </div>
 
         {/* Severity counts */}
         <div className="flex flex-wrap gap-4">

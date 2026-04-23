@@ -16,6 +16,8 @@ export async function GET(): Promise<NextResponse> {
       name: true,
       email: true,
       role: true,
+      organizationId: true,
+      isSuperAdmin: true,
       avatarUrl: true,
       ninjaAlias: true,
       isActive: true,
@@ -24,6 +26,13 @@ export async function GET(): Promise<NextResponse> {
       soundEnabled: true,
       createdAt: true,
       updatedAt: true,
+      organization: {
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+        },
+      },
     },
   })
 
@@ -33,5 +42,16 @@ export async function GET(): Promise<NextResponse> {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
-  return NextResponse.json({ user }, { status: 200 })
+  // Flatten organization fields into the response for convenient access
+  const { organization, ...userFields } = user
+  return NextResponse.json(
+    {
+      user: {
+        ...userFields,
+        organizationName: organization.name,
+        organizationSlug: organization.slug,
+      },
+    },
+    { status: 200 }
+  )
 }

@@ -2,8 +2,8 @@
 // Delegates all logic to the shared config handler, but enforces TECH_LEAD on GET too.
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { db } from "@/lib/db"
-import { requireRole } from "@/lib/auth"
+import { getTenantDb } from "@/lib/tenant-db"
+import { requireTenantRole } from "@/lib/auth"
 
 const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/
 
@@ -15,47 +15,49 @@ const updateSchema = z.object({
 })
 
 async function getOrCreateConfig() {
-  const existing = await db.checkpointConfig.findFirst()
+  const tenantDb = getTenantDb()
+  const existing = await tenantDb.checkpointConfig.findFirst()
   if (existing) return existing
-  return db.checkpointConfig.create({ data: {} })
+  // organizationId is injected by the tenant-db Prisma extension
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return tenantDb.checkpointConfig.create({ data: {} as any })
 }
 
 export async function GET(): Promise<NextResponse> {
-  const { error } = await requireRole("TECH_LEAD")
-  if (error) return error
-
-  const config = await getOrCreateConfig()
-  return NextResponse.json({ config })
+  return requireTenantRole("TECH_LEAD")(async () => {
+    const config = await getOrCreateConfig()
+    return NextResponse.json({ config })
+  })
 }
 
 export async function PATCH(request: NextRequest): Promise<NextResponse> {
-  const { error } = await requireRole("TECH_LEAD")
-  if (error) return error
+  return requireTenantRole("TECH_LEAD")(async () => {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    }
 
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
-  }
+    const parsed = updateSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      )
+    }
 
-  const parsed = updateSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    )
-  }
+    if (Object.keys(parsed.data).length === 0) {
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 })
+    }
 
-  if (Object.keys(parsed.data).length === 0) {
-    return NextResponse.json({ error: "No fields to update" }, { status: 400 })
-  }
+    const current = await getOrCreateConfig()
+    const tenantDb = getTenantDb()
+    const config = await tenantDb.checkpointConfig.update({
+      where: { id: current.id },
+      data: parsed.data,
+    })
 
-  const current = await getOrCreateConfig()
-  const config = await db.checkpointConfig.update({
-    where: { id: current.id },
-    data: parsed.data,
+    return NextResponse.json({ config })
   })
-
-  return NextResponse.json({ config })
 }

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { TicketStatus } from "@/generated/prisma/client"
 import { db } from "@/lib/db"
 
@@ -9,12 +9,40 @@ const OPEN_STATUSES: TicketStatus[] = [
 ]
 
 // Public endpoint — no auth required.
-// Returns 503 when TV mode is disabled.
-export async function GET(): Promise<NextResponse> {
-  // Check TV config; create a default record if none exists
-  let config = await db.tvConfig.findFirst()
+// Accepts ?org=SLUG to identify which organization's data to display.
+// Returns 400 when no org slug is provided, 404 when the org is not found,
+// and 503 when TV mode is disabled for that org.
+export async function GET(request: NextRequest): Promise<NextResponse> {
+  const { searchParams } = request.nextUrl
+  const orgSlug = searchParams.get("org")
+
+  if (!orgSlug) {
+    return NextResponse.json(
+      { error: "Missing required query parameter: org" },
+      { status: 400 }
+    )
+  }
+
+  // Resolve the organization by slug using the raw db (no tenant context — public route)
+  const organization = await db.organization.findUnique({
+    where: { slug: orgSlug },
+    select: { id: true, name: true, isActive: true },
+  })
+
+  if (!organization) {
+    return NextResponse.json({ error: "Organization not found" }, { status: 404 })
+  }
+
+  if (!organization.isActive) {
+    return NextResponse.json({ error: "Organization is inactive" }, { status: 403 })
+  }
+
+  const organizationId = organization.id
+
+  // Check TV config for this org; create a default record if none exists
+  let config = await db.tvConfig.findFirst({ where: { organizationId } })
   if (!config) {
-    config = await db.tvConfig.create({ data: {} })
+    config = await db.tvConfig.create({ data: { organizationId } })
   }
 
   if (!config.isEnabled) {
@@ -25,6 +53,7 @@ export async function GET(): Promise<NextResponse> {
     // All active developers and tech leads with their top assigned ticket
     db.user.findMany({
       where: {
+        organizationId,
         role: { in: ["DEVELOPER", "TECH_LEAD"] },
         isActive: true,
       },
@@ -55,6 +84,7 @@ export async function GET(): Promise<NextResponse> {
     db.ticket.groupBy({
       by: ["severity"],
       where: {
+        organizationId,
         type: "TICKET",
         status: { in: OPEN_STATUSES },
       },
@@ -65,6 +95,7 @@ export async function GET(): Promise<NextResponse> {
     db.ticket.groupBy({
       by: ["severity"],
       where: {
+        organizationId,
         type: "BUG",
         status: { in: OPEN_STATUSES },
       },
@@ -106,5 +137,6 @@ export async function GET(): Promise<NextResponse> {
     ticketCounts: severityCounts(normalizedTicketCounts),
     bugCounts: severityCounts(normalizedBugCounts),
     refreshInterval: config.refreshInterval,
+    organizationName: organization.name,
   })
 }

@@ -49,6 +49,17 @@ Admin component stubs exist returning null: command-dojo-overview, team-manageme
 - Admin UI at /admin/notifications has two sections: role config table + per-user routing table
 - Per-user routing table should dynamically show users from roles where notifyOnCreation is enabled
 
+## Multitenancy Refactor Insights
+- Row-level isolation (organizationId FK) is the correct pattern for SQLite; schema-per-tenant is not supported
+- AsyncLocalStorage + Prisma Client Extension is the standard pattern for per-request tenant scoping in Next.js
+- Not all models need direct organizationId: child models (BugReport, TicketEvent, ReorderRequest) inherit scope through parent relations
+- Singleton configs (CheckpointConfig, TvConfig) must become per-org records
+- Email uniqueness must change from global to per-org to allow same person in multiple orgs
+- Public ticket IDs should remain globally unique to avoid confusion across support channels
+- Two-step migration (nullable -> backfill -> non-nullable) is safer for existing data
+- Super admin should be a boolean flag, not a role, to avoid polluting the tenant-scoped Role enum
+- TV mode (public route, no auth) needs org slug as a URL parameter for tenant scoping
+
 ## Context System
 - Master context at ai-driven-project/master-context.md
 - Context files follow strict format with IDs (CTX-CATEGORY-NNN)

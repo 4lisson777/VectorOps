@@ -6,6 +6,10 @@ export interface SessionData {
   userId: string
   role: string
   name: string
+  organizationId: string
+  isSuperAdmin: boolean
+  /** Set during super-admin impersonation; holds the original org id so it can be restored. */
+  originalOrganizationId?: string
 }
 
 // Session cookie lives for 7 days

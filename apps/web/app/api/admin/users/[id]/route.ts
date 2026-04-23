@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { db } from "@/lib/db"
-import { requireRole } from "@/lib/auth"
+import { getTenantDb } from "@/lib/tenant-db"
+import { requireTenantRole } from "@/lib/auth"
 
 type RouteContext = { params: Promise<{ id: string }> }
 
@@ -14,63 +14,63 @@ export async function PATCH(
   request: NextRequest,
   context: RouteContext
 ): Promise<NextResponse> {
-  const { session, error } = await requireRole("TECH_LEAD")
-  if (error) return error
+  return requireTenantRole("TECH_LEAD")(async (session) => {
+    const { id } = await context.params
 
-  const { id } = await context.params
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    }
 
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
-  }
+    const parsed = patchSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      )
+    }
 
-  const parsed = patchSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    )
-  }
+    if (Object.keys(parsed.data).length === 0) {
+      return NextResponse.json({ error: "No fields to update" }, { status: 400 })
+    }
 
-  if (Object.keys(parsed.data).length === 0) {
-    return NextResponse.json({ error: "No fields to update" }, { status: 400 })
-  }
+    // Guard: cannot deactivate yourself
+    if (parsed.data.isActive === false && id === session.userId) {
+      return NextResponse.json(
+        { error: "You cannot deactivate your own account" },
+        { status: 422 }
+      )
+    }
 
-  // Guard: cannot deactivate yourself
-  if (parsed.data.isActive === false && id === session.userId) {
-    return NextResponse.json(
-      { error: "You cannot deactivate your own account" },
-      { status: 422 }
-    )
-  }
+    const tenantDb = getTenantDb()
+    const target = await tenantDb.user.findUnique({ where: { id } })
+    if (!target) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 })
+    }
 
-  const target = await db.user.findUnique({ where: { id } })
-  if (!target) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 })
-  }
+    const updated = await tenantDb.user.update({
+      where: { id },
+      data: parsed.data,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        avatarUrl: true,
+        ninjaAlias: true,
+        isActive: true,
+        notifyTickets: true,
+        notifyBugs: true,
+        soundEnabled: true,
+        devStatus: true,
+        currentTask: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
 
-  const updated = await db.user.update({
-    where: { id },
-    data: parsed.data,
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      avatarUrl: true,
-      ninjaAlias: true,
-      isActive: true,
-      notifyTickets: true,
-      notifyBugs: true,
-      soundEnabled: true,
-      devStatus: true,
-      currentTask: true,
-      createdAt: true,
-      updatedAt: true,
-    },
+    return NextResponse.json({ user: updated })
   })
-
-  return NextResponse.json({ user: updated })
 }

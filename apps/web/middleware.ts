@@ -7,6 +7,8 @@ interface SessionPayload {
   userId?: string
   role?: string
   name?: string
+  organizationId?: string
+  isSuperAdmin?: boolean
 }
 
 // Routes that do not require authentication
@@ -21,6 +23,7 @@ const PUBLIC_API_PREFIXES = [
   "/api/auth/",
   "/api/health",
   "/api/tv/",
+  "/api/invites/",
 ]
 
 // Role-based access rules: maps path prefix to allowed roles.
@@ -28,6 +31,7 @@ const PUBLIC_API_PREFIXES = [
 const ROLE_GUARDS: Array<{ prefix: string; roles: string[] }> = [
   { prefix: "/admin/team", roles: ["TECH_LEAD"] },
   { prefix: "/admin/checkpoints", roles: ["TECH_LEAD"] },
+  { prefix: "/admin/organization", roles: ["TECH_LEAD"] },
   { prefix: "/admin", roles: ["TECH_LEAD", "QA"] },
   { prefix: "/support", roles: ["SUPPORT_MEMBER", "SUPPORT_LEAD", "TECH_LEAD", "QA"] },
   // /dev/tv is already public (excluded above), other /dev routes need dev roles
@@ -99,6 +103,20 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     return NextResponse.redirect(loginUrl)
   }
 
+  // Super-admin route guard: only users with isSuperAdmin flag may access /super-admin/*
+  if (pathname.startsWith("/super-admin")) {
+    if (!session.isSuperAdmin) {
+      const home = getRoleHome(session.role ?? "")
+      return NextResponse.redirect(new URL(home, request.url))
+    }
+    // Super-admin is authorized — forward with organization header and exit
+    const response = NextResponse.next()
+    if (session.organizationId) {
+      response.headers.set("x-organization-id", session.organizationId)
+    }
+    return response
+  }
+
   // Role-based access check
   const role = session.role ?? ""
   for (const guard of ROLE_GUARDS) {
@@ -111,7 +129,13 @@ export async function middleware(request: NextRequest): Promise<NextResponse> {
     }
   }
 
-  return NextResponse.next()
+  // Propagate organizationId in a request header for downstream server components
+  // and SSE handlers that cannot access AsyncLocalStorage directly.
+  const response = NextResponse.next()
+  if (session.organizationId) {
+    response.headers.set("x-organization-id", session.organizationId)
+  }
+  return response
 }
 
 // Matcher: run middleware on all routes except Next.js internals and static assets

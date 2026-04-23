@@ -7,6 +7,7 @@ export async function GET(): Promise<Response> {
 
   const userId = session.userId
   const role = session.role
+  const organizationId = session.organizationId
 
   // Capture cleanup reference so the cancel handler can call it
   let cleanup: (() => void) | null = null
@@ -26,6 +27,15 @@ export async function GET(): Promise<Response> {
       }, 25_000)
 
       function onEvent(event: ShinobiEvent) {
+        // Filter by organizationId when the event carries one.
+        // Events without organizationId are considered global (e.g., legacy emitters).
+        if (
+          event.payload.organizationId !== undefined &&
+          event.payload.organizationId !== organizationId
+        ) {
+          return
+        }
+
         // notification:new / notification:acknowledged → only forward to the intended recipient
         if (
           (event.type === "notification:new" ||

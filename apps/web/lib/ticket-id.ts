@@ -1,10 +1,15 @@
-import { Prisma } from "@/generated/prisma/client"
-
-type TransactionClient = Prisma.TransactionClient
+// Minimal interface for the ticket.findFirst operation — compatible with both
+// Prisma.TransactionClient and the extended client's transaction type.
+interface TicketFindFirstClient {
+  ticket: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    findFirst(args?: any): Promise<{ publicId: string } | null>
+  }
+}
 
 export async function generatePublicId(
   type: "TICKET" | "BUG",
-  tx: TransactionClient
+  tx: TicketFindFirstClient
 ): Promise<string> {
   const prefix = type === "TICKET" ? "TKT" : "BUG"
   // Find the highest existing publicId for this type to determine the next sequence number

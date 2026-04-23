@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { db } from "@/lib/db"
-import { requireRole } from "@/lib/auth"
+import { getTenantDb } from "@/lib/tenant-db"
+import { requireTenantRole } from "@/lib/auth"
 import { Role } from "@/generated/prisma/client"
 
 // All roles that must have a config row
@@ -23,12 +23,13 @@ const ROLE_DEFAULTS: Record<Role, { notifyOnCreation: boolean; notifyOnAssignmen
 }
 
 /**
- * Ensures all 5 role config rows exist in the DB.
+ * Ensures all 5 role config rows exist in the DB for the current tenant.
  * Inserts only the missing ones, preserving existing customizations.
  * Called on every GET so that adding a new role to the enum auto-provisions its row.
  */
 async function ensureDefaultConfigsExist(): Promise<void> {
-  const existing = await db.roleNotificationConfig.findMany({
+  const tenantDb = getTenantDb()
+  const existing = await tenantDb.roleNotificationConfig.findMany({
     select: { role: true },
   })
   const existingRoles = new Set(existing.map((r) => r.role))
@@ -36,12 +37,14 @@ async function ensureDefaultConfigsExist(): Promise<void> {
   const missing = ALL_ROLES.filter((role) => !existingRoles.has(role))
   if (missing.length === 0) return
 
-  await db.roleNotificationConfig.createMany({
+  await tenantDb.roleNotificationConfig.createMany({
+    // organizationId is injected by the tenant-db Prisma extension
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: missing.map((role) => ({
       role,
       notifyOnCreation: ROLE_DEFAULTS[role].notifyOnCreation,
       notifyOnAssignment: ROLE_DEFAULTS[role].notifyOnAssignment,
-    })),
+    })) as any,
   })
 }
 
@@ -58,68 +61,72 @@ const patchSchema = z.object({
 })
 
 export async function GET(): Promise<NextResponse> {
-  const { error } = await requireRole("TECH_LEAD")
-  if (error) return error
+  return requireTenantRole("TECH_LEAD")(async () => {
+    await ensureDefaultConfigsExist()
 
-  await ensureDefaultConfigsExist()
+    const tenantDb = getTenantDb()
+    const configs = await tenantDb.roleNotificationConfig.findMany({
+      select: { role: true, notifyOnCreation: true, notifyOnAssignment: true },
+      orderBy: { role: "asc" },
+    })
 
-  const configs = await db.roleNotificationConfig.findMany({
-    select: { role: true, notifyOnCreation: true, notifyOnAssignment: true },
-    orderBy: { role: "asc" },
+    return NextResponse.json({ configs })
   })
-
-  return NextResponse.json({ configs })
 }
 
 export async function PATCH(request: NextRequest): Promise<NextResponse> {
-  const { error } = await requireRole("TECH_LEAD")
-  if (error) return error
+  return requireTenantRole("TECH_LEAD")(async () => {
+    let body: unknown
+    try {
+      body = await request.json()
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
+    }
 
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 })
-  }
+    const parsed = patchSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      )
+    }
 
-  const parsed = patchSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
-      { status: 400 }
-    )
-  }
+    // Ensure default rows exist before patching so upsert won't fail on missing rows
+    await ensureDefaultConfigsExist()
 
-  // Ensure default rows exist before patching so upsert won't fail on missing rows
-  await ensureDefaultConfigsExist()
+    const tenantDb = getTenantDb()
 
-  // Apply each config update; use upsert so partial updates against newly-added roles
-  // work even if ensureDefaultConfigsExist raced with the request
-  await Promise.all(
-    parsed.data.configs.map((entry) => {
-      const { role, ...fields } = entry
-      // Only include fields that were actually provided in the request
-      const updateData: { notifyOnCreation?: boolean; notifyOnAssignment?: boolean } = {}
-      if (fields.notifyOnCreation !== undefined) updateData.notifyOnCreation = fields.notifyOnCreation
-      if (fields.notifyOnAssignment !== undefined) updateData.notifyOnAssignment = fields.notifyOnAssignment
+    // Apply each config update; use the compound unique key organizationId_role for upsert
+    await Promise.all(
+      parsed.data.configs.map(async (entry) => {
+        const { role, ...fields } = entry
+        // Only include fields that were actually provided in the request
+        const updateData: { notifyOnCreation?: boolean; notifyOnAssignment?: boolean } = {}
+        if (fields.notifyOnCreation !== undefined) updateData.notifyOnCreation = fields.notifyOnCreation
+        if (fields.notifyOnAssignment !== undefined) updateData.notifyOnAssignment = fields.notifyOnAssignment
 
-      return db.roleNotificationConfig.upsert({
-        where: { role },
-        update: updateData,
-        create: {
-          role,
-          notifyOnCreation: fields.notifyOnCreation ?? ROLE_DEFAULTS[role].notifyOnCreation,
-          notifyOnAssignment: fields.notifyOnAssignment ?? ROLE_DEFAULTS[role].notifyOnAssignment,
-        },
+        // Find existing record by role (scoped to current tenant via tenantDb)
+        const existing = await tenantDb.roleNotificationConfig.findFirst({ where: { role } })
+        return tenantDb.roleNotificationConfig.upsert({
+          where: { id: existing?.id ?? "" },
+          update: updateData,
+          // organizationId is injected by the tenant-db Prisma extension
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          create: {
+            role,
+            notifyOnCreation: fields.notifyOnCreation ?? ROLE_DEFAULTS[role].notifyOnCreation,
+            notifyOnAssignment: fields.notifyOnAssignment ?? ROLE_DEFAULTS[role].notifyOnAssignment,
+          } as any,
+        })
       })
+    )
+
+    // Return the full updated list so the frontend can refresh its state in one round trip
+    const configs = await tenantDb.roleNotificationConfig.findMany({
+      select: { role: true, notifyOnCreation: true, notifyOnAssignment: true },
+      orderBy: { role: "asc" },
     })
-  )
 
-  // Return the full updated list so the frontend can refresh its state in one round trip
-  const configs = await db.roleNotificationConfig.findMany({
-    select: { role: true, notifyOnCreation: true, notifyOnAssignment: true },
-    orderBy: { role: "asc" },
+    return NextResponse.json({ configs })
   })
-
-  return NextResponse.json({ configs })
 }

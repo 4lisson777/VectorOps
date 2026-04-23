@@ -1,23 +1,39 @@
 # Tech Leader -- Short-Term Memory
 
 ## Current Task
-- **Name:** Role-Based Notification Configuration
-- **Plan folder:** `ai-driven-project/prompt-engineering/20260423_role-notification-config/`
-- **Scope:** Full-stack
-- **Status:** PLANNED (awaiting backend engineer execution first)
+- **Name:** Multitenancy Refactor
+- **Plan folder:** `ai-driven-project/prompt-engineering/20260423_multitenancy-refactor/`
+- **Scope:** Full-stack (multi-phase)
+- **Status:** PLANNED -- awaiting backend Phase MT-1 execution first
 
 ## Key Decisions
-- Introducing a new `RoleNotificationConfig` model with per-role toggles for creation and assignment notifications
-- Role-level config acts as a primary gate; existing per-user notifyTickets/notifyBugs remain as a secondary toggle
-- Both gates must be true for a user to receive creation notifications
-- Assignment notifications only check the role-level gate (no per-user override for assignments)
-- Default: TECH_LEAD and DEVELOPER get both; QA gets creation only; SUPPORT_LEAD and SUPPORT_MEMBER get neither
-- Backend must go first because frontend needs the API endpoints
-- Existing NotificationRouting component will be updated to show users from ALL roles that have notifyOnCreation enabled (not just DEVELOPER)
+- Row-level tenant isolation with organizationId FK on all tenant-scoped models
+- Keep SQLite (no DB engine change in this phase)
+- Super admin is a boolean flag on User (`isSuperAdmin`), not a Role enum value
+- Session-implicit tenancy (no subdomains, no URL path prefixes)
+- Invite-based org joining (TECH_LEAD generates codes, users join via code)
+- Prisma Client Extension + AsyncLocalStorage for auto-scoping queries
+- Public IDs remain globally unique (no per-tenant sequences)
+- Email uniqueness changes from global to per-organization
+- Two-step migration: nullable columns -> data backfill -> non-nullable columns
+- TV route gains `?org=slug` parameter for public access
 
 ## Architecture Notes
-- New model: RoleNotificationConfig with fields role (unique), notifyOnCreation, notifyOnAssignment
-- New endpoints: GET + PATCH at /api/admin/role-notification-config (TECH_LEAD only)
-- `lib/notifications.ts` getNotificationTargets() must be updated to query RoleNotificationConfig
-- Frontend adds new component `role-notification-config.tsx` to admin notifications page
-- Communication file at `.claude/communication/20260423_role-notification-config.md`
+- New models: Organization (tenant entity), Invite (join codes)
+- User gains: organizationId (FK), isSuperAdmin (boolean)
+- Session gains: organizationId, isSuperAdmin
+- All ~40 API routes need to switch from raw `db` to `getTenantDb()`
+- SSE events must include organizationId for cross-tenant filtering
+- Notification targeting must be org-scoped
+- BugReport, TicketEvent, ReorderRequest inherit org scope through parent Ticket (no direct organizationId)
+- CheckpointConfig, TvConfig become per-org (no longer singleton)
+- RoleNotificationConfig unique constraint changes from (role) to (organizationId, role)
+
+## Phase Execution Order
+1. MT-1: Schema & Data Layer (backend) -- MUST go first
+2. MT-5: Migration & Seed (backend) -- immediately after MT-1
+3. MT-2: Auth & Session (backend) -- depends on MT-1
+4. MT-3: API Route Updates (backend) -- depends on MT-1, MT-2
+5. MT-4: Middleware & Super Admin (backend) -- depends on MT-2, MT-3
+6. Frontend: all UI changes -- depends on all backend phases
+7. QA: full testing -- depends on everything

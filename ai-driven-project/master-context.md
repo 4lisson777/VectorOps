@@ -1,7 +1,7 @@
 # Master Context — ShinobiOps
 
-**System Version:** 3.4.0  
-**Last Updated:** 2026-04-23 (Role Notification Config UI: RoleNotificationConfig component, AdminNotificationsContent orchestrator, NotificationRouting updated for multi-role filtering)  
+**System Version:** 3.7.0  
+**Last Updated:** 2026-04-23 (MT-4: Middleware updated with /super-admin guard + /api/invites/ public prefix + x-organization-id header; super-admin API routes created; org current endpoints; impersonation system; super-admin placeholder pages)  
 **Maintainer:** Alisson (Tech Lead)  
 **Project Type:** Internal Fullstack Web Application (Next.js Monorepo)  
 **Language:** PT-BR (product UI) / EN-US (source code & internal docs)
@@ -20,7 +20,7 @@ ShinobiOps is an internal platform for Inovar Sistemas that unites customer supp
 |----|------|-----------|----------|---------------|-------------|--------------|
 | CTX-CORE-001 | Architecture | `core/architecture.md` | Core | 2026-04-05 | Monorepo structure, routing, component system, path aliases | — |
 | CTX-CORE-002 | Data Model | `core/data-model.md` | Core | 2026-04-06 (Phase 3) | Prisma schema, entities, relationships, enums — now includes Notification, DevStatus | CTX-INFRA-002 |
-| CTX-CORE-003 | Authentication | `core/authentication.md` | Core | 2026-04-05 | Auth flow, sessions, RBAC, middleware | CTX-CORE-002 |
+| CTX-CORE-003 | Authentication | `core/authentication.md` | Core | 2026-04-23 (MT-4) | Auth flow, sessions (now includes originalOrganizationId for impersonation), RBAC, middleware — /super-admin guard + x-organization-id header propagation added | CTX-CORE-002 |
 | CTX-FEAT-001 | Mission Board | `features/mission-board.md` | Feature | 2026-04-06 | Priority queue, ticket cards, reorder flow | CTX-CORE-002, CTX-FEAT-003 |
 | CTX-FEAT-002 | Ninja Board | `features/ninja-board.md` | Feature | 2026-04-06 | Dev team overview, status cards, TV mode — Ninja Board + DeveloperCard implemented; TV mode page exists but TvBoard is a stub | CTX-CORE-002, CTX-INFRA-003 |
 | CTX-FEAT-003 | Ticket Lifecycle | `features/ticket-lifecycle.md` | Feature | 2026-04-06 | Ticket/Bug CRUD, statuses, timeline events | CTX-CORE-002 |
@@ -28,7 +28,7 @@ ShinobiOps is an internal platform for Inovar Sistemas that unites customer supp
 | CTX-FEAT-005 | Checkpoints | `features/checkpoints.md` | Feature | 2026-04-06 | Status Scroll system, configurable intervals — Full UI + API implementation; schema migrated | CTX-CORE-002, CTX-FEAT-004 |
 | CTX-FEAT-006 | Smoke Signals | `features/smoke-signals.md` | Feature | 2026-04-06 | Help request system between developers — Full UI + API implementation (including sound triggers) | CTX-CORE-002, CTX-FEAT-004 |
 | CTX-INFRA-001 | Deployment | `infrastructure/deployment.md` | Infrastructure | 2026-04-05 | Docker, docker-compose, production config | CTX-INFRA-002 |
-| CTX-INFRA-002 | Database | `infrastructure/database.md` | Infrastructure | 2026-04-06 | SQLite config, WAL mode, Prisma 7, Seeding (`prisma/seed.ts`) fully implemented | — |
+| CTX-INFRA-002 | Database | `infrastructure/database.md` | Infrastructure | 2026-04-23 | SQLite config, WAL mode, Prisma 7, Seeding (`prisma/seed.ts`) — multitenancy: 2 orgs, organizationId non-nullable, super-admin user, db:migrate:mt script. MT-4: super-admin API routes (cross-tenant raw db), org/current endpoint, impersonation | — |
 | CTX-INFRA-003 | Real-Time | `infrastructure/realtime.md` | Infrastructure | 2026-04-06 | SSE fully implemented — `lib/sse-emitter.ts`, `app/api/sse/route.ts`, `lib/sse-context.tsx`, `hooks/use-sse.ts` | CTX-CORE-003 |
 | CTX-UTIL-001 | UI System | `utilities/ui-system.md` | Utility | 2026-04-06 | shadcn/ui, Tailwind, design tokens — 100% PT-BR translated | CTX-CORE-001 |
 | CTX-UTIL-002 | API Patterns | `utilities/api-patterns.md` | Utility | 2026-04-06 | API route conventions, logging (`TicketEvent`), validation | CTX-CORE-003 |
