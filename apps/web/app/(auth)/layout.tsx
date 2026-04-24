@@ -12,10 +12,13 @@ function VectorMark({ className }: { className?: string }) {
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="grid min-h-screen" style={{ gridTemplateColumns: "1.1fr 1fr" }}>
-      {/* Left — brand layer (physics/English OK here) */}
+    <div
+      className="flex min-h-screen flex-col md:grid"
+      style={{ gridTemplateColumns: "1.1fr 1fr" }}
+    >
+      {/* Left — brand layer (physics/English OK here) — hidden on mobile */}
       <div
-        className="relative flex flex-col justify-between overflow-hidden p-12"
+        className="relative hidden flex-col justify-between overflow-hidden p-12 md:flex"
         style={{ backgroundColor: "oklch(0.17 0.02 250)", color: "#fff" }}
       >
         {/* Dot grid texture */}
@@ -31,7 +34,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Watermark arrow */}
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute bottom-[-60px] right-[-60px] opacity-35"
+          className="pointer-events-none absolute bottom-[-60px] right-[-20px] opacity-35"
           style={{ width: 360, height: 360 }}
         >
           <svg viewBox="0 0 600 600" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -86,7 +89,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       </div>
 
       {/* Right — product layer (PT-BR, plain language) */}
-      <div className="flex items-center justify-center bg-background p-8">
+      <div className="flex flex-1 items-center justify-center bg-background p-8">
         <div className="w-full max-w-[380px]">
           {children}
         </div>

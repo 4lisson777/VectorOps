@@ -31,6 +31,16 @@ export function StatusScrollModal({
   const [isSubmitting, setIsSubmitting] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
 
+  // Reset form to a clean state each time the modal opens so stale values
+  // from a previous (dismissed or failed) session never bleed through.
+  React.useEffect(() => {
+    if (!open) return
+    setCurrentTask("")
+    setIsBlocked(false)
+    setNotes("")
+    setError(null)
+  }, [open])
+
   function handleClose() {
     if (isSubmitting) return
     onOpenChange(false)

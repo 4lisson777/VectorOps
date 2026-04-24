@@ -219,6 +219,9 @@ export function NinjaBoard({
       return next
     })
     setCheckpointOpen(false)
+    // Refetch immediately so the card reflects the new devStatus without
+    // waiting for the SSE event (which may be delayed or dropped).
+    void refetchDevs()
   }
 
   async function handleStatusChange(devId: string, status: string) {
