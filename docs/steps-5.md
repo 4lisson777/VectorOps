@@ -200,12 +200,12 @@ Complete all remaining features for a production-ready internal release: the Com
   - Stage 2 (`builder`): Build Next.js app, generate Prisma client
   - Stage 3 (`runner`): Copy only production artifacts, install only production dependencies
 - Use Node.js 20 slim or Alpine base
-- Set `DATABASE_URL` to `file:./prisma/data/shinobiops.db`
+- Set `DATABASE_URL` to `file:./prisma/data/vectorops.db`
 - Run `prisma migrate deploy` on container startup (via an entrypoint script)
 - Expose port 3000
 
 **docker-compose.yml:**
-- Single service: `shinobiops`
+- Single service: `vectorops`
 - Mount a named volume for `./prisma/data` to persist the SQLite database
 - Environment variables from `.env` file
 - Health check: `curl -f http://localhost:3000/api/health`

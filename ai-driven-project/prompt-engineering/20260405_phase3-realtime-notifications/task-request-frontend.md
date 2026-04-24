@@ -24,7 +24,7 @@ Implement the client-side real-time layer: SSE context provider, notification ce
 - **`apps/web/lib/sse-context.tsx`** -- SSEProvider component + useSSEContext hook. Single EventSource per AppShell mount, fan-out to subscribers via `Set<Subscriber>` ref.
 - **`apps/web/hooks/use-sse.ts`** -- Low-level EventSource hook with exponential backoff. Uses `handlerRef` pattern so callback identity changes do not re-create the connection.
 - **`apps/web/hooks/use-notifications.ts`** -- Fetches `GET /api/notifications` on mount, subscribes to `notification:new` via SSEContext, exposes `{ notifications, unreadCount, isLoading, markRead(id), markAllRead, refetch }`.
-- **`apps/web/hooks/use-sound-alerts.ts`** -- Web Audio API oscillator tones. Lazy AudioContext creation. 5 tones: A=880Hz sine 300ms (TICKET_CREATED), B=440Hz sawtooth 500ms (BUG_CREATED), C=660Hz triangle 400ms (help request), D=528Hz sine 250ms (checkpoint), E=1046Hz sine 200ms (TICKET_DONE/CANCELLED). Checks `localStorage.getItem("shinobiops:soundEnabled") !== "false"` before playing.
+- **`apps/web/hooks/use-sound-alerts.ts`** -- Web Audio API oscillator tones. Lazy AudioContext creation. 5 tones: A=880Hz sine 300ms (TICKET_CREATED), B=440Hz sawtooth 500ms (BUG_CREATED), C=660Hz triangle 400ms (help request), D=528Hz sine 250ms (checkpoint), E=1046Hz sine 200ms (TICKET_DONE/CANCELLED). Checks `localStorage.getItem("vectorops:soundEnabled") !== "false"` before playing.
 
 ### Modified Files
 - **`apps/web/components/layout/app-shell.tsx`** -- Wrap children + Header with `<SSEProvider>`.

@@ -204,7 +204,7 @@
 ### Key Gotchas
 - `radix-ui` package re-exports all primitives — use `import { Avatar } from "radix-ui"` pattern
 - Sidebar CSS vars: defined in globals.css, light mode = navy sidebar, dark mode = deep navy
-- Sound mute preference stored in localStorage key: `shinobiops:soundEnabled`
+- Sound mute preference stored in localStorage key: `vectorops:soundEnabled`
 - Protected layout fetches avatarUrl from DB on each navigation — will be optimized in later phases
 - Prisma query results have `Date` objects — must serialize to string before passing to client components
 - `TicketWithRelations` used by MissionBoard stores deadline/createdAt as `string | Date` to be flexible

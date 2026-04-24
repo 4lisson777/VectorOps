@@ -36,12 +36,12 @@ Base image: Node.js slim or Alpine.
 
 ```yaml
 services:
-  shinobiops:
+  vectorops:
     build: .
     ports:
       - "3000:3000"
     volumes:
-      - shinobiops-data:/app/prisma/data
+      - vectorops-data:/app/prisma/data
     environment:
       - DATABASE_URL=file:./data/prisma.db
       - NODE_ENV=production
@@ -51,14 +51,14 @@ services:
       timeout: 10s
       retries: 3
 volumes:
-  shinobiops-data:
+  vectorops-data:
 ```
 
 ### Key Details
 
 - **Port**: 3000 (HTTP)
 - **Network**: Internal only — no external internet access required
-- **Data volume**: `shinobiops-data` mounted at `/app/prisma/data` — survives container restarts
+- **Data volume**: `vectorops-data` mounted at `/app/prisma/data` — survives container restarts
 - **Health check**: `GET /api/health` endpoint
 - **Environment variables**: Via `.env` file (not committed to source control)
 - **HTTPS**: Recommended behind a reverse proxy (nginx, Caddy) for production

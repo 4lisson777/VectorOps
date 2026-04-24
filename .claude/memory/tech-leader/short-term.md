@@ -1,6 +1,12 @@
 # Tech Leader -- Short-Term Memory
 
 ## Current Task
+- **Name:** Docker Seed dotenv Fix
+- **Plan folder:** `ai-driven-project/prompt-engineering/20260424_docker-seed-dotenv-fix/`
+- **Scope:** Backend-only (bug fix)
+- **Status:** PLANNED -- awaiting backend engineer execution
+
+## Previous Task (paused)
 - **Name:** Multitenancy Refactor
 - **Plan folder:** `ai-driven-project/prompt-engineering/20260423_multitenancy-refactor/`
 - **Scope:** Full-stack (multi-phase)

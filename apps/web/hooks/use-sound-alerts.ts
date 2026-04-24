@@ -35,7 +35,7 @@ export function useSoundAlerts() {
   async function playTone(tone: Tone) {
     // Respect the user's mute preference
     if (typeof window !== "undefined" &&
-        localStorage.getItem("shinobiops:soundEnabled") === "false") {
+        localStorage.getItem("vectorops:soundEnabled") === "false") {
       return
     }
 

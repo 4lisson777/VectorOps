@@ -95,7 +95,7 @@ SessionData {
 - Creates "Inovar Sistemas" org (slug: `inovar-sistemas`) first via upsert
 - Creates "Test Company" org (slug: `test-company`) for multitenancy dev testing
 - All user upserts scoped to `(organizationId, email)` compound unique
-- `alisson.lima@shinobiops.dev` is flagged `isSuperAdmin: true`; upsert sets it on `update` path too
+- `alisson.lima@vectorops.dev` is flagged `isSuperAdmin: true`; upsert sets it on `update` path too
 - Each org gets CheckpointConfig, TvConfig, and 5 RoleNotificationConfig rows
 - RoleNotificationConfig upsert uses `@@unique([organizationId, role])` key via `{ organizationId_role: { organizationId, role } }`
 - Script is fully idempotent — safe to re-run
@@ -112,11 +112,11 @@ SessionData {
 ### Seed Credentials (all passwords: Password123!)
 | Org | Role | Email |
 |-----|------|-------|
-| Inovar Sistemas | TECH_LEAD + SUPER_ADMIN | alisson.lima@shinobiops.dev |
-| Inovar Sistemas | DEVELOPER | matheus@shinobiops.dev |
-| Inovar Sistemas | SUPPORT_LEAD | alisson.rosa@shinobiops.dev |
-| Inovar Sistemas | SUPPORT_MEMBER | bruno@shinobiops.dev |
-| Inovar Sistemas | QA | nicoli@shinobiops.dev |
+| Inovar Sistemas | TECH_LEAD + SUPER_ADMIN | alisson.lima@vectorops.dev |
+| Inovar Sistemas | DEVELOPER | matheus@vectorops.dev |
+| Inovar Sistemas | SUPPORT_LEAD | alisson.rosa@vectorops.dev |
+| Inovar Sistemas | SUPPORT_MEMBER | bruno@vectorops.dev |
+| Inovar Sistemas | QA | nicoli@vectorops.dev |
 | Test Company | TECH_LEAD | lead@testcompany.dev |
 | Test Company | DEVELOPER | dev@testcompany.dev |
 | Test Company | SUPPORT_MEMBER | support@testcompany.dev |

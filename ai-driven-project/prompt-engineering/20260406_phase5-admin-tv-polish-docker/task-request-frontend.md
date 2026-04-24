@@ -36,32 +36,32 @@ Implement all frontend UI for the remaining Phase 5 tasks. This covers the Comma
 
 ### Pages to Implement (replace current stubs)
 
-1. **`/admin` (Command Dojo)** -- `/home/alisson/web/personal/shinobiops/apps/web/app/(protected)/admin/page.tsx`
+1. **`/admin` (Command Dojo)** -- `/home/alisson/web/personal/vectorops/apps/web/app/(protected)/admin/page.tsx`
    - Render `CommandDojoOverview` component
    - Server component that fetches initial stats, passes to client component for refresh
 
-2. **`/admin/team`** -- `/home/alisson/web/personal/shinobiops/apps/web/app/(protected)/admin/team/page.tsx`
+2. **`/admin/team`** -- `/home/alisson/web/personal/vectorops/apps/web/app/(protected)/admin/team/page.tsx`
    - Render `TeamManagement` component
 
-3. **`/admin/checkpoints`** -- `/home/alisson/web/personal/shinobiops/apps/web/app/(protected)/admin/checkpoints/page.tsx`
+3. **`/admin/checkpoints`** -- `/home/alisson/web/personal/vectorops/apps/web/app/(protected)/admin/checkpoints/page.tsx`
    - Render `CheckpointConfig` component
 
-4. **`/admin/log`** -- `/home/alisson/web/personal/shinobiops/apps/web/app/(protected)/admin/log/page.tsx`
+4. **`/admin/log`** -- `/home/alisson/web/personal/vectorops/apps/web/app/(protected)/admin/log/page.tsx`
    - Render `TicketLog` component
 
-5. **`/dev/tv`** -- `/home/alisson/web/personal/shinobiops/apps/web/app/(public)/dev/tv/page.tsx`
+5. **`/dev/tv`** -- `/home/alisson/web/personal/vectorops/apps/web/app/(public)/dev/tv/page.tsx`
    - Render `TvBoard` component
 
 ### Components to Implement (replace current stubs)
 
-1. **`CommandDojoOverview`** -- `/home/alisson/web/personal/shinobiops/apps/web/components/admin/command-dojo-overview.tsx`
+1. **`CommandDojoOverview`** -- `/home/alisson/web/personal/vectorops/apps/web/components/admin/command-dojo-overview.tsx`
    - "use client" component
    - Stat cards grid: Open Tickets (by severity), Open Bugs (by severity), Avg Resolution 7d, Avg Resolution 30d, Assigned count, Unassigned count
    - Per-developer workload list with avatar, name, alias, open ticket count, progress bar
    - TV Mode settings section: enable/disable toggle, refresh interval input, Save button
    - Refresh button + auto-refresh interval (60s)
 
-2. **`TeamManagement`** -- `/home/alisson/web/personal/shinobiops/apps/web/components/admin/team-management.tsx`
+2. **`TeamManagement`** -- `/home/alisson/web/personal/vectorops/apps/web/components/admin/team-management.tsx`
    - "use client" component
    - Search input for name/email
    - Filter dropdowns for role and active status
@@ -70,7 +70,7 @@ Implement all frontend UI for the remaining Phase 5 tasks. This covers the Comma
    - Active/inactive toggle via Switch component
    - Avatar upload button per row (opens file picker, uploads to API)
 
-3. **`CheckpointConfig`** -- `/home/alisson/web/personal/shinobiops/apps/web/components/admin/checkpoint-config.tsx`
+3. **`CheckpointConfig`** -- `/home/alisson/web/personal/vectorops/apps/web/components/admin/checkpoint-config.tsx`
    - "use client" component
    - Top section: config form with fields (isEnabled Switch, intervalMinutes Input, activeHoursStart/End time inputs)
    - Save button that PATCHes `/api/admin/checkpoints/config`
@@ -79,7 +79,7 @@ Implement all frontend UI for the remaining Phase 5 tasks. This covers the Comma
    - Table: developer name, current task, blocked (badge), notes, timestamp
    - Pagination controls
 
-4. **`TicketLog`** -- `/home/alisson/web/personal/shinobiops/apps/web/components/admin/ticket-log.tsx`
+4. **`TicketLog`** -- `/home/alisson/web/personal/vectorops/apps/web/components/admin/ticket-log.tsx`
    - "use client" component
    - Search input (debounced, searches publicId and title)
    - Filter bar: type Select, severity Select, status Select, date range inputs
@@ -87,7 +87,7 @@ Implement all frontend UI for the remaining Phase 5 tasks. This covers the Comma
    - Clickable rows that navigate to `/ticket/[publicId]`
    - Pagination (page numbers, prev/next buttons)
 
-5. **`TvBoard`** -- `/home/alisson/web/personal/shinobiops/apps/web/components/tv/tv-board.tsx`
+5. **`TvBoard`** -- `/home/alisson/web/personal/vectorops/apps/web/components/tv/tv-board.tsx`
    - "use client" component
    - Full-screen dark layout (bg-[oklch(0.12_0.03_265)])
    - Top bar: ShinobiOps logo, severity count badges (4 for tickets, 4 for bugs), clock
@@ -96,13 +96,13 @@ Implement all frontend UI for the remaining Phase 5 tasks. This covers the Comma
    - "Last updated" timestamp indicator
    - No interactive elements (read-only)
 
-6. **`UserAvatar`** -- Create new shared component at `/home/alisson/web/personal/shinobiops/apps/web/components/user-avatar.tsx`
+6. **`UserAvatar`** -- Create new shared component at `/home/alisson/web/personal/vectorops/apps/web/components/user-avatar.tsx`
    - Props: name (string), avatarUrl (string | null), size ("sm" | "md" | "lg"), className
    - Uses shadcn Avatar/AvatarImage/AvatarFallback
    - Fallback: colored circle with initials (first letter of first and last name)
    - Color derived from name hash for consistency
 
-7. **`GlobalSearch`** -- Enhance the search in `/home/alisson/web/personal/shinobiops/apps/web/components/layout/header.tsx`
+7. **`GlobalSearch`** -- Enhance the search in `/home/alisson/web/personal/vectorops/apps/web/components/layout/header.tsx`
    - Add debounced API call to `/api/tickets?search=...&limit=8` as user types
    - Show dropdown/popover below search input with matching results
    - Each result shows: publicId, title, severity badge, status badge
@@ -113,10 +113,10 @@ Implement all frontend UI for the remaining Phase 5 tasks. This covers the Comma
 
 ### Loading State Files to Create
 
-- `/home/alisson/web/personal/shinobiops/apps/web/app/(protected)/admin/loading.tsx` -- skeleton for Command Dojo
-- `/home/alisson/web/personal/shinobiops/apps/web/app/(protected)/dev/loading.tsx` -- skeleton for Ninja Board
-- `/home/alisson/web/personal/shinobiops/apps/web/app/(protected)/support/queue/loading.tsx` -- skeleton for Mission Board
-- `/home/alisson/web/personal/shinobiops/apps/web/app/(protected)/ticket/[publicId]/loading.tsx` -- skeleton for ticket detail
+- `/home/alisson/web/personal/vectorops/apps/web/app/(protected)/admin/loading.tsx` -- skeleton for Command Dojo
+- `/home/alisson/web/personal/vectorops/apps/web/app/(protected)/dev/loading.tsx` -- skeleton for Ninja Board
+- `/home/alisson/web/personal/vectorops/apps/web/app/(protected)/support/queue/loading.tsx` -- skeleton for Mission Board
+- `/home/alisson/web/personal/vectorops/apps/web/app/(protected)/ticket/[publicId]/loading.tsx` -- skeleton for ticket detail
 
 ## Mock Data
 
@@ -158,18 +158,18 @@ Review and update all pages to ensure:
 - Use existing patterns from other pages in the codebase for data fetching, error handling, and state management
 
 ## Communication File
-`/home/alisson/web/personal/shinobiops/.claude/communication/phase5-admin-tv-polish-docker.md`
+`/home/alisson/web/personal/vectorops/.claude/communication/phase5-admin-tv-polish-docker.md`
 
 ## Key Existing Files Reference
-- Header (search lives here): `/home/alisson/web/personal/shinobiops/apps/web/components/layout/header.tsx`
-- Sidebar: `/home/alisson/web/personal/shinobiops/apps/web/components/layout/sidebar.tsx`
-- AppShell: `/home/alisson/web/personal/shinobiops/apps/web/components/layout/app-shell.tsx`
-- Developer card: `/home/alisson/web/personal/shinobiops/apps/web/components/dev/developer-card.tsx`
-- Ninja board: `/home/alisson/web/personal/shinobiops/apps/web/components/dev/ninja-board.tsx`
-- Ticket card: `/home/alisson/web/personal/shinobiops/apps/web/components/tickets/ticket-card.tsx`
-- Mission board: `/home/alisson/web/personal/shinobiops/apps/web/components/mission-board/mission-board.tsx`
-- Notification center: `/home/alisson/web/personal/shinobiops/apps/web/components/layout/notification-center.tsx`
-- Existing admin stubs: `/home/alisson/web/personal/shinobiops/apps/web/components/admin/` (all 5 files are stubs returning null)
-- TV board stub: `/home/alisson/web/personal/shinobiops/apps/web/components/tv/tv-board.tsx`
+- Header (search lives here): `/home/alisson/web/personal/vectorops/apps/web/components/layout/header.tsx`
+- Sidebar: `/home/alisson/web/personal/vectorops/apps/web/components/layout/sidebar.tsx`
+- AppShell: `/home/alisson/web/personal/vectorops/apps/web/components/layout/app-shell.tsx`
+- Developer card: `/home/alisson/web/personal/vectorops/apps/web/components/dev/developer-card.tsx`
+- Ninja board: `/home/alisson/web/personal/vectorops/apps/web/components/dev/ninja-board.tsx`
+- Ticket card: `/home/alisson/web/personal/vectorops/apps/web/components/tickets/ticket-card.tsx`
+- Mission board: `/home/alisson/web/personal/vectorops/apps/web/components/mission-board/mission-board.tsx`
+- Notification center: `/home/alisson/web/personal/vectorops/apps/web/components/layout/notification-center.tsx`
+- Existing admin stubs: `/home/alisson/web/personal/vectorops/apps/web/components/admin/` (all 5 files are stubs returning null)
+- TV board stub: `/home/alisson/web/personal/vectorops/apps/web/components/tv/tv-board.tsx`
 - Skeleton component: `@workspace/ui/components/skeleton`
 - SeverityBadge: `@workspace/ui/components/severity-badge`

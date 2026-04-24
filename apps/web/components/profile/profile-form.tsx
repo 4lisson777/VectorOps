@@ -104,14 +104,14 @@ export function ProfileForm() {
     void load()
 
     // Read sound preference from localStorage
-    const stored = localStorage.getItem("shinobiops:soundEnabled")
+    const stored = localStorage.getItem("vectorops:soundEnabled")
     if (stored !== null) setSoundEnabled(stored !== "false")
   }, [])
 
   function toggleSound() {
     setSoundEnabled((prev) => {
       const next = !prev
-      localStorage.setItem("shinobiops:soundEnabled", String(next))
+      localStorage.setItem("vectorops:soundEnabled", String(next))
       return next
     })
   }

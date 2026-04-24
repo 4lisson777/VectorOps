@@ -13,7 +13,7 @@ Build a persistent notification system on the frontend that repeats sound alerts
 - [ ] If the user has multiple tabs open, acknowledging in one tab stops the repeat in all tabs (via `notification:acknowledged` SSE event)
 - [ ] On page load/refresh, the app fetches `GET /api/notifications/pending` and resumes the repeat interval for any unacknowledged persistent notifications
 - [ ] The Chrome Notifications API permission is requested once on first persistent notification (or on app load for QA/TECH_LEAD/DEV roles)
-- [ ] If the user has sound muted (`shinobiops:soundEnabled === "false"`), only the browser notification repeats (not the sound)
+- [ ] If the user has sound muted (`vectorops:soundEnabled === "false"`), only the browser notification repeats (not the sound)
 - [ ] The acknowledge modal/banner shows: notification title, body, and a link to the ticket if applicable
 - [ ] Multiple pending persistent notifications should stack (show a count and allow acknowledging individually or all at once)
 

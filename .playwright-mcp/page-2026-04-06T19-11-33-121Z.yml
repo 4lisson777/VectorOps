@@ -113,11 +113,11 @@
                   - button "Enviar" [ref=e222]:
                     - img
                     - text: Enviar
-              - row "KM Kenji Mori support@shinobiops.dev GhostFox 6 de abr. de 2026 Toggle active status for Kenji Mori Ativo Enviar" [ref=e223]:
+              - row "KM Kenji Mori support@vectorops.dev GhostFox 6 de abr. de 2026 Toggle active status for Kenji Mori Ativo Enviar" [ref=e223]:
                 - cell "KM" [ref=e224]:
                   - generic [ref=e226]: KM
                 - cell "Kenji Mori" [ref=e227]
-                - cell "support@shinobiops.dev" [ref=e228]
+                - cell "support@vectorops.dev" [ref=e228]
                 - cell [ref=e229]:
                   - combobox [ref=e230]:
                     - generic: Membro de Suporte
@@ -132,11 +132,11 @@
                   - button "Enviar" [ref=e240]:
                     - img
                     - text: Enviar
-              - row "ML Mei Lin supportlead@shinobiops.dev SwiftCrane 6 de abr. de 2026 Toggle active status for Mei Lin Ativo Enviar" [ref=e241]:
+              - row "ML Mei Lin supportlead@vectorops.dev SwiftCrane 6 de abr. de 2026 Toggle active status for Mei Lin Ativo Enviar" [ref=e241]:
                 - cell "ML" [ref=e242]:
                   - generic [ref=e244]: ML
                 - cell "Mei Lin" [ref=e245]
-                - cell "supportlead@shinobiops.dev" [ref=e246]
+                - cell "supportlead@vectorops.dev" [ref=e246]
                 - cell [ref=e247]:
                   - combobox [ref=e248]:
                     - generic: Líder de Suporte
@@ -170,11 +170,11 @@
                   - button "Enviar" [ref=e276]:
                     - img
                     - text: Enviar
-              - row "RH Ryu Hayabusa developer@shinobiops.dev SilentBlade 6 de abr. de 2026 Toggle active status for Ryu Hayabusa Ativo Enviar" [ref=e277]:
+              - row "RH Ryu Hayabusa developer@vectorops.dev SilentBlade 6 de abr. de 2026 Toggle active status for Ryu Hayabusa Ativo Enviar" [ref=e277]:
                 - cell "RH" [ref=e278]:
                   - generic [ref=e280]: RH
                 - cell "Ryu Hayabusa" [ref=e281]
-                - cell "developer@shinobiops.dev" [ref=e282]
+                - cell "developer@vectorops.dev" [ref=e282]
                 - cell [ref=e283]:
                   - combobox [ref=e284]:
                     - generic: Ninja (Desenvolvedor)
@@ -189,11 +189,11 @@
                   - button "Enviar" [ref=e294]:
                     - img
                     - text: Enviar
-              - row "TE Test User E2E e2etest@shinobiops.dev E2ENinja 6 de abr. de 2026 Toggle active status for Test User E2E Ativo Enviar" [ref=e295]:
+              - row "TE Test User E2E e2etest@vectorops.dev E2ENinja 6 de abr. de 2026 Toggle active status for Test User E2E Ativo Enviar" [ref=e295]:
                 - cell "TE" [ref=e296]:
                   - generic [ref=e298]: TE
                 - cell "Test User E2E" [ref=e299]
-                - cell "e2etest@shinobiops.dev" [ref=e300]
+                - cell "e2etest@vectorops.dev" [ref=e300]
                 - cell [ref=e301]:
                   - combobox [ref=e302]:
                     - generic: Membro de Suporte
@@ -227,11 +227,11 @@
                   - button "Enviar" [ref=e330]:
                     - img
                     - text: Enviar
-              - row "YT Yuki Tanaka techlead@shinobiops.dev IronJonin 6 de abr. de 2026 Toggle active status for Yuki Tanaka Ativo Enviar" [ref=e331]:
+              - row "YT Yuki Tanaka techlead@vectorops.dev IronJonin 6 de abr. de 2026 Toggle active status for Yuki Tanaka Ativo Enviar" [ref=e331]:
                 - cell "YT" [ref=e332]:
                   - generic [ref=e334]: YT
                 - cell "Yuki Tanaka" [ref=e335]
-                - cell "techlead@shinobiops.dev" [ref=e336]
+                - cell "techlead@vectorops.dev" [ref=e336]
                 - cell [ref=e337]:
                   - combobox [ref=e338]:
                     - generic: Jōnin (Tech Lead)

@@ -159,7 +159,7 @@ async function testSchemaPrisma() {
 
   const fs = await import("fs")
   const content = fs.readFileSync(
-    "/home/alisson/web/personal/shinobiops/apps/web/prisma/schema.prisma",
+    "/home/alisson/web/personal/vectorops/apps/web/prisma/schema.prisma",
     "utf8"
   )
 
@@ -201,7 +201,7 @@ async function testNotificationsStaticAnalysis() {
 
   const fs = await import("fs")
   const content = fs.readFileSync(
-    "/home/alisson/web/personal/shinobiops/apps/web/lib/notifications.ts",
+    "/home/alisson/web/personal/vectorops/apps/web/lib/notifications.ts",
     "utf8"
   )
 
@@ -272,7 +272,7 @@ async function testRouteStaticAnalysis() {
 
   const fs = await import("fs")
   const content = fs.readFileSync(
-    "/home/alisson/web/personal/shinobiops/apps/web/app/api/admin/role-notification-config/route.ts",
+    "/home/alisson/web/personal/vectorops/apps/web/app/api/admin/role-notification-config/route.ts",
     "utf8"
   )
 
@@ -673,7 +673,7 @@ async function testFrontendComponents() {
 
   // Suite 31-34: role-notification-config.tsx
   const roleConfigContent = fs.readFileSync(
-    "/home/alisson/web/personal/shinobiops/apps/web/components/admin/role-notification-config.tsx",
+    "/home/alisson/web/personal/vectorops/apps/web/components/admin/role-notification-config.tsx",
     "utf8"
   )
 
@@ -738,7 +738,7 @@ async function testFrontendComponents() {
 
   // Suite 35: admin-notifications-content.tsx
   const adminContent = fs.readFileSync(
-    "/home/alisson/web/personal/shinobiops/apps/web/components/admin/admin-notifications-content.tsx",
+    "/home/alisson/web/personal/vectorops/apps/web/components/admin/admin-notifications-content.tsx",
     "utf8"
   )
 
@@ -762,7 +762,7 @@ async function testFrontendComponents() {
 
   // Suite 36-38: notification-routing.tsx
   const routingContent = fs.readFileSync(
-    "/home/alisson/web/personal/shinobiops/apps/web/components/admin/notification-routing.tsx",
+    "/home/alisson/web/personal/vectorops/apps/web/components/admin/notification-routing.tsx",
     "utf8"
   )
 
@@ -1079,7 +1079,7 @@ async function testNotificationRegressions(cookies) {
   // Suite 44: HELP_REQUEST_NEW — verify static logic is unchanged
   const fs = await import("fs")
   const content = fs.readFileSync(
-    "/home/alisson/web/personal/shinobiops/apps/web/lib/notifications.ts",
+    "/home/alisson/web/personal/vectorops/apps/web/lib/notifications.ts",
     "utf8"
   )
   const helpBlock = content.slice(
@@ -1204,13 +1204,13 @@ async function main() {
 
   // Login all required roles (300ms gaps to avoid SQLite contention from bcrypt)
   console.log("\nLogging in test users...")
-  const techLeadCookie = await login("alisson.lima@shinobiops.dev", "Password123!")
+  const techLeadCookie = await login("alisson.lima@vectorops.dev", "Password123!")
   await sleep(300)
-  const devCookie = await login("matheus@shinobiops.dev", "Password123!")
+  const devCookie = await login("matheus@vectorops.dev", "Password123!")
   await sleep(300)
-  const supportCookie = await login("bruno@shinobiops.dev", "Password123!")
+  const supportCookie = await login("bruno@vectorops.dev", "Password123!")
   await sleep(300)
-  const qaCookie = await login("nicoli@shinobiops.dev", "Password123!")
+  const qaCookie = await login("nicoli@vectorops.dev", "Password123!")
 
   if (!techLeadCookie) {
     console.error("\nFATAL: Could not log in as TECH_LEAD. Is the dev server running?")

@@ -22,10 +22,10 @@ Todos os usuários utilizam a senha: **`Password123!`**
 
 | Nome | E-mail | Role | Ninja Alias |
 | :--- | :--- | :--- | :--- |
-| Yuki Tanaka | `techlead@shinobiops.dev` | `TECH_LEAD` | IronJonin |
-| Ryu Hayabusa | `developer@shinobiops.dev` | `DEVELOPER` | SilentBlade |
-| Mei Lin | `supportlead@shinobiops.dev` | `SUPPORT_LEAD` | SwiftCrane |
-| Kenji Mori | `support@shinobiops.dev` | `SUPPORT_MEMBER` | GhostFox |
+| Yuki Tanaka | `techlead@vectorops.dev` | `TECH_LEAD` | IronJonin |
+| Ryu Hayabusa | `developer@vectorops.dev` | `DEVELOPER` | SilentBlade |
+| Mei Lin | `supportlead@vectorops.dev` | `SUPPORT_LEAD` | SwiftCrane |
+| Kenji Mori | `support@vectorops.dev` | `SUPPORT_MEMBER` | GhostFox |
 
 ## 4. Configurações Iniciais
 Além de usuários, o script aplica `PRAGMAs` fundamentais do SQLite:

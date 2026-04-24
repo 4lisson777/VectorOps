@@ -106,7 +106,7 @@ async function testTicketActionsStaticAnalysis() {
 
   const fs = await import("fs")
   const filePath =
-    "/home/alisson/web/personal/shinobiops/apps/web/components/tickets/ticket-actions.tsx"
+    "/home/alisson/web/personal/vectorops/apps/web/components/tickets/ticket-actions.tsx"
   const content = fs.readFileSync(filePath, "utf8")
 
   // 1a: isQA boolean must be declared
@@ -180,7 +180,7 @@ async function testPageStaticAnalysis() {
 
   const fs = await import("fs")
   const filePath =
-    "/home/alisson/web/personal/shinobiops/apps/web/app/(protected)/ticket/[publicId]/page.tsx"
+    "/home/alisson/web/personal/vectorops/apps/web/app/(protected)/ticket/[publicId]/page.tsx"
   const content = fs.readFileSync(filePath, "utf8")
 
   // Developer fetch condition includes QA
@@ -572,13 +572,13 @@ async function main() {
   console.log("\n[Setup] Authenticating test users...")
 
   // Sequential logins to avoid concurrent bcrypt + SQLite contention
-  const supportCookie = await login("bruno@shinobiops.dev", "Password123!")
+  const supportCookie = await login("bruno@vectorops.dev", "Password123!")
   await new Promise((r) => setTimeout(r, 300))
-  const qaCookie = await login("nicoli@shinobiops.dev", "Password123!")
+  const qaCookie = await login("nicoli@vectorops.dev", "Password123!")
   await new Promise((r) => setTimeout(r, 300))
-  const techLeadCookie = await login("alisson.lima@shinobiops.dev", "Password123!")
+  const techLeadCookie = await login("alisson.lima@vectorops.dev", "Password123!")
   await new Promise((r) => setTimeout(r, 300))
-  const developerCookie = await login("matheus@shinobiops.dev", "Password123!")
+  const developerCookie = await login("matheus@vectorops.dev", "Password123!")
 
   const cookies = {
     support: supportCookie,

@@ -26,7 +26,7 @@
 ## Database Schema (current — Phase 1)
 - `User` model: id (cuid), name, email (unique), passwordHash, role (enum), avatarUrl?, ninjaAlias, isActive, notifyTickets, notifyBugs, soundEnabled, createdAt, updatedAt
 - Roles: `TECH_LEAD | DEVELOPER | SUPPORT_LEAD | SUPPORT_MEMBER`
-- DB file: `apps/web/prisma/data/shinobiops.db` (env: `DATABASE_URL`)
+- DB file: `apps/web/prisma/data/vectorops.db` (env: `DATABASE_URL`)
 
 ## Color Palette
 - Primary: deep navy `#1A1A2E`

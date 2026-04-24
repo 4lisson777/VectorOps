@@ -479,7 +479,7 @@ async function testSSETypeRegistration() {
   console.log("\n[Suite 9] SSE event type registration")
 
   const fs = await import("fs")
-  const sseEmitterPath = "/home/alisson/web/personal/shinobiops/apps/web/lib/sse-emitter.ts"
+  const sseEmitterPath = "/home/alisson/web/personal/vectorops/apps/web/lib/sse-emitter.ts"
   const content = fs.readFileSync(sseEmitterPath, "utf8")
 
   assert(
@@ -495,7 +495,7 @@ async function testSSETypeRegistration() {
   )
 
   // Verify SSE route filters notification:acknowledged by userId
-  const sseRoutePath = "/home/alisson/web/personal/shinobiops/apps/web/app/api/sse/route.ts"
+  const sseRoutePath = "/home/alisson/web/personal/vectorops/apps/web/app/api/sse/route.ts"
   const routeContent = fs.readFileSync(sseRoutePath, "utf8")
 
   assert(
@@ -513,7 +513,7 @@ async function testSchemaCorrectness() {
   console.log("\n[Suite 10] Schema and migration correctness")
 
   const fs = await import("fs")
-  const schemaPath = "/home/alisson/web/personal/shinobiops/apps/web/prisma/schema.prisma"
+  const schemaPath = "/home/alisson/web/personal/vectorops/apps/web/prisma/schema.prisma"
   const schema = fs.readFileSync(schemaPath, "utf8")
 
   assert(
@@ -533,7 +533,7 @@ async function testSchemaCorrectness() {
   )
 
   const migrationPath =
-    "/home/alisson/web/personal/shinobiops/apps/web/prisma/migrations/20260407000000_add_notification_ack/migration.sql"
+    "/home/alisson/web/personal/vectorops/apps/web/prisma/migrations/20260407000000_add_notification_ack/migration.sql"
   const migration = fs.readFileSync(migrationPath, "utf8")
 
   assert(
@@ -563,7 +563,7 @@ async function testSSEPayloadIncludesId() {
   console.log("\n[Suite 11] CRITICAL: SSE notification:new payload — id field")
 
   const fs = await import("fs")
-  const notifLibPath = "/home/alisson/web/personal/shinobiops/apps/web/lib/notifications.ts"
+  const notifLibPath = "/home/alisson/web/personal/vectorops/apps/web/lib/notifications.ts"
   const content = fs.readFileSync(notifLibPath, "utf8")
 
   // Check if createMany is used (which cannot return IDs) vs create in a loop
@@ -604,7 +604,7 @@ async function testAcknowledgeAllLogic() {
 
   const fs = await import("fs")
   const hookPath =
-    "/home/alisson/web/personal/shinobiops/apps/web/hooks/use-persistent-notifications.ts"
+    "/home/alisson/web/personal/vectorops/apps/web/hooks/use-persistent-notifications.ts"
   const content = fs.readFileSync(hookPath, "utf8")
 
   // acknowledgeAll reads from pendingRef — if ids are fake, all API calls will 404
@@ -641,10 +641,10 @@ async function main() {
   // Credentials from prisma/seed.ts + manually created QA user
   // Roles needed: SUPPORT_MEMBER, QA, TECH_LEAD, DEVELOPER
   // Sequential logins to avoid concurrent bcrypt + SQLite contention on the dev server
-  const supportCookie = await login("support@shinobiops.dev", "Password123!")
-  const qaCookie = await login("qa@shinobiops.dev", "Password123!")
-  const techLeadCookie = await login("techlead@shinobiops.dev", "Password123!")
-  const developerCookie = await login("developer@shinobiops.dev", "Password123!")
+  const supportCookie = await login("support@vectorops.dev", "Password123!")
+  const qaCookie = await login("qa@vectorops.dev", "Password123!")
+  const techLeadCookie = await login("techlead@vectorops.dev", "Password123!")
+  const developerCookie = await login("developer@vectorops.dev", "Password123!")
 
   // Allow fallback to alternative seed emails if primary ones don't exist
   const loginResults = {

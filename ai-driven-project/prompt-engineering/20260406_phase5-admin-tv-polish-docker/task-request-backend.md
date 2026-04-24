@@ -106,17 +106,17 @@ Implement all backend APIs and infrastructure for the remaining Phase 5 tasks. T
 - Import from `@prisma/client` for types/enums (the generated client path is `../generated/prisma/client`)
 
 ## Communication File
-`/home/alisson/web/personal/shinobiops/.claude/communication/phase5-admin-tv-polish-docker.md`
+`/home/alisson/web/personal/vectorops/.claude/communication/phase5-admin-tv-polish-docker.md`
 
 ## Key Existing Files Reference
-- Auth helpers: `/home/alisson/web/personal/shinobiops/apps/web/lib/auth.ts`
-- DB singleton: `/home/alisson/web/personal/shinobiops/apps/web/lib/db.ts`
-- Session: `/home/alisson/web/personal/shinobiops/apps/web/lib/session.ts`
-- Ticket schemas: `/home/alisson/web/personal/shinobiops/apps/web/lib/schemas/ticket-schemas.ts`
-- Notifications: `/home/alisson/web/personal/shinobiops/apps/web/lib/notifications.ts`
-- SSE emitter: `/home/alisson/web/personal/shinobiops/apps/web/lib/sse-emitter.ts`
-- Prisma schema: `/home/alisson/web/personal/shinobiops/apps/web/prisma/schema.prisma`
-- Existing checkpoint config API: `/home/alisson/web/personal/shinobiops/apps/web/app/api/checkpoints/config/route.ts`
-- Existing users API: `/home/alisson/web/personal/shinobiops/apps/web/app/api/users/route.ts`
-- Existing tickets API: `/home/alisson/web/personal/shinobiops/apps/web/app/api/tickets/route.ts`
-- Health endpoint: `/home/alisson/web/personal/shinobiops/apps/web/app/api/health/route.ts`
+- Auth helpers: `/home/alisson/web/personal/vectorops/apps/web/lib/auth.ts`
+- DB singleton: `/home/alisson/web/personal/vectorops/apps/web/lib/db.ts`
+- Session: `/home/alisson/web/personal/vectorops/apps/web/lib/session.ts`
+- Ticket schemas: `/home/alisson/web/personal/vectorops/apps/web/lib/schemas/ticket-schemas.ts`
+- Notifications: `/home/alisson/web/personal/vectorops/apps/web/lib/notifications.ts`
+- SSE emitter: `/home/alisson/web/personal/vectorops/apps/web/lib/sse-emitter.ts`
+- Prisma schema: `/home/alisson/web/personal/vectorops/apps/web/prisma/schema.prisma`
+- Existing checkpoint config API: `/home/alisson/web/personal/vectorops/apps/web/app/api/checkpoints/config/route.ts`
+- Existing users API: `/home/alisson/web/personal/vectorops/apps/web/app/api/users/route.ts`
+- Existing tickets API: `/home/alisson/web/personal/vectorops/apps/web/app/api/tickets/route.ts`
+- Health endpoint: `/home/alisson/web/personal/vectorops/apps/web/app/api/health/route.ts`

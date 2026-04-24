@@ -59,10 +59,10 @@ Role guards (checked in order):
 ### Seed Credentials (dev only)
 | Role | Email | Password |
 |------|-------|----------|
-| TECH_LEAD | techlead@shinobiops.dev | Password123! |
-| DEVELOPER | developer@shinobiops.dev | Password123! |
-| SUPPORT_LEAD | supportlead@shinobiops.dev | Password123! |
-| SUPPORT_MEMBER | support@shinobiops.dev | Password123! |
+| TECH_LEAD | techlead@vectorops.dev | Password123! |
+| DEVELOPER | developer@vectorops.dev | Password123! |
+| SUPPORT_LEAD | supportlead@vectorops.dev | Password123! |
+| SUPPORT_MEMBER | support@vectorops.dev | Password123! |
 
 ### Migration Notes
 - Migration SQL is hand-written (Prisma CLI not available at write time)
@@ -215,7 +215,7 @@ When you change `@unique` on a field to `@@unique([organizationId, field])`, Pri
 
 #### SQLite database is locked by Next.js dev server
 Running `prisma migrate dev` while the dev server is running always fails with "database is locked". Steps to fix:
-1. `fuser /path/to/shinobiops.db` to find the PID
+1. `fuser /path/to/vectorops.db` to find the PID
 2. Kill the next-server process (and turbo/node procs)
 3. Run the migration
 4. Restart dev server
@@ -340,6 +340,18 @@ All `/api/super-admin/*` routes import `db` directly (not `getTenantDb()`) becau
 
 #### OrgSelfUpdateSchema for TECH_LEAD self-service
 TECH_LEAD can update their org name but NOT slug or isActive directly. Use `OrgSelfUpdateSchema` (name only) in `/api/organizations/current PATCH`. Slug is auto-derived from name. isActive requires super-admin via `/api/super-admin/organizations/[id] PATCH`.
+
+### Docker Seed Compilation Pattern
+
+#### esbuild CJS format cannot handle import.meta.url from Prisma generated client
+The generated Prisma client (`apps/web/generated/prisma/client.ts`) uses `import.meta.url` at the top level:
+`globalThis['__dirname'] = path.dirname(fileURLToPath(import.meta.url))`
+When esbuild bundles the seed script (`--packages=external --format=cjs`), this local file IS inlined (it's not an npm package), and `import.meta.url` becomes `undefined` in CJS output — causing `fileURLToPath(undefined)` → `ERR_INVALID_ARG_TYPE`.
+
+Fix: use `--format=esm --outfile=seed.prod.mjs` instead of `--format=cjs`. Node 20 supports ESM natively, so `node seed.prod.mjs` works without any flags.
+
+#### dotenv import is unnecessary in Docker production seed
+`import "dotenv/config"` in the prod seed is pointless — docker-compose injects env vars directly. Remove it from seed.prod.ts. Note: `lib/db.ts` still has `import "dotenv/config"` but that's bundled by Next.js and handled at build time, so `dotenv` stays in `dependencies`.
 
 ### Gotchas
 - The monorepo uses `"type": "module"` in `apps/web/package.json` — imports use ESM

@@ -7,6 +7,6 @@ export default defineConfig({
     seed: "tsx ./prisma/seed.ts",
   },
   datasource: {
-    url: "file:./prisma/data/shinobiops.db",
+    url: "file:./prisma/data/vectorops.db",
   },
 })

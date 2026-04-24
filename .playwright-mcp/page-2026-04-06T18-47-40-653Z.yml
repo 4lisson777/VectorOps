@@ -14,7 +14,7 @@
           - generic [ref=e16]: Email
           - textbox "Email" [ref=e17]:
             - /placeholder: ninja@inovar.com
-            - text: techlead@shinobiops.dev
+            - text: techlead@vectorops.dev
         - generic [ref=e18]:
           - generic [ref=e19]: Senha
           - textbox "Senha" [ref=e20]:

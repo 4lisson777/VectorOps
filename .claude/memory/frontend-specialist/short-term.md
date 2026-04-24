@@ -4,7 +4,7 @@
 Multitenancy UI Updates — Complete frontend implementation for multitenancy support
 
 ## Plan Path
-`/home/alisson/web/personal/shinobiops/ai-driven-project/prompt-engineering/20260423_multitenancy-refactor/task-request-frontend.md`
+`/home/alisson/web/personal/vectorops/ai-driven-project/prompt-engineering/20260423_multitenancy-refactor/task-request-frontend.md`
 
 ## Files Created
 - `apps/web/components/admin/organization-settings.tsx` — TECH_LEAD self-service org name editor; fetches GET /api/organizations/current; PATCH to save; shows slug (read-only), user count, creation date

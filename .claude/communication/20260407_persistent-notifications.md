@@ -186,5 +186,5 @@ Runs both groups in parallel. Existing `createAndEmitNotifications` is unchanged
 - `notification:new` SSE payload must include `id` field (notification DB id) for the pending queue to correctly identify items — confirmed present in backend implementation
 - `notification:acknowledged` SSE payload uses key `notificationId` (not `id`) — frontend reads `payload.notificationId`
 - `/api/notifications/pending` response shape matches; `ticket` field (with `publicId`) is used for direct navigation links in the banner
-- Sound mute preference (`shinobiops:soundEnabled`) is already respected by `useSoundAlerts` — persistent repeat skips sound but browser notification still fires when muted
+- Sound mute preference (`vectorops:soundEnabled`) is already respected by `useSoundAlerts` — persistent repeat skips sound but browser notification still fires when muted
 - No additional fields needed

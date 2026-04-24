@@ -19,7 +19,7 @@
           - generic: Email
           - textbox:
             - /placeholder: ninja@inovar.com
-            - text: e2etest@shinobiops.dev
+            - text: e2etest@vectorops.dev
         - generic:
           - generic: Senha
           - textbox:

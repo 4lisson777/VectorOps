@@ -52,7 +52,7 @@ The entrypoint runs `node apps/web/server.js` from `/app`. With Next.js standalo
 
 ### Issue 6: DATABASE_URL path for migrations vs runtime
 
-The docker-compose sets `DATABASE_URL=file:/app/apps/web/prisma/data/shinobiops.db` (absolute path). The volume mount is `./data:/app/apps/web/prisma/data`. Prisma migrate deploy needs to create the database file at this location. Ensure the `node` user has write permissions to the mounted volume.
+The docker-compose sets `DATABASE_URL=file:/app/apps/web/prisma/data/vectorops.db` (absolute path). The volume mount is `./data:/app/apps/web/prisma/data`. Prisma migrate deploy needs to create the database file at this location. Ensure the `node` user has write permissions to the mounted volume.
 
 **Fix:** The volume mount directory must be writable by the `node` user (uid 1000). Add a note or ensure the data directory is created with proper permissions. Consider creating the data directory in the Dockerfile before switching to the `node` user.
 
@@ -64,9 +64,9 @@ With npm workspaces, `npm ci` hoists dependencies to the root `node_modules`. Th
 
 ## Files to Modify
 
-1. `/home/alisson/web/personal/shinobiops/Dockerfile` -- Fix all build stages
-2. `/home/alisson/web/personal/shinobiops/entrypoint.sh` -- Fix Prisma CLI invocation
-3. `/home/alisson/web/personal/shinobiops/apps/web/next.config.mjs` -- Add serverExternalPackages
+1. `/home/alisson/web/personal/vectorops/Dockerfile` -- Fix all build stages
+2. `/home/alisson/web/personal/vectorops/entrypoint.sh` -- Fix Prisma CLI invocation
+3. `/home/alisson/web/personal/vectorops/apps/web/next.config.mjs` -- Add serverExternalPackages
 
 ## Business Logic
 

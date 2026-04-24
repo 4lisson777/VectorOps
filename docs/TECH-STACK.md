@@ -236,12 +236,12 @@ PRAGMA busy_timeout = 5000;      -- Prevent SQLITE_BUSY under concurrency
 
 ```yaml
 services:
-  shinobiops:
+  vectorops:
     build: .
     ports:
       - "3000:3000"
     volumes:
-      - shinobiops-data:/app/prisma/data
+      - vectorops-data:/app/prisma/data
     environment:
       - DATABASE_URL=file:./data/prisma.db
       - NODE_ENV=production
@@ -251,7 +251,7 @@ services:
       timeout: 10s
       retries: 3
 volumes:
-  shinobiops-data:
+  vectorops-data:
 ```
 
 ### Port & Network

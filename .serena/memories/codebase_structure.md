@@ -1,7 +1,7 @@
 # ShinobiOps — Codebase Structure
 
 ```
-shinobiops/                         # monorepo root
+vectorops/                         # monorepo root
 ├── apps/
 │   └── web/                        # Next.js 16 app (main application)
 │       ├── app/                    # App Router

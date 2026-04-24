@@ -27,7 +27,7 @@ import { defineConfig } from "prisma/config"
 export default defineConfig({
   schema: "./prisma/schema.prisma",
   datasource: {
-    url: process.env["DATABASE_URL"] ?? "file:./prisma/data/shinobiops.db",
+    url: process.env["DATABASE_URL"] ?? "file:./prisma/data/vectorops.db",
   },
 })
 ```
@@ -114,7 +114,7 @@ export default defineConfig({
 - Move seed config from `package.json` `prisma.seed` → `prisma.config.ts` `migrations.seed`
 - Use `path.join()` for cross-platform path resolution (per official docs example)
 
-**Note on `env()` vs fallback:** The current config has a fallback (`?? "file:./prisma/data/shinobiops.db"`). The `env()` helper will throw if `DATABASE_URL` is unset. This is the correct behavior for production. For development, `DATABASE_URL` should be set in `.env` file (which `lib/db.ts` already handles with its own fallback at runtime).
+**Note on `env()` vs fallback:** The current config has a fallback (`?? "file:./prisma/data/vectorops.db"`). The `env()` helper will throw if `DATABASE_URL` is unset. This is the correct behavior for production. For development, `DATABASE_URL` should be set in `.env` file (which `lib/db.ts` already handles with its own fallback at runtime).
 
 ### 3.2 Remove Legacy Seed Config from `package.json` (Priority: High)
 
@@ -144,7 +144,7 @@ import { PrismaClient } from "../generated/prisma/client"
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export function createPrismaClient(): PrismaClient {
-  const url = process.env.DATABASE_URL ?? "file:./prisma/data/shinobiops.db"
+  const url = process.env.DATABASE_URL ?? "file:./prisma/data/vectorops.db"
   const filePath = url.replace(/^file:/, "")
   const dbPath = path.isAbsolute(filePath)
     ? filePath

@@ -3,7 +3,12 @@ services:
     env_file:
       - apps/web/.env
     environment:
-      DATABASE_URL: "file:./prisma/data/shinobiops.db"
+      DATABASE_URL: "file:./prisma/data/vectorops.db"
+      # Production seed — runs once on first deploy when SEED_ADMIN_EMAIL is set.
+      # Remove or leave unset after the initial deployment.
+      # SEED_ADMIN_NAME: "Your Name"
+      # SEED_ADMIN_EMAIL: "admin@yourcompany.com"
+      # SEED_ADMIN_PASSWORD: "ChangeMe123!"
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,7 +18,7 @@ services:
       # Named volume so Docker manages directory ownership (avoids permission errors
       # that occur when a bind-mount directory is created as root on the host while
       # the container runs as the non-root "node" user).
-      - shinobiops-data:/app/apps/web/prisma/data
+      - vectorops-data:/app/apps/web/prisma/data
     restart: unless-stopped
     healthcheck:
       test:
@@ -27,4 +32,4 @@ services:
       start_period: 30s
 
 volumes:
-  shinobiops-data:
+  vectorops-data:

@@ -23,12 +23,12 @@ interface SeedUser {
   isSuperAdmin?: boolean
 }
 
-// Primary organization users (Inovar Sistemas)
-const INOVAR_USERS: SeedUser[] = [
+// Primary organization users (VectorOps)
+const VECTOROPS_USERS: SeedUser[] = [
   // Super Admin + Tech Lead (1)
   {
     name: "Alisson Lima",
-    email: "alisson.lima@shinobiops.dev",
+    email: "alisson@vector.ops",
     password: "Password123!",
     role: "TECH_LEAD",
     ninjaAlias: "IronJonin",
@@ -37,28 +37,28 @@ const INOVAR_USERS: SeedUser[] = [
   // Developers (4)
   {
     name: "Matheus",
-    email: "matheus@shinobiops.dev",
+    email: "matheus@vectorops.dev",
     password: "Password123!",
     role: "DEVELOPER",
     ninjaAlias: "SilentBlade",
   },
   {
     name: "Marcos",
-    email: "marcos@shinobiops.dev",
+    email: "marcos@vectorops.dev",
     password: "Password123!",
     role: "DEVELOPER",
     ninjaAlias: "StormKunai",
   },
   {
     name: "Ivson",
-    email: "ivson@shinobiops.dev",
+    email: "ivson@vectorops.dev",
     password: "Password123!",
     role: "DEVELOPER",
     ninjaAlias: "VoidSerpent",
   },
   {
     name: "Guilherme",
-    email: "guilherme@shinobiops.dev",
+    email: "guilherme@vectorops.dev",
     password: "Password123!",
     role: "DEVELOPER",
     ninjaAlias: "EmberShuriken",
@@ -66,7 +66,7 @@ const INOVAR_USERS: SeedUser[] = [
   // Support Lead (1)
   {
     name: "Alisson Rosa",
-    email: "alisson.rosa@shinobiops.dev",
+    email: "alisson.rosa@vectorops.dev",
     password: "Password123!",
     role: "SUPPORT_LEAD",
     ninjaAlias: "SwiftCrane",
@@ -74,14 +74,14 @@ const INOVAR_USERS: SeedUser[] = [
   // Support Members (2)
   {
     name: "Bruno Carvalho",
-    email: "bruno@shinobiops.dev",
+    email: "bruno@vectorops.dev",
     password: "Password123!",
     role: "SUPPORT_MEMBER",
     ninjaAlias: "CrimsonFang",
   },
   {
     name: "Leticia Duarte",
-    email: "leticia@shinobiops.dev",
+    email: "leticia@vectorops.dev",
     password: "Password123!",
     role: "SUPPORT_MEMBER",
     ninjaAlias: "MistSparrow",
@@ -89,7 +89,7 @@ const INOVAR_USERS: SeedUser[] = [
   // QA (1)
   {
     name: "Nicoli",
-    email: "nicoli@shinobiops.dev",
+    email: "nicoli@vectorops.dev",
     password: "Password123!",
     role: "QA",
     ninjaAlias: "ShadowSeal",
@@ -224,24 +224,24 @@ async function main(): Promise<void> {
   console.log("Applying SQLite pragmas...")
   await applyPragmas()
 
-  // ── Organization 1: Inovar Sistemas (default / production org) ───────────
-  console.log('\nSeeding organization: "Inovar Sistemas"...')
-  const inovarOrg = await prisma.organization.upsert({
-    where: { slug: "inovar-sistemas" },
+  // ── Organization 1: VectorOps (default / dev org) ────────────────────────
+  console.log('\nSeeding organization: "VectorOps"...')
+  const vectoropsOrg = await prisma.organization.upsert({
+    where: { slug: "vectorops" },
     update: {},
     create: {
-      name: "Inovar Sistemas",
-      slug: "inovar-sistemas",
+      name: "VectorOps",
+      slug: "vectorops",
       isActive: true,
     },
   })
-  console.log(`  Organization ID: ${inovarOrg.id}`)
+  console.log(`  Organization ID: ${vectoropsOrg.id}`)
 
   console.log("  Seeding users...")
-  await seedOrganizationUsers(inovarOrg.id, INOVAR_USERS)
+  await seedOrganizationUsers(vectoropsOrg.id, VECTOROPS_USERS)
 
   console.log("  Seeding org configs...")
-  await seedOrgConfigs(inovarOrg.id)
+  await seedOrgConfigs(vectoropsOrg.id)
 
   // ── Organization 2: Test Company (dev multitenancy testing) ──────────────
   console.log('\nSeeding organization: "Test Company"...')
@@ -262,15 +262,15 @@ async function main(): Promise<void> {
   console.log("  Seeding org configs...")
   await seedOrgConfigs(testOrg.id)
 
-  console.log("\nSeeding complete.")
+  console.log("\nDev seed complete.")
   console.log("")
   console.log("Seed credentials (all passwords: Password123!):")
-  console.log("  Inovar Sistemas:")
-  console.log("    TECH_LEAD + SUPER_ADMIN : alisson.lima@shinobiops.dev")
-  console.log("    DEVELOPER               : matheus@shinobiops.dev")
-  console.log("    SUPPORT_LEAD            : alisson.rosa@shinobiops.dev")
-  console.log("    SUPPORT_MEMBER          : bruno@shinobiops.dev")
-  console.log("    QA                      : nicoli@shinobiops.dev")
+  console.log("  VectorOps:")
+  console.log("    TECH_LEAD + SUPER_ADMIN : alisson@vector.ops")
+  console.log("    DEVELOPER               : matheus@vectorops.dev")
+  console.log("    SUPPORT_LEAD            : alisson.rosa@vectorops.dev")
+  console.log("    SUPPORT_MEMBER          : bruno@vectorops.dev")
+  console.log("    QA                      : nicoli@vectorops.dev")
   console.log("  Test Company:")
   console.log("    TECH_LEAD               : lead@testcompany.dev")
   console.log("    DEVELOPER               : dev@testcompany.dev")

@@ -31,11 +31,11 @@
 ## Seed User Credentials (Confirmed Working 2026-04-08)
 | Role | Email | Password |
 |------|-------|----------|
-| TECH_LEAD | alisson.lima@shinobiops.dev | Password123! |
-| DEVELOPER | matheus@shinobiops.dev | Password123! |
-| SUPPORT_MEMBER | bruno@shinobiops.dev | Password123! |
-| QA | nicoli@shinobiops.dev | Password123! |
-| SUPPORT_LEAD | alisson.rosa@shinobiops.dev | Password123! |
+| TECH_LEAD | alisson.lima@vectorops.dev | Password123! |
+| DEVELOPER | matheus@vectorops.dev | Password123! |
+| SUPPORT_MEMBER | bruno@vectorops.dev | Password123! |
+| QA | nicoli@vectorops.dev | Password123! |
+| SUPPORT_LEAD | alisson.rosa@vectorops.dev | Password123! |
 
 Note: Sequential logins with 300ms gaps are required to avoid SQLite contention (bcrypt is CPU-heavy).
 

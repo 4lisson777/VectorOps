@@ -60,6 +60,11 @@ Admin component stubs exist returning null: command-dojo-overview, team-manageme
 - Super admin should be a boolean flag, not a role, to avoid polluting the tenant-scoped Role enum
 - TV mode (public route, no auth) needs org slug as a URL parameter for tenant scoping
 
+## Docker / Build Pitfalls
+- PITFALL: `--packages=external` in esbuild keeps all imports as runtime requires. If a dependency is pruned (npm prune --omit=dev), the bundled CJS file fails at runtime.
+- Production seed scripts should NOT import `dotenv/config` -- Docker provides env vars via docker-compose. `dotenv` is a dev convenience only.
+- The Dockerfile uses a 3-stage build: deps (npm ci) -> builder (build + esbuild + prune) -> runner (standalone output). Only production deps survive into the runner.
+
 ## Context System
 - Master context at ai-driven-project/master-context.md
 - Context files follow strict format with IDs (CTX-CATEGORY-NNN)

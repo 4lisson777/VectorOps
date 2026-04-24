@@ -212,9 +212,9 @@ function uniqueOrgName(prefix = "TestOrg") {
 
 // ─── Seed Credentials ─────────────────────────────────────────────────────────
 // Inovar Sistemas (slug: inovar-sistemas)
-const INOVAR_TECH_LEAD = { email: "alisson.lima@shinobiops.dev", password: "Password123!" }
-const INOVAR_DEVELOPER = { email: "matheus@shinobiops.dev", password: "Password123!" }
-const INOVAR_SUPPORT   = { email: "bruno@shinobiops.dev", password: "Password123!" }
+const INOVAR_TECH_LEAD = { email: "alisson.lima@vectorops.dev", password: "Password123!" }
+const INOVAR_DEVELOPER = { email: "matheus@vectorops.dev", password: "Password123!" }
+const INOVAR_SUPPORT   = { email: "bruno@vectorops.dev", password: "Password123!" }
 
 // Test Company (slug: test-company)
 const TC_TECH_LEAD     = { email: "lead@testcompany.dev", password: "Password123!" }

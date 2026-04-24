@@ -137,7 +137,7 @@ Establish the foundational layer: users can register, log in, see role-appropria
 ### 1.13 Environment Configuration
 
 - Create `.env.example` with all required variables:
-  - `DATABASE_URL=file:./prisma/data/shinobiops.db`
+  - `DATABASE_URL=file:./prisma/data/vectorops.db`
   - `SESSION_SECRET=<random-32-char-string>`
   - `NODE_ENV=development`
 - Add `.env` to `.gitignore`
