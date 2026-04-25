@@ -158,6 +158,8 @@ model User {
   createdInvites    Invite[]              @relation("CreatedInvites")
 
   @@unique([organizationId, email])
+  @@index([organizationId, isActive])
+  @@index([organizationId, role])
   @@map("users")
 }
 
@@ -187,6 +189,10 @@ model Ticket {
   reorderRequests ReorderRequest[]
   notifications   Notification[]
 
+  @@index([organizationId, status])
+  @@index([organizationId, priorityOrder])
+  @@index([organizationId, severity])
+  @@index([organizationId, createdAt])
   @@map("tickets")
 }
 
@@ -216,6 +222,7 @@ model TicketEvent {
   ticket Ticket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
   actor  User   @relation("ActorEvents", fields: [actorId], references: [id])
 
+  @@index([ticketId, createdAt])
   @@map("ticket_events")
 }
 
@@ -234,6 +241,7 @@ model ReorderRequest {
   requestedBy User   @relation("RequestedReorders", fields: [requestedById], references: [id])
   resolvedBy  User?  @relation("ResolvedReorders", fields: [resolvedById], references: [id])
 
+  @@index([ticketId, status])
   @@map("reorder_requests")
 }
 
