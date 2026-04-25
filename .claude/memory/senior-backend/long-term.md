@@ -353,6 +353,17 @@ Fix: use `--format=esm --outfile=seed.prod.mjs` instead of `--format=cjs`. Node 
 #### dotenv import is unnecessary in Docker production seed
 `import "dotenv/config"` in the prod seed is pointless — docker-compose injects env vars directly. Remove it from seed.prod.ts. Note: `lib/db.ts` still has `import "dotenv/config"` but that's bundled by Next.js and handled at build time, so `dotenv` stays in `dependencies`.
 
+### Runtime Bug Patterns (20260425)
+
+#### TypeScript does not narrow prop types across function/closure boundaries
+Even if a React component has an early `if (!prop) return ...` guard, TypeScript still sees `prop` as `T | undefined` inside a nested function defined after the guard. Fix: assign to a local const immediately after the guard (`const slug = orgSlug`) — TypeScript narrows the local correctly.
+
+#### Next.js `manifest` metadata property vs `icons.other`
+Declaring the web manifest via `icons.other: [{ rel: "manifest", url: "..." }]` routes it through Next.js's icon pipeline, which corrupts the content-type. Use the dedicated top-level `manifest: "/site.webmanifest"` property on the `Metadata` object instead.
+
+#### Prisma interactive transaction tx does not inherit Client Extensions
+`getTenantDb().$transaction(async (tx) => ...)` — the `tx` argument is a plain `PrismaClient` transaction, not the extended client. Extension query hooks (e.g., auto-inject `organizationId`) do NOT run on `tx`. Always inject `organizationId: session.organizationId` explicitly in `tx.model.create()` data inside interactive transactions.
+
 ### Gotchas
 - The monorepo uses `"type": "module"` in `apps/web/package.json` — imports use ESM
 - SQLite enums are stored as TEXT in the DB (SQLite has no native enum type)

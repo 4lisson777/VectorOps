@@ -237,11 +237,29 @@ export function TvBoard({ orgSlug }: TvBoardProps) {
   const [lastUpdated, setLastUpdated] = React.useState<Date | null>(null)
   const intervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null)
 
+  // The TV board requires the ?org=SLUG URL parameter to know which
+  // organization to display. Without it the API will return 400.
+  if (!orgSlug) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[oklch(0.17_0.02_250)] p-8 text-center">
+        <VectorOpsLogo />
+        <p className="mt-4 text-lg font-semibold text-white/60">
+          Informe o parâmetro <span className="font-mono text-white/80">?org=SLUG</span> na URL para visualizar o painel.
+        </p>
+        <p className="text-sm text-white/30">
+          Exemplo: <span className="font-mono">/dev/tv?org=minha-empresa</span>
+        </p>
+      </div>
+    )
+  }
+
+  // Capture the narrowed (non-undefined) slug in a local variable so the
+  // closure below does not see the wider `string | undefined` type.
+  const slug = orgSlug
+
   async function fetchData() {
     try {
-      const url = orgSlug
-        ? `/api/tv/data?org=${encodeURIComponent(orgSlug)}`
-        : "/api/tv/data"
+      const url = `/api/tv/data?org=${encodeURIComponent(slug)}`
       const res = await fetch(url)
       if (res.status === 503) {
         setIsDisabled(true)

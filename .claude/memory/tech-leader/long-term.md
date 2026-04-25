@@ -76,6 +76,12 @@ Admin component stubs exist returning null: command-dojo-overview, team-manageme
 - NODE_PATH=/prisma-cli/node_modules is needed when running prisma migrate deploy so prisma.config.ts can resolve `import from "prisma/config"`.
 - Prisma CLI version in /prisma-cli is dynamically extracted from the installed package to stay in sync with package.json.
 
+## Prisma Extension Pitfalls
+- PITFALL: Prisma Client Extensions ($extends) do NOT propagate query hooks into interactive transactions ($transaction(async (tx) => ...)). The `tx` object is a raw PrismaClient transaction, not the extended one. Any tenant-scoped creation inside interactive transactions must manually inject organizationId.
+- This affects all API routes that use getTenantDb().$transaction(async (tx) => { tx.model.create(...) }) -- the create hook that auto-injects organizationId is skipped.
+- Child models without organizationId (BugReport, TicketEvent, ReorderRequest) are fine since they link via parent FK.
+- generatePublicId() operating cross-tenant inside tx is acceptable because publicIds are globally unique by design.
+
 ## Context System
 - Master context at ai-driven-project/master-context.md
 - Context files follow strict format with IDs (CTX-CATEGORY-NNN)

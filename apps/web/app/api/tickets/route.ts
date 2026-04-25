@@ -139,7 +139,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const priorityOrder = await calculatePriorityOrder(data.severity as Severity, tx)
 
       const created = await tx.ticket.create({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data: {
           publicId,
           title: data.title,
@@ -149,8 +148,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           deadline: new Date(data.deadline),
           priorityOrder,
           openedById: session.userId,
-          // organizationId is injected by the tenant-db Prisma extension
-        } as any,
+          // tx inside an interactive transaction is a raw PrismaClient — the
+          // tenant-db extension's query hooks do NOT run here, so we must
+          // inject organizationId explicitly.
+          organizationId: session.organizationId,
+        },
         include: {
           openedBy: { select: userSelect },
           assignedTo: { select: userSelect },
