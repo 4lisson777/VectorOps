@@ -14,8 +14,7 @@
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed",
     "db:seed:prod": "tsx prisma/seed.prod.ts",
-    "db:studio": "prisma studio",
-    "db:migrate:mt": "tsx prisma/migrations/data-migration-multitenancy.ts"
+    "db:studio": "prisma studio"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
