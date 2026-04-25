@@ -4,9 +4,12 @@ import * as React from "react"
 import { DeveloperCard } from "@/components/dev/developer-card"
 import { SmokeSignalModal } from "@/components/dev/smoke-signal-modal"
 import { StatusScrollModal } from "@/components/dev/status-scroll-modal"
+import { WarRoomOverlay, WarRoomBanner } from "@/components/dev/war-room-overlay"
 import { useSSEContext } from "@/lib/sse-context"
+import { useSoundAlerts } from "@/hooks/use-sound-alerts"
 import { cn } from "@workspace/ui/lib/utils"
 import type { DevCardData } from "@/components/dev/developer-card"
+import type { WarRoomData } from "@/lib/war-room-state"
 
 interface NinjaBoardProps {
   initialDevs: DevCardData[]
@@ -46,12 +49,17 @@ export function NinjaBoard({
   const [checkpointOpen, setCheckpointOpen] = React.useState(false)
   const [awaitingCheckpoint, setAwaitingCheckpoint] = React.useState<Set<string>>(new Set())
   const [isRespondingHelp, setIsRespondingHelp] = React.useState(false)
+  const [warRoom, setWarRoom] = React.useState<WarRoomData | null>(null)
+  const [warRoomDismissed, setWarRoomDismissed] = React.useState(false)
+  const [isEndingWarRoom, setIsEndingWarRoom] = React.useState(false)
 
   const { subscribe } = useSSEContext()
+  const { playWarRoomAlarm } = useSoundAlerts()
   const arrivalTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
   const checkpointPromptTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const isDevRole = currentUserRole === "DEVELOPER" || currentUserRole === "TECH_LEAD"
+  const isTechLead = currentUserRole === "TECH_LEAD"
 
   const triggerCheckpointPrompt = React.useCallback(() => {
     setCheckpointOpen(true)
@@ -83,6 +91,31 @@ export function NinjaBoard({
       )
     } catch {
       // Silently ignore network errors
+    }
+  }
+
+  // Fetch current war room state on mount (handles page refresh during active war room)
+  React.useEffect(() => {
+    void fetch("/api/war-room")
+      .then((res) => res.ok ? res.json() as Promise<{ warRoom: WarRoomData | null }> : null)
+      .then((data) => {
+        if (data?.warRoom) {
+          setWarRoom(data.warRoom)
+        }
+      })
+      .catch(() => undefined)
+  }, [])
+
+  async function handleEndWarRoom() {
+    setIsEndingWarRoom(true)
+    try {
+      const res = await fetch("/api/war-room", { method: "DELETE" })
+      if (res.ok) {
+        setWarRoom(null)
+        setWarRoomDismissed(false)
+      }
+    } finally {
+      setIsEndingWarRoom(false)
     }
   }
 
@@ -145,8 +178,22 @@ export function NinjaBoard({
           triggerCheckpointPrompt()
         }
       }
+
+      // War room started — show overlay and play alarm
+      if (event.type === "war_room:started") {
+        const payload = event.payload as WarRoomData
+        setWarRoom(payload)
+        setWarRoomDismissed(false)
+        void playWarRoomAlarm()
+      }
+
+      // War room ended — clear state
+      if (event.type === "war_room:ended") {
+        setWarRoom(null)
+        setWarRoomDismissed(false)
+      }
     })
-  }, [subscribe, currentUserId, triggerCheckpointPrompt])
+  }, [subscribe, currentUserId, triggerCheckpointPrompt, playWarRoomAlarm])
 
   // 4.6 — Client-side checkpoint scheduler
   React.useEffect(() => {
@@ -219,6 +266,9 @@ export function NinjaBoard({
       return next
     })
     setCheckpointOpen(false)
+    // Refetch immediately so the card reflects the new devStatus without
+    // waiting for the SSE event (which may be delayed or dropped).
+    void refetchDevs()
   }
 
   async function handleStatusChange(devId: string, status: string) {
@@ -255,6 +305,17 @@ export function NinjaBoard({
     }
   }
 
+  // Blocked devs float to the front — they need immediate attention
+  const sortedDevs = React.useMemo(
+    () =>
+      [...devs].sort((a, b) => {
+        const aBlocked = a.devStatus === "BLOCKED" ? 0 : 1
+        const bBlocked = b.devStatus === "BLOCKED" ? 0 : 1
+        return aBlocked - bBlocked
+      }),
+    [devs]
+  )
+
   // Stats
   const activeCount = devs.filter((d) => d.devStatus === "ACTIVE" || !d.devStatus).length
   const blockedCount = devs.filter((d) => d.devStatus === "BLOCKED").length
@@ -263,6 +324,25 @@ export function NinjaBoard({
 
   return (
     <div className="flex min-h-full flex-col gap-6 p-6">
+      {/* War room full-screen overlay */}
+      {warRoom && !warRoomDismissed && (
+        <WarRoomOverlay
+          warRoom={warRoom}
+          onDismiss={() => setWarRoomDismissed(true)}
+        />
+      )}
+
+      {/* War room compact banner (after dismiss while still active) */}
+      {warRoom && warRoomDismissed && (
+        <WarRoomBanner
+          warRoom={warRoom}
+          onReopen={() => setWarRoomDismissed(false)}
+          isTechLead={isTechLead}
+          onEnd={isTechLead ? () => void handleEndWarRoom() : undefined}
+          isEnding={isEndingWarRoom}
+        />
+      )}
+
       {/* New ticket/bug arrival banner */}
       {newArrival && (
         <div
@@ -370,7 +450,7 @@ export function NinjaBoard({
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {devs.map((dev) => (
+          {sortedDevs.map((dev) => (
             <DeveloperCard
               key={dev.id}
               dev={dev}

@@ -12,6 +12,8 @@ export type ShinobiEventType =
   | "help_request:new"
   | "help_request:responded"
   | "checkpoint:prompt"
+  | "war_room:started"
+  | "war_room:ended"
 
 export interface ShinobiEvent {
   type: ShinobiEventType

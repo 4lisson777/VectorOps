@@ -54,6 +54,15 @@ export async function GET(): Promise<Response> {
           return
         }
 
+        // war_room events → only relevant to DEV / TECH_LEAD roles
+        if (
+          (event.type === "war_room:started" || event.type === "war_room:ended") &&
+          role !== "DEVELOPER" &&
+          role !== "TECH_LEAD"
+        ) {
+          return
+        }
+
         try {
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify(event)}\n\n`)

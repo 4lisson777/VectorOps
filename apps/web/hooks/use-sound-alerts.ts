@@ -73,5 +73,58 @@ export function useSoundAlerts() {
     oscillator.stop(now + durationSec)
   }
 
-  return { playTone }
+  async function playWarRoomAlarm() {
+    if (
+      typeof window !== "undefined" &&
+      localStorage.getItem("vectorops:soundEnabled") === "false"
+    ) {
+      return
+    }
+
+    const ctx = getOrCreateAudioContext()
+    if (!ctx) return
+
+    if (ctx.state === "suspended") {
+      try {
+        await ctx.resume()
+      } catch {
+        return
+      }
+    }
+
+    const now = ctx.currentTime
+
+    // 3 rapid alert beeps (square wave, sharp and urgent)
+    for (let i = 0; i < 3; i++) {
+      const t = now + i * 0.16
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.type = "square"
+      osc.frequency.setValueAtTime(1320, t)
+      gain.gain.setValueAtTime(0, t)
+      gain.gain.linearRampToValueAtTime(0.25, t + 0.01)
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09)
+      osc.start(t)
+      osc.stop(t + 0.09)
+    }
+
+    // Descending siren tone after the beeps
+    const sirenStart = now + 0.55
+    const osc2 = ctx.createOscillator()
+    const gain2 = ctx.createGain()
+    osc2.connect(gain2)
+    gain2.connect(ctx.destination)
+    osc2.type = "sawtooth"
+    osc2.frequency.setValueAtTime(900, sirenStart)
+    osc2.frequency.linearRampToValueAtTime(520, sirenStart + 0.6)
+    gain2.gain.setValueAtTime(0, sirenStart)
+    gain2.gain.linearRampToValueAtTime(0.3, sirenStart + 0.04)
+    gain2.gain.exponentialRampToValueAtTime(0.001, sirenStart + 0.6)
+    osc2.start(sirenStart)
+    osc2.stop(sirenStart + 0.6)
+  }
+
+  return { playTone, playWarRoomAlarm }
 }

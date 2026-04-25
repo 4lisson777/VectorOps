@@ -98,6 +98,7 @@ function StatusBadge({
 }) {
   const key = status ?? "ACTIVE"
   const config = STATUS_CONFIG[key] ?? STATUS_CONFIG["ACTIVE"]!
+  const isBlocked = key === "BLOCKED"
   return (
     <span
       className={cn(
@@ -106,13 +107,27 @@ function StatusBadge({
       )}
       style={config.style}
     >
-      <span
-        className={cn("size-1.5 rounded-full shrink-0", config.dot)}
-        style={{
-          backgroundColor: "currentColor",
-          ...(key === "HELPING" ? { boxShadow: "0 0 0 3px color-mix(in oklab, currentColor 25%, transparent)" } : {})
-        }}
-      />
+      {isBlocked ? (
+        // Pulsing dot signals urgency for blocked status
+        <span className="relative flex size-1.5 shrink-0">
+          <span
+            className="absolute inline-flex size-full animate-ping rounded-full opacity-60"
+            style={{ backgroundColor: "currentColor" }}
+          />
+          <span
+            className="relative inline-flex size-1.5 rounded-full"
+            style={{ backgroundColor: "currentColor" }}
+          />
+        </span>
+      ) : (
+        <span
+          className={cn("size-1.5 rounded-full shrink-0", config.dot)}
+          style={{
+            backgroundColor: "currentColor",
+            ...(key === "HELPING" ? { boxShadow: "0 0 0 3px color-mix(in oklab, currentColor 25%, transparent)" } : {})
+          }}
+        />
+      )}
       {config.label}
     </span>
   )
@@ -125,6 +140,8 @@ export function DeveloperCard({
   onStatusChange,
   onTaskChange,
 }: DeveloperCardProps) {
+  const isBlocked = dev.devStatus === "BLOCKED"
+
   const [isEditingTask, setIsEditingTask] = React.useState(false)
   const [taskDraft, setTaskDraft] = React.useState(dev.currentTask ?? "")
   const [isSavingStatus, setIsSavingStatus] = React.useState(false)
@@ -177,9 +194,29 @@ export function DeveloperCard({
 
   return (
     <Card
-      className={cn("flex flex-col gap-4 p-5", isCurrentUser && "ring-1 ring-ring")}
-      style={isCurrentUser ? { boxShadow: "var(--shadow-plasma)" } : undefined}
+      className={cn(
+        "relative flex flex-col gap-4 overflow-hidden p-5",
+        isCurrentUser && !isBlocked && "ring-1 ring-ring",
+      )}
+      style={
+        isBlocked
+          ? {
+              boxShadow: "0 0 0 1px var(--st-blocked)",
+              backgroundColor: "color-mix(in oklab, var(--st-blocked) 6%, var(--card))",
+            }
+          : isCurrentUser
+          ? { boxShadow: "var(--shadow-plasma)" }
+          : undefined
+      }
     >
+      {/* Left accent strip — only when blocked */}
+      {isBlocked && (
+        <div
+          className="absolute inset-y-0 left-0 w-[3px]"
+          style={{ backgroundColor: "var(--st-blocked)" }}
+        />
+      )}
+
       <CardContent className="flex flex-col gap-4 p-0">
         {/* Avatar + name + alias */}
         <div className="flex items-center gap-3">

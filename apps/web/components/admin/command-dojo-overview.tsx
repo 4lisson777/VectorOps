@@ -10,6 +10,7 @@ import { Switch } from "@workspace/ui/components/switch"
 import { Skeleton } from "@workspace/ui/components/skeleton"
 import { cn } from "@workspace/ui/lib/utils"
 import { UserAvatar } from "@/components/user-avatar"
+import { WarRoomControl } from "@/components/admin/war-room-control"
 
 // ---- Types ---------------------------------------------------------------
 
@@ -239,6 +240,9 @@ export function CommandDojoOverview({
           {error}
         </div>
       )}
+
+      {/* War Room control */}
+      <WarRoomControl />
 
       {/* Stat cards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
