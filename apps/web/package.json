@@ -14,7 +14,9 @@
     "db:generate": "prisma generate",
     "db:seed": "prisma db seed",
     "db:seed:prod": "tsx prisma/seed.prod.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "test:api": "node tests/run-all.mjs",
+    "test:api:new": "node tests/run-all.mjs --new"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { getTenantDb } from "@/lib/tenant-db"
+import { getTenantId } from "@/lib/tenant-context"
 import { requireTenantAuth, requireTenantRole } from "@/lib/auth"
 
 const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/
@@ -16,9 +17,7 @@ async function getOrCreateConfig() {
   const tenantDb = getTenantDb()
   const existing = await tenantDb.checkpointConfig.findFirst()
   if (existing) return existing
-  // organizationId is injected by the tenant-db Prisma extension
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return tenantDb.checkpointConfig.create({ data: {} as any })
+  return tenantDb.checkpointConfig.create({ data: { organizationId: getTenantId() } })
 }
 
 export async function GET(): Promise<NextResponse> {

@@ -3,6 +3,7 @@ import { z } from "zod"
 import { Prisma, Severity, TicketStatus, TicketType } from "@/generated/prisma/client"
 import { getTenantDb } from "@/lib/tenant-db"
 import { requireTenantAuth, requireTenantRole } from "@/lib/auth"
+import { runWithTenant } from "@/lib/tenant-context"
 import { generatePublicId } from "@/lib/ticket-id"
 import { calculatePriorityOrder } from "@/lib/priority-order"
 import { bugCreateSchema, ticketFilterSchema } from "@/lib/schemas/ticket-schemas"
@@ -127,7 +128,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       const priorityOrder = await calculatePriorityOrder(data.severity as Severity, tx)
 
       const created = await tx.ticket.create({
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data: {
           publicId,
           title: data.title,
@@ -137,8 +137,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           deadline: new Date(data.deadline),
           priorityOrder,
           openedById: session.userId,
-          // organizationId is injected by the tenant-db Prisma extension
-        } as any,
+          organizationId: session.organizationId,
+        },
         include: {
           openedBy: { select: userSelect },
           assignedTo: { select: userSelect },
@@ -184,7 +184,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
     })
 
-    // Fire-and-forget: emit per-user notifications without blocking the response
+    // Fire-and-forget: emit per-user notifications without blocking the response.
+    // runWithTenant ensures the tenant context survives the async chain.
     const severityLabel =
       bug.severity === "LOW"
         ? "Baixa"
@@ -193,18 +194,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           : bug.severity === "HIGH"
             ? "Alta"
             : "Crítica"
-    void getNotificationTargets("BUG_CREATED")
-      .then(({ normalUserIds, persistentUserIds }) =>
-        createAndEmitNotificationsForTargets({
-          type: "BUG_CREATED",
-          title: `Novo Bug: ${bug.title}`,
-          body: `${bug.publicId} — Severidade ${severityLabel}`,
-          ticketId: bug.id,
-          normalUserIds,
-          persistentUserIds,
-        })
-      )
-      .catch(console.error)
+    void runWithTenant(session.organizationId, () =>
+      getNotificationTargets("BUG_CREATED")
+        .then(({ normalUserIds, persistentUserIds }) =>
+          createAndEmitNotificationsForTargets({
+            type: "BUG_CREATED",
+            title: `Novo Bug: ${bug.title}`,
+            body: `${bug.publicId} — Severidade ${severityLabel}`,
+            ticketId: bug.id,
+            normalUserIds,
+            persistentUserIds,
+          })
+        )
+    ).catch(console.error)
 
     return NextResponse.json({ bug }, { status: 201 })
   })

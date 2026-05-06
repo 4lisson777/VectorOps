@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { getTenantDb } from "@/lib/tenant-db"
 import { requireTenantRole } from "@/lib/auth"
+import { runWithTenant } from "@/lib/tenant-context"
 import { createAndEmitNotifications } from "@/lib/notifications"
 
 const actionSchema = z.object({
@@ -63,13 +64,15 @@ export async function PATCH(
         return req
       })
 
-      void createAndEmitNotifications({
-        type: "TICKET_STATUS_CHANGED",
-        title: "Pedido de reordenação recusado",
-        body: `Seu pedido de reordenação para ${reorderRequest.ticket.publicId} foi recusado.`,
-        ticketId: reorderRequest.ticketId,
-        targetUserIds: [reorderRequest.requestedById],
-      }).catch(console.error)
+      void runWithTenant(session.organizationId, () =>
+        createAndEmitNotifications({
+          type: "TICKET_STATUS_CHANGED",
+          title: "Pedido de reordenação recusado",
+          body: `Seu pedido de reordenação para ${reorderRequest.ticket.publicId} foi recusado.`,
+          ticketId: reorderRequest.ticketId,
+          targetUserIds: [reorderRequest.requestedById],
+        })
+      ).catch(console.error)
 
       return NextResponse.json({ reorderRequest: updated })
     }
@@ -112,13 +115,15 @@ export async function PATCH(
       return { ticket, req }
     })
 
-    void createAndEmitNotifications({
-      type: "TICKET_STATUS_CHANGED",
-      title: "Pedido de reordenação aprovado",
-      body: `Seu pedido de reordenação para ${reorderRequest.ticket.publicId} foi aprovado. Agora está na posição ${targetPosition}.`,
-      ticketId: reorderRequest.ticketId,
-      targetUserIds: [reorderRequest.requestedById],
-    }).catch(console.error)
+    void runWithTenant(session.organizationId, () =>
+      createAndEmitNotifications({
+        type: "TICKET_STATUS_CHANGED",
+        title: "Pedido de reordenação aprovado",
+        body: `Seu pedido de reordenação para ${reorderRequest.ticket.publicId} foi aprovado. Agora está na posição ${targetPosition}.`,
+        ticketId: reorderRequest.ticketId,
+        targetUserIds: [reorderRequest.requestedById],
+      })
+    ).catch(console.error)
 
     return NextResponse.json({ reorderRequest: updated.req, ticket: updated.ticket })
   })

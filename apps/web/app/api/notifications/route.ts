@@ -3,6 +3,9 @@ import { z } from "zod"
 import { getTenantDb } from "@/lib/tenant-db"
 import { requireTenantAuth } from "@/lib/auth"
 
+const MAX_NOTIFICATIONS = 50
+const KEEP_NOTIFICATIONS = 30
+
 const querySchema = z.object({
   limit: z.coerce.number().int().min(1).max(50).default(20),
   unread: z
@@ -32,6 +35,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     const tenantDb = getTenantDb()
+
+    const totalCount = await tenantDb.notification.count({ where: { userId } })
+    if (totalCount > MAX_NOTIFICATIONS) {
+      const cutoffRows = await tenantDb.notification.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        skip: KEEP_NOTIFICATIONS,
+        take: 1,
+        select: { createdAt: true },
+      })
+      const cutoff = cutoffRows[0]
+      if (cutoff) {
+        await tenantDb.notification.deleteMany({
+          where: { userId, createdAt: { lte: cutoff.createdAt } },
+        })
+      }
+    }
+
     const [notifications, unreadCount] = await Promise.all([
       tenantDb.notification.findMany({
         where,

@@ -31,14 +31,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const tenantDb = getTenantDb()
     const [checkpoint, updatedUser] = await tenantDb.$transaction(async (tx) => {
       const cp = await tx.checkpoint.create({
-        // organizationId is injected by the tenant-db Prisma extension
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data: {
           userId: session.userId,
           currentTask,
           isBlocked,
           notes: notes ?? null,
-        } as any,
+          organizationId: session.organizationId,
+        },
       })
       const user = await tx.user.update({
         where: { id: session.userId },

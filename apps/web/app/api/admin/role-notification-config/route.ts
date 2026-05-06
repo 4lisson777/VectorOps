@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { getTenantDb } from "@/lib/tenant-db"
+import { getTenantId } from "@/lib/tenant-context"
 import { requireTenantRole } from "@/lib/auth"
 import { Role } from "@/generated/prisma/client"
 
@@ -37,14 +38,14 @@ async function ensureDefaultConfigsExist(): Promise<void> {
   const missing = ALL_ROLES.filter((role) => !existingRoles.has(role))
   if (missing.length === 0) return
 
+  const organizationId = getTenantId()
   await tenantDb.roleNotificationConfig.createMany({
-    // organizationId is injected by the tenant-db Prisma extension
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data: missing.map((role) => ({
       role,
       notifyOnCreation: ROLE_DEFAULTS[role].notifyOnCreation,
       notifyOnAssignment: ROLE_DEFAULTS[role].notifyOnAssignment,
-    })) as any,
+      organizationId,
+    })),
   })
 }
 
@@ -67,8 +68,9 @@ export async function GET(): Promise<NextResponse> {
     const tenantDb = getTenantDb()
     const configs = await tenantDb.roleNotificationConfig.findMany({
       select: { role: true, notifyOnCreation: true, notifyOnAssignment: true },
-      orderBy: { role: "asc" },
     })
+    // MySQL sorts enums by definition order, not alphabetically — sort in JS
+    configs.sort((a, b) => a.role.localeCompare(b.role))
 
     return NextResponse.json({ configs })
   })
@@ -110,13 +112,12 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
         return tenantDb.roleNotificationConfig.upsert({
           where: { id: existing?.id ?? "" },
           update: updateData,
-          // organizationId is injected by the tenant-db Prisma extension
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           create: {
             role,
             notifyOnCreation: fields.notifyOnCreation ?? ROLE_DEFAULTS[role].notifyOnCreation,
             notifyOnAssignment: fields.notifyOnAssignment ?? ROLE_DEFAULTS[role].notifyOnAssignment,
-          } as any,
+            organizationId: getTenantId(),
+          },
         })
       })
     )
@@ -124,8 +125,8 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
     // Return the full updated list so the frontend can refresh its state in one round trip
     const configs = await tenantDb.roleNotificationConfig.findMany({
       select: { role: true, notifyOnCreation: true, notifyOnAssignment: true },
-      orderBy: { role: "asc" },
     })
+    configs.sort((a, b) => a.role.localeCompare(b.role))
 
     return NextResponse.json({ configs })
   })

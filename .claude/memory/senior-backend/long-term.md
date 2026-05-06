@@ -395,6 +395,24 @@ The old SQLite migrations are incompatible — create a single new baseline migr
 #### Pool timeout errors during `next build` are expected
 During static page generation, Next.js tries to connect to the DB (for RSC pages that call Prisma). These fail with "pool timeout" if no DB is running at build time. This does NOT fail the build — it just means those pages fall back to dynamic rendering. Normal and expected in CI/CD environments.
 
+### Docker Production Build — Patching Compiled Chunks
+
+#### Source edits do NOT hot-reload into the production Docker container
+The Next.js server runs as a standalone production build inside Docker. `NODE_ENV=production`, `PWD=/app`. There is no dev server. Editing source `.ts` files has no effect on the running server.
+
+To apply a backend change without rebuilding the full image:
+1. Edit the source `.ts` file (for correctness in git history)
+2. Find the compiled chunk: `docker exec vectorops-web-1 grep -rl "unique string from the change" /app/apps/web/.next/server/chunks/`
+3. `docker cp CONTAINER:/app/apps/web/.next/server/chunks/CHUNK_NAME.js /tmp/chunk.js`
+4. `sed -i 's/old_pattern/new_pattern/' /tmp/chunk.js`
+5. `docker cp /tmp/chunk.js CONTAINER:/app/apps/web/.next/server/chunks/CHUNK_NAME.js`
+6. `docker restart CONTAINER_NAME` and wait ~8s for health check to pass
+
+#### Finding the right chunk for an API route
+The root chunk for most API routes is `/app/apps/web/.next/server/chunks/[root-of-the-server]__HASH.js`.
+Multiple such root chunks may exist. Use `grep -rl "unique string"` to identify which one contains the code you need to patch.
+The route handler is inlined in the root chunk; the `page: "/api/route/path/route"` string identifies which route each section belongs to.
+
 ### Gotchas
 - The monorepo uses `"type": "module"` in `apps/web/package.json` — imports use ESM
 - SQLite enums are stored as TEXT in the DB (SQLite has no native enum type)

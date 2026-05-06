@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { getTenantDb } from "@/lib/tenant-db"
 import { requireTenantRole } from "@/lib/auth"
+import { runWithTenant } from "@/lib/tenant-context"
 import { emitShinobiEvent } from "@/lib/sse-emitter"
 import { createAndEmitNotifications } from "@/lib/notifications"
 
@@ -42,12 +43,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const tenantDb = getTenantDb()
     const helpRequest = await tenantDb.helpRequest.create({
-      // organizationId is injected by the tenant-db Prisma extension
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: {
         requestedById: session.userId,
         contextMessage: parsed.data.contextMessage,
-      } as any,
+        organizationId: session.organizationId,
+      },
       include: {
         requestedBy: { select: { id: true, name: true, ninjaAlias: true } },
       },
@@ -71,9 +71,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       },
     })
 
-    // Fire-and-forget: create in-app notifications for all other devs in the same org
-    void (async () => {
-      const targets = await tenantDb.user.findMany({
+    // Fire-and-forget: create in-app notifications for all other devs in the same org.
+    // runWithTenant ensures the tenant context survives the async chain.
+    void runWithTenant(session.organizationId, async () => {
+      const notifDb = getTenantDb()
+      const targets = await notifDb.user.findMany({
         where: {
           role: { in: ["DEVELOPER", "TECH_LEAD"] },
           isActive: true,
@@ -87,7 +89,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         body: helpRequest.contextMessage,
         targetUserIds: targets.map((u) => u.id),
       })
-    })().catch(console.error)
+    }).catch(console.error)
 
     return NextResponse.json({ helpRequest }, { status: 201 })
   })

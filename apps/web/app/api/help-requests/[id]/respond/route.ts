@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getTenantDb } from "@/lib/tenant-db"
 import { requireTenantRole } from "@/lib/auth"
+import { runWithTenant } from "@/lib/tenant-context"
 import { emitShinobiEvent } from "@/lib/sse-emitter"
 import { createAndEmitNotifications } from "@/lib/notifications"
 
@@ -43,9 +44,11 @@ export async function POST(
 
     const [response, responder] = await tenantDb.$transaction(async (tx) => {
       const resp = await tx.helpRequestResponse.create({
-        // organizationId is injected by the tenant-db Prisma extension
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data: { helpRequestId: id, responderId: session.userId } as any,
+        data: {
+          helpRequestId: id,
+          responderId: session.userId,
+          organizationId: session.organizationId,
+        },
       })
       const user = await tx.user.update({
         where: { id: session.userId },
@@ -84,13 +87,16 @@ export async function POST(
       },
     })
 
-    // Fire-and-forget: in-app notification for the requester
-    void createAndEmitNotifications({
-      type: "HELP_REQUEST_RESPONDED",
-      title: `${responder.ninjaAlias} pode te ajudar`,
-      body: `${responder.name} pode te ajudar com seu pedido.`,
-      targetUserIds: [helpRequest.requestedById],
-    }).catch(console.error)
+    // Fire-and-forget: in-app notification for the requester.
+    // runWithTenant ensures the tenant context survives the async chain.
+    void runWithTenant(session.organizationId, () =>
+      createAndEmitNotifications({
+        type: "HELP_REQUEST_RESPONDED",
+        title: `${responder.ninjaAlias} pode te ajudar`,
+        body: `${responder.name} pode te ajudar com seu pedido.`,
+        targetUserIds: [helpRequest.requestedById],
+      })
+    ).catch(console.error)
 
     return NextResponse.json({ response }, { status: 201 })
   })

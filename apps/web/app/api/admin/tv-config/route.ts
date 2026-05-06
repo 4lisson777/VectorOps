@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
 import { getTenantDb } from "@/lib/tenant-db"
+import { getTenantId } from "@/lib/tenant-context"
 import { requireTenantRole } from "@/lib/auth"
 
 const patchSchema = z.object({
@@ -12,9 +13,7 @@ async function getOrCreateTvConfig() {
   const tenantDb = getTenantDb()
   const existing = await tenantDb.tvConfig.findFirst()
   if (existing) return existing
-  // organizationId is injected by the tenant-db Prisma extension
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return tenantDb.tvConfig.create({ data: {} as any })
+  return tenantDb.tvConfig.create({ data: { organizationId: getTenantId() } })
 }
 
 export async function GET(): Promise<NextResponse> {

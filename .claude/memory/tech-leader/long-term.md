@@ -110,3 +110,23 @@ Admin component stubs exist returning null: command-dojo-overview, team-manageme
 ## SSR Crash Diagnosis Pattern
 - A minified server error like `TypeError: ... at <unknown> (.next/server/chunks/ssr/[root-of-the-server]__HASH._.js:1:OFFSET)` can be located by `head -c (OFFSET+10) | tail -c 60` on the chunk file inside the running container -- the offset points at the exact JS expression. Useful for finding which component crashed when sourcemaps are unavailable in prod.
 - Defensive components: any component that does `prop.length` / `prop.split` / `prop.trim` should accept `string | null | undefined` and short-circuit on falsy. UserAvatar, in particular, is rendered server-side from session data which can be partial after migrations.
+
+## API Integration Tests Pattern
+- Test runner at `apps/web/tests/run-all.mjs` runs suites sequentially via `execSync`
+- 8 "new" suites import from shared harness (`tests/_shared/test-harness.mjs`) which has `loginAs()` with retry-on-429 logic (12 retries, 5s delay)
+- 5 "legacy" suites define their own inline `login()`, `getJson()`, etc. WITHOUT retry logic
+- All tests share a single rate-limit bucket (IP: "unknown" or "127.0.0.1") -- be careful with login rate limits
+- PITFALL: Legacy tests reference hard-coded emails that may not match the seed. Always cross-reference `prisma/seed.ts` SEED_EMAILS before writing tests.
+- Seed orgs: VectorOps (slug: "vectorops"), Test Company (slug: "test-company"). NEVER "inovar-sistemas".
+- Seed TECH_LEAD+SUPER_ADMIN: `alisson@vector.ops` (NOT `alisson.lima@vectorops.dev`)
+- Rate limit for login: 5/min is too low for sequential test suites. Increase to 30/min or add retry logic to test clients.
+- PITFALL: VectorOps org accumulates 1000+ tickets from repeated test runs. Tests that create tickets and look for them in a paginated list MUST sort by `createdAt desc` (or filter by ID) to avoid missing newly-created tickets that land beyond page 1 when sorted by default `priorityOrder asc`.
+- Super-admin organization list endpoint has a separate Zod schema with `limit.max(100)`. Tests that need to list all orgs must either stay within this limit or the max should be raised. Super-admin endpoints deal with small datasets (orgs) so higher limits (500) are safe.
+- PITFALL: Notifications accumulate unboundedly across test runs. GET /api/notifications has max(50) limit. Tests that compare `.notifications.length` before/after creating a notification FAIL when users have 50+ notifications because `min(N, 50) == min(N+1, 50) == 50`. Fix: add auto-cleanup to GET endpoint (threshold=50, retain latest 30). This ensures tests see actual count changes.
+- PITFALL (refinement): The cleanup threshold (MAX_NOTIFICATIONS) MUST be <= the API response limit (currently 50). Setting MAX_NOTIFICATIONS=100 means cleanup only fires at >100, but users with 50-100 notifications still saturate the limit=50 response. Correct values: MAX_NOTIFICATIONS=50, KEEP_NOTIFICATIONS=30.
+- The notification creation logic (lib/notifications.ts), fire-and-forget patterns in ticket routes, and role-notification-config PATCH/GET are all correct. Only the GET /api/notifications route needed the cleanup addition.
+
+## Documentation
+- Deployment guide created at `docs/DEPLOYMENT.md` -- comprehensive DevOps reference covering Docker Compose, env vars, migrations, backups, health checks, reverse proxy (SSE-aware nginx config), troubleshooting
+- Two .env files pattern: root `.env` for Docker Compose build-time interpolation, `apps/web/.env` for container runtime env (injected via `env_file:`)
+- Critical reverse proxy note: nginx must have `proxy_buffering off` and `proxy_cache off` for SSE to work

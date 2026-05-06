@@ -1,15 +1,18 @@
 # Short-Term Memory -- Senior Backend Engineer
 
 ## Current Task
-Fix Docker build failing on `prisma generate` (DB_URL missing at build time) — Complete
+Fix 3 failing multitenancy tests (20260506_fix-multitenancy-tests) — Complete
 
 ## Files Modified
 
 | File | Action |
 |------|--------|
-| `apps/web/prisma.config.ts` | Modified — replaced `env("DB_URL")` with `process.env.DB_URL ?? "mysql://placeholder:..."` |
-| `Dockerfile` | Modified — removed `ARG DB_URL`, `ENV DB_URL=$DB_URL`, and redundant `RUN cd apps/web && npx prisma generate` from builder stage |
-| `docker-compose.yml` | Modified — removed `web.build.args.DB_URL`, `web.environment.DB_URL`, `web.environment.DB_HOST`; runtime env injected solely via `env_file: apps/web/.env` |
-| `apps/web/.env.example` | Modified — added all individual DB vars (DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD); clarified Docker vs local host values |
-| `.env.example` (root) | Modified — simplified to only the 3 vars the mysql service compose-time interpolation needs (DB_NAME, DB_USER, DB_PASSWORD) |
-| `entrypoint.sh` | Modified — TCP probe now uses `DB_HOST`/`DB_PORT` directly instead of regex-parsing `DB_URL` |
+| `apps/web/app/api/super-admin/organizations/route.ts` | Modified — changed `limit` max from 100 to 500 in `listQuerySchema` |
+| `apps/web/tests/multitenancy/api.test.mjs` | Modified — test 6b now uses `?limit=100&sortBy=createdAt&sortOrder=desc` |
+
+## Important Note: Production Server is Docker-based
+The running Next.js server is a production standalone build inside Docker (`vectorops-web-1`). Source file edits are NOT picked up by the server without rebuilding the image. To apply backend changes immediately:
+1. Edit the source file
+2. Find the compiled chunk in the container: `docker exec vectorops-web-1 grep -rl "unique string" /app/apps/web/.next/server/chunks/`
+3. `docker cp` the chunk out, patch it with `sed`, copy back
+4. `docker restart vectorops-web-1`

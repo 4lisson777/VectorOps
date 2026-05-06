@@ -52,15 +52,23 @@ function assert(condition, name, reason) {
 }
 
 async function login(email, password) {
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  })
-  const setCookie = res.headers.get("set-cookie")
-  if (!setCookie) return null
-  const match = setCookie.match(/^([^;]+)/)
-  return match ? match[1] : null
+  const maxRetries = 12
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    })
+    if (res.status === 429 && attempt < maxRetries) {
+      await new Promise((r) => setTimeout(r, 5_000))
+      continue
+    }
+    const setCookie = res.headers.get("set-cookie")
+    if (!setCookie) return null
+    const match = setCookie.match(/^([^;]+)/)
+    return match ? match[1] : null
+  }
+  return null
 }
 
 async function patchJson(url, data, cookie) {
@@ -107,19 +115,12 @@ const PASSWORD = "Password123!"
 
 // ─── Suite 1: PATCH /api/users/me/status — role permissions ─────────────────
 
-async function testStatusPatchPermissions() {
+async function testStatusPatchPermissions(devCookie, techCookie, qaCookie, supportCookie) {
   console.log("\n[Suite 1] PATCH /api/users/me/status — role permissions")
 
-  const devCookie = await login(DEVELOPER_EMAIL, PASSWORD)
   assert(devCookie !== null, "Developer login succeeds", "No session cookie returned")
-
-  const techCookie = await login(TECH_LEAD_EMAIL, PASSWORD)
   assert(techCookie !== null, "Tech Lead login succeeds", "No session cookie returned")
-
-  const qaCookie = await login(QA_EMAIL, PASSWORD)
   assert(qaCookie !== null, "QA login succeeds", "No session cookie returned")
-
-  const supportCookie = await login(SUPPORT_EMAIL, PASSWORD)
   assert(supportCookie !== null, "Support login succeeds", "No session cookie returned")
 
   // 1 — DEVELOPER can update status
@@ -174,10 +175,9 @@ async function testStatusPatchPermissions() {
 
 // ─── Suite 2: PATCH /api/users/me/status — validation ───────────────────────
 
-async function testStatusPatchValidation() {
+async function testStatusPatchValidation(devCookie) {
   console.log("\n[Suite 2] PATCH /api/users/me/status — input validation")
 
-  const devCookie = await login(DEVELOPER_EMAIL, PASSWORD)
   if (!devCookie) {
     fail("Suite 2 setup", "Could not log in as DEVELOPER")
     return
@@ -227,12 +227,8 @@ async function testStatusPatchValidation() {
 
 // ─── Suite 3: POST /api/checkpoints — role permissions ──────────────────────
 
-async function testCheckpointPostPermissions() {
+async function testCheckpointPostPermissions(devCookie, techCookie, qaCookie) {
   console.log("\n[Suite 3] POST /api/checkpoints — role permissions")
-
-  const devCookie = await login(DEVELOPER_EMAIL, PASSWORD)
-  const techCookie = await login(TECH_LEAD_EMAIL, PASSWORD)
-  const qaCookie = await login(QA_EMAIL, PASSWORD)
 
   // 8 — DEVELOPER can post a checkpoint
   if (devCookie) {
@@ -284,10 +280,9 @@ async function testCheckpointPostPermissions() {
 
 // ─── Suite 4: POST /api/checkpoints — devStatus propagation ─────────────────
 
-async function testCheckpointStatusPropagation() {
+async function testCheckpointStatusPropagation(devCookie) {
   console.log("\n[Suite 4] POST /api/checkpoints — devStatus propagation")
 
-  const devCookie = await login(DEVELOPER_EMAIL, PASSWORD)
   if (!devCookie) {
     fail("Suite 4 setup", "Could not log in as DEVELOPER")
     return
@@ -337,11 +332,8 @@ async function testCheckpointStatusPropagation() {
 
 // ─── Suite 5: GET /api/checkpoints — history access ─────────────────────────
 
-async function testCheckpointHistory() {
+async function testCheckpointHistory(techCookie, devCookie) {
   console.log("\n[Suite 5] GET /api/checkpoints — history access")
-
-  const techCookie = await login(TECH_LEAD_EMAIL, PASSWORD)
-  const devCookie = await login(DEVELOPER_EMAIL, PASSWORD)
 
   // 14 — TECH_LEAD can get checkpoint history
   if (techCookie) {
@@ -374,11 +366,23 @@ async function testCheckpointHistory() {
 async function run() {
   console.log("=== Status Change API Tests ===")
 
-  await testStatusPatchPermissions()
-  await testStatusPatchValidation()
-  await testCheckpointPostPermissions()
-  await testCheckpointStatusPropagation()
-  await testCheckpointHistory()
+  // Login each user exactly once and reuse cookies across all suites
+  console.log("\n[Setup] Authenticating test users...")
+  const devCookie = await login(DEVELOPER_EMAIL, PASSWORD)
+  const techCookie = await login(TECH_LEAD_EMAIL, PASSWORD)
+  const qaCookie = await login(QA_EMAIL, PASSWORD)
+  const supportCookie = await login(SUPPORT_EMAIL, PASSWORD)
+
+  console.log(`  DEVELOPER   : ${devCookie ? "OK" : "FAILED"}`)
+  console.log(`  TECH_LEAD   : ${techCookie ? "OK" : "FAILED"}`)
+  console.log(`  QA          : ${qaCookie ? "OK" : "FAILED"}`)
+  console.log(`  SUPPORT     : ${supportCookie ? "OK" : "FAILED"}`)
+
+  await testStatusPatchPermissions(devCookie, techCookie, qaCookie, supportCookie)
+  await testStatusPatchValidation(devCookie)
+  await testCheckpointPostPermissions(devCookie, techCookie, qaCookie)
+  await testCheckpointStatusPropagation(devCookie)
+  await testCheckpointHistory(techCookie, devCookie)
 
   console.log(`\n=== Results: ${passCount} passed, ${failCount} failed ===`)
   if (failures.length > 0) {

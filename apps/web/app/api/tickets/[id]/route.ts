@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { TicketStatus } from "@/generated/prisma/client"
 import { getTenantDb } from "@/lib/tenant-db"
 import { requireTenantAuth, requireTenantRole } from "@/lib/auth"
+import { runWithTenant } from "@/lib/tenant-context"
 import { ticketUpdateSchema } from "@/lib/schemas/ticket-schemas"
 import {
   createAndEmitNotificationsForTargets,
@@ -226,19 +227,21 @@ export async function PATCH(
         payload: { ticketId: ticket.id, publicId: ticket.publicId, status, organizationId: session.organizationId },
       })
 
-      // Status-change notifications are always non-persistent (normalUserIds only)
-      void getNotificationTargets(notificationType, existing.openedById)
-        .then(({ normalUserIds, persistentUserIds }) =>
-          createAndEmitNotificationsForTargets({
-            type: notificationType,
-            title: `${ticket.type === "BUG" ? "Bug" : "Missão"} ${status === "DONE" ? "Concluída" : status === "CANCELLED" ? "Cancelada" : "Atualizada"}: ${ticket.title}`,
-            body: `O status de ${ticket.publicId} mudou para ${status === "DONE" ? "Concluído" : status === "CANCELLED" ? "Cancelado" : status === "IN_PROGRESS" ? "Em Progresso" : status === "WAITING_FOR_INFO" ? "Aguardando" : "Aberto"}.`,
-            ticketId: ticket.id,
-            normalUserIds,
-            persistentUserIds,
-          })
-        )
-        .catch(console.error)
+      // Status-change notifications are always non-persistent (normalUserIds only).
+      // runWithTenant ensures the tenant context survives the async chain.
+      void runWithTenant(session.organizationId, () =>
+        getNotificationTargets(notificationType, existing.openedById)
+          .then(({ normalUserIds, persistentUserIds }) =>
+            createAndEmitNotificationsForTargets({
+              type: notificationType,
+              title: `${ticket.type === "BUG" ? "Bug" : "Missão"} ${status === "DONE" ? "Concluída" : status === "CANCELLED" ? "Cancelada" : "Atualizada"}: ${ticket.title}`,
+              body: `O status de ${ticket.publicId} mudou para ${status === "DONE" ? "Concluído" : status === "CANCELLED" ? "Cancelado" : status === "IN_PROGRESS" ? "Em Progresso" : status === "WAITING_FOR_INFO" ? "Aguardando" : "Aberto"}.`,
+              ticketId: ticket.id,
+              normalUserIds,
+              persistentUserIds,
+            })
+          )
+      ).catch(console.error)
     }
 
     return NextResponse.json({ ticket })

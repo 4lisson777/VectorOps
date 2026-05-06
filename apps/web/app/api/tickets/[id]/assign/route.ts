@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getTenantDb } from "@/lib/tenant-db"
 import { requireTenantRole } from "@/lib/auth"
+import { runWithTenant } from "@/lib/tenant-context"
 import { assignSchema } from "@/lib/schemas/ticket-schemas"
 import {
   createAndEmitNotificationsForTargets,
@@ -136,19 +137,21 @@ export async function POST(
       payload: { ticketId: ticket.id, publicId: ticket.publicId, assignedToId, organizationId: session.organizationId },
     })
 
-    // Fire-and-forget: notify the assignee (persistent) without blocking the response
-    void getNotificationTargets("TICKET_ASSIGNED", undefined, assignedToId)
-      .then(({ normalUserIds, persistentUserIds }) =>
-        createAndEmitNotificationsForTargets({
-          type: "TICKET_ASSIGNED",
-          title: `Missão Atribuída: ${ticket.title}`,
-          body: `${ticket.publicId} foi atribuída a você`,
-          ticketId: ticket.id,
-          normalUserIds,
-          persistentUserIds,
-        })
-      )
-      .catch(console.error)
+    // Fire-and-forget: notify the assignee (persistent) without blocking the response.
+    // runWithTenant ensures the tenant context survives the async chain.
+    void runWithTenant(session.organizationId, () =>
+      getNotificationTargets("TICKET_ASSIGNED", undefined, assignedToId)
+        .then(({ normalUserIds, persistentUserIds }) =>
+          createAndEmitNotificationsForTargets({
+            type: "TICKET_ASSIGNED",
+            title: `Missão Atribuída: ${ticket.title}`,
+            body: `${ticket.publicId} foi atribuída a você`,
+            ticketId: ticket.id,
+            normalUserIds,
+            persistentUserIds,
+          })
+        )
+    ).catch(console.error)
 
     return NextResponse.json({ ticket })
   })

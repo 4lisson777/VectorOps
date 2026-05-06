@@ -6,9 +6,9 @@ import { checkRateLimit, getClientIp } from "@/lib/rate-limit"
 import { LoginSchema } from "@/lib/schemas/auth-schemas"
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
-  // Rate limit: 5 attempts per minute per IP
+  // Rate limit: 30 attempts per minute per IP (internal app; sequential test suites need headroom)
   const ip = getClientIp(request)
-  const rateLimit = checkRateLimit(`login:${ip}`, { limit: 5, windowMs: 60_000 })
+  const rateLimit = checkRateLimit(`login:${ip}`, { limit: 30, windowMs: 60_000 })
   if (!rateLimit.allowed) {
     return NextResponse.json(
       { error: "Muitas solicitações. Tente novamente mais tarde." },

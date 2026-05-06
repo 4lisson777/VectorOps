@@ -157,7 +157,9 @@ async function postJson(url, data, cookie) {
     body: JSON.stringify(data),
   })
   const body = await res.json().catch(() => null)
-  return { status: res.status, body }
+  const setCookie = res.headers.get("set-cookie")
+  const newCookie = setCookie ? (setCookie.match(/^([^;]+)/) ?? [null, null])[1] : null
+  return { status: res.status, body, cookie: newCookie }
 }
 
 async function patchJson(url, data, cookie) {
@@ -183,17 +185,25 @@ async function deleteJson(url, cookie) {
 }
 
 async function login(email, password, organizationSlug) {
-  const body = { email, password }
-  if (organizationSlug) body.organizationSlug = organizationSlug
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  })
-  const setCookie = res.headers.get("set-cookie")
-  const cookie = setCookie ? (setCookie.match(/^([^;]+)/) ?? [null, null])[1] : null
-  const resBody = await res.json().catch(() => null)
-  return { status: res.status, cookie, body: resBody }
+  const maxRetries = 12
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const reqBody = { email, password }
+    if (organizationSlug) reqBody.organizationSlug = organizationSlug
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(reqBody),
+    })
+    if (res.status === 429 && attempt < maxRetries) {
+      await new Promise((r) => setTimeout(r, 5_000))
+      continue
+    }
+    const setCookie = res.headers.get("set-cookie")
+    const cookie = setCookie ? (setCookie.match(/^([^;]+)/) ?? [null, null])[1] : null
+    const resBody = await res.json().catch(() => null)
+    return { status: res.status, cookie, body: resBody }
+  }
+  return { status: 429, cookie: null, body: null }
 }
 
 // Wait between auth operations to avoid bcrypt contention
@@ -211,8 +221,8 @@ function uniqueOrgName(prefix = "TestOrg") {
 }
 
 // ─── Seed Credentials ─────────────────────────────────────────────────────────
-// Inovar Sistemas (slug: inovar-sistemas)
-const INOVAR_TECH_LEAD = { email: "alisson.lima@vectorops.dev", password: "Password123!" }
+// VectorOps org (slug: vectorops)
+const INOVAR_TECH_LEAD = { email: "alisson@vector.ops", password: "Password123!" }
 const INOVAR_DEVELOPER = { email: "matheus@vectorops.dev", password: "Password123!" }
 const INOVAR_SUPPORT   = { email: "bruno@vectorops.dev", password: "Password123!" }
 
@@ -292,7 +302,7 @@ async function testLoginFlows() {
 
   // 1d: Login with organizationSlug disambiguates correctly
   {
-    const { status, body } = await login(INOVAR_TECH_LEAD.email, INOVAR_TECH_LEAD.password, "inovar-sistemas")
+    const { status, body } = await login(INOVAR_TECH_LEAD.email, INOVAR_TECH_LEAD.password, "vectorops")
     assert(status === 200, "1d: login with correct org slug returns 200", `Got ${status}`)
     assert(body?.user?.organizationId, "1d: user.organizationId is present", `Missing: ${JSON.stringify(body?.user)}`)
   }
@@ -414,7 +424,7 @@ async function testInviteSystem() {
   {
     const { body } = await getJson("/api/auth/me", cookies.inovar_tech_lead)
     inovarOrgId = body?.user?.organizationId
-    assert(!!inovarOrgId, "3-setup: resolved Inovar org ID from /api/auth/me", `Got: ${JSON.stringify(body?.user)}`)
+    assert(!!inovarOrgId, "3-setup: resolved VectorOps org ID from /api/auth/me", `Got: ${JSON.stringify(body?.user)}`)
   }
 
   // Resolve Test Company org ID
@@ -488,7 +498,7 @@ async function testInviteSystem() {
   if (createdInviteCode) {
     const { status, body } = await getJson(`/api/invites/${createdInviteCode}`)
     assert(status === 200, "3f: GET /api/invites/[code] returns 200", `Got ${status}: ${JSON.stringify(body)}`)
-    assert(body?.organizationName === "Inovar Sistemas", "3f: invite shows correct org name", `Got: ${body?.organizationName}`)
+    assert(body?.organizationName === "VectorOps", "3f: invite shows correct org name", `Got: ${body?.organizationName}`)
     assert(body?.role === "DEVELOPER", "3f: invite shows correct role", `Got: ${body?.role}`)
     assert(!!body?.expiresAt, "3f: invite shows expiresAt", `Missing expiresAt: ${JSON.stringify(body)}`)
   }
@@ -573,7 +583,7 @@ async function testRegistrationJoinOrg() {
     assert(res.status === 201, "4a: join-org register returns 201", `Got ${res.status}: ${JSON.stringify(body)}`)
     assert(body?.user?.role === "DEVELOPER", "4a: user gets DEVELOPER role from invite", `Got: ${body?.user?.role}`)
     assert(body?.user?.organizationId === cookies.inovar_org_id, "4a: user is in Inovar Sistemas org", `Expected ${cookies.inovar_org_id}, got ${body?.user?.organizationId}`)
-    assert(body?.organization?.slug === "inovar-sistemas", "4a: org slug is inovar-sistemas", `Got: ${body?.organization?.slug}`)
+    assert(body?.organization?.slug === "vectorops", "4a: org slug is vectorops", `Got: ${body?.organization?.slug}`)
   }
 
   // 4b: Used invite cannot be reused
@@ -726,8 +736,8 @@ async function testTicketIsolation() {
       "/api/tickets",
       {
         type: "TICKET",
-        title: "Isolation Test Ticket — Inovar Sistemas",
-        description: "This ticket should only be visible within Inovar Sistemas.",
+        title: "Isolation Test Ticket — VectorOps",
+        description: "This ticket should only be visible within VectorOps.",
         severity: "LOW",
         deadline: makeDeadline(),
       },
@@ -741,7 +751,7 @@ async function testTicketIsolation() {
   // 6b: Org A user can see their own ticket
   await sleep(300)
   if (inovarTicketId) {
-    const { status, body } = await getJson("/api/tickets", cookies.inovar_tech_lead)
+    const { status, body } = await getJson("/api/tickets?limit=100&sortBy=createdAt&sortOrder=desc", cookies.inovar_tech_lead)
     assert(status === 200, "6b: Inovar GET /api/tickets returns 200", `Got ${status}`)
     const tickets = body?.tickets ?? []
     const found = tickets.some((t) => t.id === inovarTicketId)
@@ -776,7 +786,7 @@ async function testTicketIsolation() {
       "/api/tickets",
       {
         type: "TICKET",
-        title: "Isolation Test Ticket 2 — Inovar Sistemas",
+        title: "Isolation Test Ticket 2 — VectorOps",
         description: "Second ticket for isolation test.",
         severity: "HIGH",
         deadline: makeDeadline(),
@@ -842,7 +852,7 @@ async function testCheckpointConfigIsolation() {
       cookies.inovar_tech_lead
     )
     assert(status === 200, "8a: PATCH Inovar checkpoint config returns 200", `Got ${status}: ${JSON.stringify(body)}`)
-    assert(body?.intervalMinutes === 99, "8a: Inovar intervalMinutes updated to 99", `Got: ${body?.intervalMinutes}`)
+    assert(body?.config?.intervalMinutes === 99, "8a: Inovar intervalMinutes updated to 99", `Got: ${body?.config?.intervalMinutes}`)
   }
 
   // TC's config should still have a different value (not 99)
@@ -878,7 +888,7 @@ async function testTvConfigIsolation() {
       cookies.inovar_tech_lead
     )
     assert(status === 200, "9a: PATCH Inovar TV config returns 200", `Got ${status}: ${JSON.stringify(body)}`)
-    assert(body?.refreshInterval === 120, "9a: Inovar refreshInterval updated to 120", `Got: ${body?.refreshInterval}`)
+    assert(body?.config?.refreshInterval === 120, "9a: Inovar refreshInterval updated to 120", `Got: ${body?.config?.refreshInterval}`)
   }
 
   // TC's TV config should retain its own value
@@ -889,20 +899,20 @@ async function testTvConfigIsolation() {
     assert(body?.refreshInterval !== 120, "9b: TC TV config refreshInterval is NOT affected by Inovar change", `SECURITY: TC got refreshInterval=120 which should belong to Inovar`)
   }
 
-  // 9c: GET /api/tv/data?org=inovar-sistemas returns Inovar data
+  // 9c: GET /api/tv/data?org=vectorops returns VectorOps data
   await sleep(300)
   {
-    const { status, body } = await getJson("/api/tv/data?org=inovar-sistemas")
+    const { status, body } = await getJson("/api/tv/data?org=vectorops")
     assert(
       status === 200 || status === 503,
-      "9c: GET /api/tv/data?org=inovar-sistemas returns 200 or 503 (TV may be disabled)",
+      "9c: GET /api/tv/data?org=vectorops returns 200 or 503 (TV may be disabled)",
       `Got ${status}: ${JSON.stringify(body)}`
     )
     if (status === 200) {
-      // Verify data is scoped — developers should be Inovar devs only
+      // Verify data is scoped — developers should be VectorOps devs only
       assert(
-        body?.organizationName === "Inovar Sistemas" || body?.developers !== undefined,
-        "9c: TV data includes Inovar-scoped content",
+        body?.organizationName === "VectorOps" || body?.developers !== undefined,
+        "9c: TV data includes VectorOps-scoped content",
         `Got: ${JSON.stringify(body)}`
       )
     }
@@ -1055,10 +1065,10 @@ async function testSuperAdmin() {
   // 12b: Both orgs appear in the list
   await sleep(300)
   {
-    const { body } = await getJson("/api/super-admin/organizations", cookies.inovar_tech_lead)
+    const { body } = await getJson("/api/super-admin/organizations?limit=200", cookies.inovar_tech_lead)
     const orgs = body?.organizations ?? []
     const slugs = orgs.map((o) => o.slug)
-    assert(slugs.includes("inovar-sistemas"), "12b: Inovar Sistemas appears in org list", `Slugs: ${JSON.stringify(slugs)}`)
+    assert(slugs.includes("vectorops"), "12b: VectorOps appears in org list", `Slugs: ${JSON.stringify(slugs)}`)
     assert(slugs.includes("test-company"), "12b: Test Company appears in org list", `Slugs: ${JSON.stringify(slugs)}`)
   }
 
@@ -1088,9 +1098,10 @@ async function testSuperAdmin() {
   // 12e: Super admin can update org
   await sleep(300)
   if (createdOrgId) {
+    const updatedName = uniqueOrgName("UpdatedOrg")
     const { status, body } = await patchJson(
       `/api/super-admin/organizations/${createdOrgId}`,
-      { name: "Updated Org Name", isActive: true },
+      { name: updatedName, isActive: true },
       cookies.inovar_tech_lead
     )
     assert(status === 200, "12e: PATCH /api/super-admin/organizations/[id] returns 200", `Got ${status}: ${JSON.stringify(body)}`)
@@ -1161,8 +1172,9 @@ async function testImpersonation() {
 
   // 13a: Super admin impersonates TC
   await sleep(300)
+  let impersonatedCookie = cookies.inovar_tech_lead
   {
-    const { status, body } = await postJson(
+    const { status, body, cookie: newCookie } = await postJson(
       "/api/super-admin/impersonate",
       { organizationId: tcOrgId },
       cookies.inovar_tech_lead
@@ -1170,12 +1182,14 @@ async function testImpersonation() {
     assert(status === 200, "13a: super admin can impersonate TC org (200)", `Got ${status}: ${JSON.stringify(body)}`)
     assert(body?.isImpersonating === true, "13a: response includes isImpersonating=true", `Got: ${JSON.stringify(body)}`)
     assert(body?.organization?.id === tcOrgId, "13a: impersonated org ID matches TC org", `Expected ${tcOrgId}, got ${body?.organization?.id}`)
+    // iron-session stores data in the cookie — capture the updated session cookie
+    if (newCookie) impersonatedCookie = newCookie
   }
 
   // 13b: While impersonating, GET /api/tickets returns TC's tickets (not Inovar's)
   await sleep(300)
   {
-    const { status, body } = await getJson("/api/tickets", cookies.inovar_tech_lead)
+    const { status, body } = await getJson("/api/tickets", impersonatedCookie)
     assert(status === 200, "13b: GET /api/tickets while impersonating returns 200", `Got ${status}`)
     const tickets = body?.tickets ?? []
     // Should see TC tickets, not Inovar tickets only
@@ -1188,13 +1202,15 @@ async function testImpersonation() {
   // 13c: Stop impersonating
   await sleep(300)
   {
-    const { status, body } = await postJson(
+    const { status, body, cookie: restoredCookie } = await postJson(
       "/api/super-admin/stop-impersonating",
       {},
-      cookies.inovar_tech_lead
+      impersonatedCookie
     )
     assert(status === 200, "13c: stop-impersonating returns 200", `Got ${status}: ${JSON.stringify(body)}`)
     assert(body?.isImpersonating === false, "13c: response includes isImpersonating=false", `Got: ${JSON.stringify(body)}`)
+    // Update the main cookie with the restored session
+    if (restoredCookie) cookies.inovar_tech_lead = restoredCookie
   }
 
   // 13d: After stopping, GET /api/tickets returns Inovar's tickets again
@@ -1210,7 +1226,7 @@ async function testImpersonation() {
     assert(tickets.length >= inovarTicketCount, "13d: Inovar ticket count is restored after stop-impersonate", `Expected >=${inovarTicketCount}, got ${tickets.length}`)
   }
 
-  // 13e: Stop-impersonating without active impersonation returns 400
+  // 13e: Stop-impersonating without active impersonation returns 400 (use restored cookie)
   await sleep(300)
   {
     const { status, body } = await postJson(
@@ -1258,9 +1274,9 @@ async function testTicketRegressionCrud() {
 
   // 14c: TECH_LEAD can update ticket status (regression)
   await sleep(300)
-  if (ticketPublicId) {
+  if (ticketId) {
     const { status, body } = await patchJson(
-      `/api/tickets/${ticketPublicId}`,
+      `/api/tickets/${ticketId}`,
       { status: "IN_PROGRESS" },
       cookies.inovar_tech_lead
     )
@@ -1291,8 +1307,8 @@ async function testMeSessionFields() {
   assert(typeof user?.isSuperAdmin === "boolean", "15b: me includes isSuperAdmin boolean", `Got: ${JSON.stringify(user?.isSuperAdmin)}`)
   assert(!!user?.organizationName, "15c: me includes organizationName", `Missing: ${JSON.stringify(user)}`)
   assert(!!user?.organizationSlug, "15d: me includes organizationSlug", `Missing: ${JSON.stringify(user)}`)
-  assert(user?.isSuperAdmin === true, "15e: Inovar tech lead is super admin", `Got isSuperAdmin=${user?.isSuperAdmin}`)
-  assert(user?.organizationSlug === "inovar-sistemas", "15f: Inovar tech lead org slug is inovar-sistemas", `Got: ${user?.organizationSlug}`)
+  assert(user?.isSuperAdmin === true, "15e: VectorOps tech lead is super admin", `Got isSuperAdmin=${user?.isSuperAdmin}`)
+  assert(user?.organizationSlug === "vectorops", "15f: VectorOps tech lead org slug is vectorops", `Got: ${user?.organizationSlug}`)
 
   // Verify TC tech lead is NOT super admin
   await sleep(300)

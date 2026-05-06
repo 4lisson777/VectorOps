@@ -3,6 +3,7 @@ import { z } from "zod"
 import { Prisma, Severity, TicketStatus, TicketType } from "@/generated/prisma/client"
 import { getTenantDb } from "@/lib/tenant-db"
 import { requireTenantAuth, requireTenantRole } from "@/lib/auth"
+import { runWithTenant } from "@/lib/tenant-context"
 import { generatePublicId } from "@/lib/ticket-id"
 import { calculatePriorityOrder } from "@/lib/priority-order"
 import {
@@ -201,6 +202,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Fire-and-forget: emit per-user notifications without blocking the response.
     // QA and TECH_LEAD users receive persistent notifications (requiresAck: true);
     // DEVELOPER users receive normal notifications.
+    // runWithTenant ensures the tenant context is available throughout the async chain,
+    // even after the route handler returns its response to Next.js.
     const notificationType = isBug ? "BUG_CREATED" : "TICKET_CREATED"
     const severityLabel =
       ticket.severity === "LOW"
@@ -210,18 +213,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           : ticket.severity === "HIGH"
             ? "Alta"
             : "Crítica"
-    void getNotificationTargets(notificationType)
-      .then(({ normalUserIds, persistentUserIds }) =>
-        createAndEmitNotificationsForTargets({
-          type: notificationType,
-          title: isBug ? `Novo Bug: ${ticket.title}` : `Nova Missão: ${ticket.title}`,
-          body: `${ticket.publicId} — Severidade ${severityLabel}`,
-          ticketId: ticket.id,
-          normalUserIds,
-          persistentUserIds,
-        })
-      )
-      .catch(console.error)
+    void runWithTenant(session.organizationId, () =>
+      getNotificationTargets(notificationType)
+        .then(({ normalUserIds, persistentUserIds }) =>
+          createAndEmitNotificationsForTargets({
+            type: notificationType,
+            title: isBug ? `Novo Bug: ${ticket.title}` : `Nova Missão: ${ticket.title}`,
+            body: `${ticket.publicId} — Severidade ${severityLabel}`,
+            ticketId: ticket.id,
+            normalUserIds,
+            persistentUserIds,
+          })
+        )
+    ).catch(console.error)
 
     return NextResponse.json({ ticket }, { status: 201 })
   })

@@ -84,15 +84,23 @@ async function patchJson(url, data, cookie, { redirect = "follow" } = {}) {
 }
 
 async function login(email, password) {
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  })
-  const setCookie = res.headers.get("set-cookie")
-  if (!setCookie) return null
-  const match = setCookie.match(/^([^;]+)/)
-  return match ? match[1] : null
+  const maxRetries = 12
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    })
+    if (res.status === 429 && attempt < maxRetries) {
+      await new Promise((r) => setTimeout(r, 5_000))
+      continue
+    }
+    const setCookie = res.headers.get("set-cookie")
+    if (!setCookie) return null
+    const match = setCookie.match(/^([^;]+)/)
+    return match ? match[1] : null
+  }
+  return null
 }
 
 function makeDeadline() {
@@ -576,7 +584,7 @@ async function main() {
   await new Promise((r) => setTimeout(r, 300))
   const qaCookie = await login("nicoli@vectorops.dev", "Password123!")
   await new Promise((r) => setTimeout(r, 300))
-  const techLeadCookie = await login("alisson.lima@vectorops.dev", "Password123!")
+  const techLeadCookie = await login("alisson@vector.ops", "Password123!")
   await new Promise((r) => setTimeout(r, 300))
   const developerCookie = await login("matheus@vectorops.dev", "Password123!")
 

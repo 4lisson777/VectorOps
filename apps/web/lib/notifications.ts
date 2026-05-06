@@ -213,9 +213,15 @@ export async function createAndEmitNotifications({
   const tenantDb = getTenantDb()
   for (const userId of targetUserIds) {
     const notification = await tenantDb.notification.create({
-      // organizationId is injected by the tenant-db Prisma extension
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data: { userId, type, title, body, ticketId: ticketId ?? null, requiresAck } as any,
+      data: {
+        userId,
+        type,
+        title,
+        body,
+        ticketId: ticketId ?? null,
+        requiresAck,
+        organizationId: organizationId ?? "",
+      },
     })
     emitShinobiEvent({
       type: "notification:new",

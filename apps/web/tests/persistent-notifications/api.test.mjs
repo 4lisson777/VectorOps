@@ -70,18 +70,27 @@ async function patchJson(url, data, cookie, { redirect = "follow" } = {}) {
 
 /**
  * Authenticates a user and returns the session cookie.
+ * Retries up to 12 times on HTTP 429 (rate limit), waiting 5s between attempts.
  */
 async function login(email, password) {
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  })
-  const setCookie = res.headers.get("set-cookie")
-  if (!setCookie) return null
-  // Extract cookie name=value from the Set-Cookie header
-  const match = setCookie.match(/^([^;]+)/)
-  return match ? match[1] : null
+  const maxRetries = 12
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    })
+    if (res.status === 429 && attempt < maxRetries) {
+      await new Promise((r) => setTimeout(r, 5_000))
+      continue
+    }
+    const setCookie = res.headers.get("set-cookie")
+    if (!setCookie) return null
+    // Extract cookie name=value from the Set-Cookie header
+    const match = setCookie.match(/^([^;]+)/)
+    return match ? match[1] : null
+  }
+  return null
 }
 
 // ─── Test Suites ─────────────────────────────────────────────────────────────
@@ -638,13 +647,13 @@ async function main() {
   // --- Authenticate test users ---
   console.log("\n[Setup] Authenticating test users...")
 
-  // Credentials from prisma/seed.ts + manually created QA user
+  // Credentials from prisma/seed.ts
   // Roles needed: SUPPORT_MEMBER, QA, TECH_LEAD, DEVELOPER
   // Sequential logins to avoid concurrent bcrypt contention on the dev server
-  const supportCookie = await login("support@vectorops.dev", "Password123!")
-  const qaCookie = await login("qa@vectorops.dev", "Password123!")
-  const techLeadCookie = await login("techlead@vectorops.dev", "Password123!")
-  const developerCookie = await login("developer@vectorops.dev", "Password123!")
+  const supportCookie = await login("bruno@vectorops.dev", "Password123!")
+  const qaCookie = await login("nicoli@vectorops.dev", "Password123!")
+  const techLeadCookie = await login("alisson@vector.ops", "Password123!")
+  const developerCookie = await login("matheus@vectorops.dev", "Password123!")
 
   // Allow fallback to alternative seed emails if primary ones don't exist
   const loginResults = {

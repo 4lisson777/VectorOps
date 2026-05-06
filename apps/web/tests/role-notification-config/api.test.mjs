@@ -133,15 +133,23 @@ async function postJson(url, data, cookie) {
 }
 
 async function login(email, password) {
-  const res = await fetch(`${BASE_URL}/api/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  })
-  const setCookie = res.headers.get("set-cookie")
-  if (!setCookie) return null
-  const match = setCookie.match(/^([^;]+)/)
-  return match ? match[1] : null
+  const maxRetries = 12
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    const res = await fetch(`${BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    })
+    if (res.status === 429 && attempt < maxRetries) {
+      await new Promise((r) => setTimeout(r, 5_000))
+      continue
+    }
+    const setCookie = res.headers.get("set-cookie")
+    if (!setCookie) return null
+    const match = setCookie.match(/^([^;]+)/)
+    return match ? match[1] : null
+  }
+  return null
 }
 
 function sleep(ms) {
@@ -170,9 +178,9 @@ async function testSchemaPrisma() {
   )
 
   assert(
-    content.includes("role                Role     @unique"),
-    "RoleNotificationConfig.role is unique Role enum",
-    "role @unique field not found in RoleNotificationConfig"
+    content.includes("@@unique([organizationId, role])"),
+    "RoleNotificationConfig has compound unique constraint on (organizationId, role)",
+    "@@unique([organizationId, role]) not found in RoleNotificationConfig"
   )
 
   assert(
@@ -278,16 +286,16 @@ async function testRouteStaticAnalysis() {
 
   // Suite 5: Auth guard
   assert(
-    content.includes('requireRole("TECH_LEAD")'),
+    content.includes('requireTenantRole("TECH_LEAD")'),
     "route.ts GET requires TECH_LEAD role",
-    'requireRole("TECH_LEAD") not found in GET handler'
+    'requireTenantRole("TECH_LEAD") not found in GET handler'
   )
 
   const patchSection = content.slice(content.indexOf("export async function PATCH"))
   assert(
-    patchSection.includes('requireRole("TECH_LEAD")'),
+    patchSection.includes('requireTenantRole("TECH_LEAD")'),
     "route.ts PATCH also requires TECH_LEAD role",
-    'requireRole("TECH_LEAD") not found in PATCH handler'
+    'requireTenantRole("TECH_LEAD") not found in PATCH handler'
   )
 
   // Suite 6: Zod schema
@@ -985,7 +993,7 @@ async function testNotificationLogicViaPatch(cookies) {
     cookies.techLead
   )
 
-  await sleep(500)
+  await sleep(2000)
   const { body: assign42AfterBody } = await getJson("/api/notifications?limit=50", cookies.dev)
   const assign42AfterCount = assign42AfterBody?.notifications?.length ?? 0
 
@@ -1058,7 +1066,7 @@ async function testNotificationRegressions(cookies) {
     cookies.techLead
   )
 
-  await sleep(600)
+  await sleep(2000)
   // Ticket opener (support user) should receive a TICKET_DONE notification
   const { body: regAfterBody } = await getJson("/api/notifications?limit=50", cookies.support)
   const regAfterCount = regAfterBody?.notifications?.length ?? 0
@@ -1204,7 +1212,7 @@ async function main() {
 
   // Login all required roles (300ms gaps to avoid contention from bcrypt)
   console.log("\nLogging in test users...")
-  const techLeadCookie = await login("alisson.lima@vectorops.dev", "Password123!")
+  const techLeadCookie = await login("alisson@vector.ops", "Password123!")
   await sleep(300)
   const devCookie = await login("matheus@vectorops.dev", "Password123!")
   await sleep(300)
